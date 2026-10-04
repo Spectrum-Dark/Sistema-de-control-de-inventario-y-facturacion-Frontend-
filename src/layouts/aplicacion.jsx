@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Encabezados from "../components/encabezados";
-import BarraLateral from "../components/barralateral";
+import BarraLateral from "../components/barra_lateral";
+import MigasPan from "../components/migajas_pan";
 
 function Aplicacion() {
   return (
@@ -13,6 +14,7 @@ function Aplicacion() {
 
       {/* Vistas de la app (Outlet) */}
       <main>
+        <MigasPan />
         <Outlet />
       </main>
     </div>

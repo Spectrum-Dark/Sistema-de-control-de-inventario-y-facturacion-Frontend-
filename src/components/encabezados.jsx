@@ -1,7 +1,14 @@
 function Encabezado() {
   return (
     <header>
-      <h1>Encabezado</h1>
+      <div>
+        <h1>Sistema de Control de Inventario</h1>
+      </div>
+
+      <div>
+        <p>Usuario</p>
+        <span>Rol</span>
+      </div>
     </header>
   );
 }
