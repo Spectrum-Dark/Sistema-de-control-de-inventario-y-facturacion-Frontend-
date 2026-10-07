@@ -1,8 +1,9 @@
+import Notificaciones from "./notificaciones";
+
 function Encabezado({
   menuAbierto = false,
   alAlternarMenu = () => {},
   cantidadNotificaciones = 0,
-  alAbrirNotificaciones = () => {},
   alCerrarSesion = () => {},
 }) {
   return (
@@ -23,7 +24,11 @@ function Encabezado({
             stroke="currentColor"
             strokeWidth="2"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
           </svg>
         </button>
 
@@ -35,32 +40,7 @@ function Encabezado({
 
       <div className="ml-4 flex shrink-0 items-center gap-1 sm:gap-2">
         {/* Notificaciones */}
-        <button
-          type="button"
-          onClick={alAbrirNotificaciones}
-          aria-label={`Notificaciones${
-            cantidadNotificaciones > 0
-              ? ` (${cantidadNotificaciones} nuevas)`
-              : ""
-          }`}
-          className="relative rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
-        >
-          <svg
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-          </svg>
-          {cantidadNotificaciones > 0 && (
-            <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white" />
-          )}
-        </button>
+        <Notificaciones cantidad={cantidadNotificaciones} />
 
         <div aria-hidden="true" className="mx-1 h-5 w-px bg-slate-200" />
 

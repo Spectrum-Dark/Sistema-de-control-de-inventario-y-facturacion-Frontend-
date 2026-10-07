@@ -8,7 +8,7 @@ import Registro from "./pages/autenticacion/registro";
 import Aplicacion from "./layouts/aplicacion";
 
 /* Vistas de la Aplicación */
-import Inicio from "./pages/dashboard/dashboard";
+import Dashboard from "./pages/dashboard/dashboard";
 import Productos from "./pages/gestion/productos";
 import Categorias from "./pages/gestion/categorias";
 import Marcas from "./pages/gestion/marcas";
@@ -39,7 +39,7 @@ function App() {
       <Route path="/app" element={<Aplicacion />}>
         {/* Redirecciona /app automáticamente al dashboard */}
         <Route index element={<Navigate to="/app/dashboard" replace />} />
-        <Route path="dashboard" element={<Inicio />} />
+        <Route path="dashboard" element={<Dashboard />} />
 
         {/* Gestión */}
         <Route path="gestion/productos" element={<Productos />} />

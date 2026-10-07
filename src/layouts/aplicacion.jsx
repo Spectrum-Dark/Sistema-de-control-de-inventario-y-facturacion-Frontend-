@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Encabezados from "../components/encabezados";
-import BarraLateral from "../components/barra_lateral";
-import MigasPan from "../components/migajas_pan";
+import Encabezados from "../components/sistema/encabezados";
+import BarraLateral from "../components/sistema/barra_lateral";
+import MigasPan from "../components/sistema/migajas_pan";
 
 function Aplicacion() {
   const [menuAbierto, setMenuAbierto] = useState(false);
