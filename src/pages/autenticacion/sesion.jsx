@@ -27,8 +27,8 @@ function Iniciar_Sesion() {
           </p>
         </div>
 
-        <p className="border-t border-slate-700 pt-5 text-xs text-slate-500">
-          Proyecto de grado · Acceso restringido a usuarios autorizados
+        <p className="border-t border-slate-700 pt-5 text-xs text-center text-slate-500">
+          Acceso restringido a usuarios autorizados
         </p>
       </aside>
 

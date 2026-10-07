@@ -1,6 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
-// Diccionario que mapea los fragmentos de la URL (slugs) a nombres amigables para el usuario
 const nombresRutas = {
   gestion: "Gestión",
   productos: "Productos",
@@ -28,41 +27,42 @@ const nombresRutas = {
 };
 
 function MigasPan() {
-  /* Obtiene la ruta/URL actual donde se encuentra el usuario */
   const ubicacion = useLocation();
 
-  /* Divide la URL por las barras "/" y elimina elementos vacíos */
   const segmentos = ubicacion.pathname.split("/").filter(Boolean);
-
-  /* Arreglo recortado omitiendo el primer nivel ("app") */
   const segmentosMigas = segmentos.slice(1);
 
   return (
-    <nav aria-label="Migas de pan">
-      {/* Enlace estático al inicio de la aplicación */}
-      <Link to="/app/dashboard">Inicio</Link>
+    <nav
+      aria-label="Migas de pan"
+      className="mb-6 flex flex-wrap items-center text-sm text-slate-500"
+    >
+      {/* "Inicio" como texto plano */}
+      <span className="font-medium text-slate-500">
+        Inicio
+      </span>
 
       {segmentosMigas.map((segmento, indice) => {
-        /* Construye la URL acumulada para cada nivel */
         const ruta = "/" + segmentos.slice(0, indice + 2).join("/");
-
-        /* Busca el nombre amigable en el diccionario o usa la palabra original */
         const nombre = nombresRutas[segmento] || segmento;
-
-        /* Comprueba si el segmento actual es el último nivel de la miga de pan */
         const esUltimo = indice === segmentosMigas.length - 1;
 
         return (
-          <span key={ruta}>
+          <span key={ruta} className="inline-flex items-center">
             {/* Separador visual */}
-            {" / "}
+            <span className="mx-2 text-slate-300">/</span>
 
-            {/* Si es el último nivel, renderiza texto plano; si no, renderiza un enlace */}
-            {esUltimo ? (
-              <span aria-current="page">{nombre}</span>
-            ) : (
-              <Link to={ruta}>{nombre}</Link>
-            )}
+            {/* Texto plano (con resaltado solo en la última sección) */}
+            <span
+              className={
+                esUltimo
+                  ? "font-semibold text-slate-900"
+                  : "text-slate-500"
+              }
+              {...(esUltimo ? { "aria-current": "page" } : {})}
+            >
+              {nombre}
+            </span>
           </span>
         );
       })}

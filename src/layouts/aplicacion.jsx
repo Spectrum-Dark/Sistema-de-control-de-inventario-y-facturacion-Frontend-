@@ -1,19 +1,28 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Encabezados from "../components/encabezados";
 import BarraLateral from "../components/barra_lateral";
 import MigasPan from "../components/migajas_pan";
 
 function Aplicacion() {
+  const [menuAbierto, setMenuAbierto] = useState(false);
+
   return (
-    <div>
+    <div className="min-h-screen bg-slate-100">
       {/* Encabezado (header) */}
-      <Encabezados />
+      <Encabezados
+        menuAbierto={menuAbierto}
+        alAlternarMenu={() => setMenuAbierto(!menuAbierto)}
+      />
 
       {/* Barra lateral (Sidebar) */}
-      <BarraLateral />
+      <BarraLateral
+        abierto={menuAbierto}
+        alCerrar={() => setMenuAbierto(false)}
+      />
 
       {/* Vistas de la app (Outlet) */}
-      <main>
+      <main className="px-4 pb-8 pt-20 sm:px-6 lg:pl-72 lg:pr-8">
         <MigasPan />
         <Outlet />
       </main>
