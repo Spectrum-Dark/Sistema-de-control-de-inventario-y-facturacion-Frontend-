@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import useSesion from "../../hooks/useSesion";
+import useSesion from "../../hooks/autenticacion/useSesion";
 
 function Iniciar_Sesion() {
   const { formulario, error, manejarCambio, manejarEnvio } = useSesion();

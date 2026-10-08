@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import useRegistro from "../../hooks/useRegistro";
+import useRegistro from "../../hooks/autenticacion/useRegistro";
 
 function Registrar_Usuarios() {
   const { formulario, error, manejarCambio, manejarEnvio } = useRegistro();

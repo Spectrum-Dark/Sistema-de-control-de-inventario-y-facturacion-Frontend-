@@ -1,3 +1,4 @@
+import useDashboard from "../../hooks/dashboard/useDashboard";
 import TarjetaIndicador from "../../components/dashboard/tarjeta_indicador";
 import GraficoVentas from "../../components/dashboard/grafico_ventas";
 import GraficoProductos from "../../components/dashboard/grafico_productos";
@@ -5,7 +6,6 @@ import GraficoInventario from "../../components/dashboard/grafico_inventario";
 import GraficoCategorias from "../../components/dashboard/grafico_categoria";
 import StockBajo from "../../components/dashboard/stock_bajo";
 import UltimasOperaciones from "../../components/dashboard/ultimas_operaciones";
-import useDashboard from "../../hooks/useDashboard";
 
 function Dashboard() {
   const { datosDashboard } = useDashboard();
