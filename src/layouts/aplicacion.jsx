@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Encabezados from "../components/sistema/encabezados";
 import BarraLateral from "../components/sistema/barra_lateral";
-import MigasPan from "../components/sistema/migajas_pan";
 
 function Aplicacion() {
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -23,7 +22,6 @@ function Aplicacion() {
 
       {/* Vistas de la app (Outlet) */}
       <main className="px-4 pb-8 pt-20 sm:px-6 lg:pl-72 lg:pr-8">
-        <MigasPan />
         <Outlet />
       </main>
     </div>

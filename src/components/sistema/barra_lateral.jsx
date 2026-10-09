@@ -1,7 +1,32 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
-// Iconografía SVG uniforme
+// =====================================================
+// LOGO PERSONALIZADO SVG (Astro / daily.dev)
+// =====================================================
+const LogoAstroSVG = () => (
+  <svg
+    className="h-8 w-auto shrink-0"
+    viewBox="0 0 256 144"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g>
+      <path
+        d="M219.832837,71.6995129 L191.573071,43.3805814 L205.69559,15.0714884 L251.612188,61.0842182 C257.462604,66.9468836 257.462604,76.4521422 251.612188,82.3148081 L195.097565,138.947752 C189.247148,144.810417 179.761748,144.810417 173.911332,138.947752 C168.060915,133.085086 168.060915,123.579827 173.911332,117.717162 L219.832837,71.6995129 Z"
+        fill="#3b82f6"
+      ></path>
+      <path
+        d="M173.921862,4.39576953 C179.772279,-1.46689601 189.260133,-1.46443637 195.11055,4.39822916 L205.706121,15.0159838 L82.0886685,138.892247 C76.238252,144.754913 66.7503974,144.752453 60.8999803,138.889788 L50.3044093,128.272033 L173.921862,4.39576953 Z M120.941551,43.3299961 L99.7504086,64.5655051 L71.4906426,36.2465737 L36.167163,71.6440084 L64.4269285,99.96294 L50.3044093,128.272033 L4.38781264,82.2593032 C-1.46260421,76.3966377 -1.46260421,66.8913792 4.38781264,61.0287132 L60.8999803,4.39822916 C66.7503974,-1.46443637 76.238252,-1.46689601 82.0886685,4.39576953 L120.941551,43.3299961 Z"
+        fill="#ffffff"
+      ></path>
+    </g>
+  </svg>
+);
+
+// =====================================================
+// ICONOGRAFÍA SVG UNIFORME
+// =====================================================
 const Iconos = {
   dashboard: (
     <svg
@@ -155,10 +180,8 @@ const secciones = [
 ];
 
 const claseSubEnlace = ({ isActive }) =>
-  `flex items-center rounded-md px-3 py-2 text-xs font-medium transition ${
-    isActive
-      ? "bg-slate-800 text-white font-semibold"
-      : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
+  `flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+    isActive ? "text-white font-semibold" : "text-slate-400 hover:text-white"
   }`;
 
 function BarraLateral({ abierto = false, alCerrar = () => {} }) {
@@ -167,7 +190,6 @@ function BarraLateral({ abierto = false, alCerrar = () => {} }) {
   const seccionActiva =
     secciones.find((s) => ubicacion.pathname.startsWith(s.base))?.id ?? null;
 
-  // Sincronización limpia en React sin useEffect (evita renderizados en cascada)
   const [seccionManual, setSeccionManual] = useState(null);
   const [ultimaRuta, setUltimaRuta] = useState(ubicacion.pathname);
 
@@ -189,31 +211,34 @@ function BarraLateral({ abierto = false, alCerrar = () => {} }) {
         <div
           onClick={alCerrar}
           aria-hidden="true"
-          className="fixed inset-0 z-40 bg-slate-900/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs lg:hidden"
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-800 bg-slate-900 transition-transform duration-200 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-[#1e232a] text-slate-300 transition-transform duration-200 lg:translate-x-0 ${
           abierto ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Identidad Institucional (Mismo estilo que Iniciar_Sesion.jsx) */}
-        <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-800 px-5">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-white text-base font-bold text-slate-900">
-              R
+        {/* ENCABEZADO CON LOGO Y MARCA ASTRO */}
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-800/60 px-5">
+          <div className="flex items-center gap-2.5">
+            <LogoAstroSVG />
+            <div className="flex flex-col">
+              <span className="text-lg font-black tracking-wider text-white">
+                ASTRO
+              </span>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-blue-400 -mt-1">
+                SISTEMA DE GESTION
+              </span>
             </div>
-            <span className="text-xs font-semibold uppercase tracking-widest text-slate-200">
-              Sistema de Repuestos
-            </span>
           </div>
 
           <button
             type="button"
             onClick={alCerrar}
             aria-label="Cerrar menú"
-            className="rounded-md p-1.5 text-slate-400 transition hover:bg-slate-800 hover:text-white lg:hidden"
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white lg:hidden"
           >
             <svg
               className="h-5 w-5"
@@ -231,20 +256,26 @@ function BarraLateral({ abierto = false, alCerrar = () => {} }) {
           </button>
         </div>
 
-        {/* Navegación con Scrollbar CSS Estándar (Compatible con Tailwind v4) */}
+        {/* ETIQUETA DE NAVEGACIÓN */}
+        <div className="px-5 pt-4 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+          Navegación
+        </div>
+
+        {/* NAVEGACIÓN PRINCIPAL */}
         <nav
           aria-label="Navegación principal"
-          className="flex-1 space-y-1 overflow-y-auto px-4 py-5 [scrollbar-color:#334155_transparent] scrollbar-thin"
+          className="flex-1 space-y-1 overflow-y-auto px-3 pb-6 [scrollbar-color:#334155_transparent] scrollbar-thin"
           onClick={(e) => {
             if (e.target.closest("a")) alCerrar();
           }}
         >
+          {/* Dashboard */}
           <NavLink
             to="/app/dashboard"
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+              `flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition ${
                 isActive
-                  ? "bg-slate-800 text-white"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
                   : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
               }`
             }
@@ -253,19 +284,22 @@ function BarraLateral({ abierto = false, alCerrar = () => {} }) {
             <span>Dashboard</span>
           </NavLink>
 
+          {/* Menús desplegables */}
           {secciones.map((seccion) => {
             const estaAbierta = seccionAbierta === seccion.id;
             const esActiva = seccionActiva === seccion.id;
 
             return (
-              <div key={seccion.id}>
+              <div key={seccion.id} className="space-y-1">
                 <button
                   type="button"
                   onClick={() => alternarSeccion(seccion.id)}
                   aria-expanded={estaAbierta}
                   aria-controls={`submenu-${seccion.id}`}
-                  className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-slate-800/60 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-700 ${
-                    esActiva ? "text-white" : "text-slate-400"
+                  className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-medium transition ${
+                    esActiva && !estaAbierta
+                      ? "bg-slate-800/80 text-white"
+                      : "text-slate-400 hover:bg-slate-800/50 hover:text-white"
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -274,8 +308,10 @@ function BarraLateral({ abierto = false, alCerrar = () => {} }) {
                   </div>
 
                   <svg
-                    className={`h-4 w-4 transition-transform duration-200 ${
-                      estaAbierta ? "rotate-180" : ""
+                    className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                      estaAbierta
+                        ? "rotate-180 text-blue-400"
+                        : "text-slate-500"
                     }`}
                     fill="none"
                     viewBox="0 0 24 24"
@@ -290,10 +326,11 @@ function BarraLateral({ abierto = false, alCerrar = () => {} }) {
                   </svg>
                 </button>
 
+                {/* Submenú desplegable */}
                 {estaAbierta && (
                   <div
                     id={`submenu-${seccion.id}`}
-                    className="ml-4 mt-1 flex flex-col gap-1 border-l border-slate-800 pl-3"
+                    className="ml-4 flex flex-col gap-0.5 border-l border-slate-700/60 pl-2 animate-in fade-in duration-150"
                   >
                     {seccion.enlaces.map((enlace) => (
                       <NavLink
@@ -301,7 +338,16 @@ function BarraLateral({ abierto = false, alCerrar = () => {} }) {
                         to={enlace.to}
                         className={claseSubEnlace}
                       >
-                        {enlace.texto}
+                        {({ isActive }) => (
+                          <>
+                            <span
+                              className={`h-1.5 w-1.5 rounded-full ${
+                                isActive ? "bg-blue-500" : "bg-slate-600"
+                              }`}
+                            ></span>
+                            <span>{enlace.texto}</span>
+                          </>
+                        )}
                       </NavLink>
                     ))}
                   </div>
@@ -310,23 +356,6 @@ function BarraLateral({ abierto = false, alCerrar = () => {} }) {
             );
           })}
         </nav>
-
-        {/* Pie de perfil */}
-        <div className="flex shrink-0 items-center gap-3 border-t border-slate-800 px-5 py-4">
-          <div
-            aria-hidden="true"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-800 text-slate-300 border border-slate-700"
-          >
-            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-3.3 0-8 1.7-8 5v1h16v-1c0-3.3-4.7-5-8-5Z" />
-            </svg>
-          </div>
-
-          <div className="min-w-0 leading-tight">
-            <p className="truncate text-sm font-medium text-white">Usuario</p>
-            <span className="text-xs text-slate-400">Administrador</span>
-          </div>
-        </div>
       </aside>
     </>
   );

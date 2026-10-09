@@ -1,43 +1,42 @@
 import { useState } from "react";
 
 function useRegistro() {
-  /* Estadio para almancenar los valores del formulario */
+  /* Estado para almacenar los valores del formulario */
   const [formulario, setFormulario] = useState({
     nombre: "",
-    apellido: "",
     nombre_usuario: "",
     correo_electronico: "",
     contrasena: "",
     confirmar_contrasena: "",
   });
 
-  /* --- mensaje de errores */
+  /* Mensaje de error */
   const [error, setError] = useState("");
 
   // Manejador que se ejecuta cada vez que el usuario escribe en un campo de texto
   const manejarCambio = (evento) => {
-    /* Extraemoslos valores el formulario */
+    /* Extraemos el nombre del atributo 'name' y su valor */
     const { name, value } = evento.target;
 
     // Actualiza el estado manteniendo el valor previo de los otros campos
     setFormulario((formularioActual) => ({
       ...formularioActual,
-      [name]: value, // Actualiza dinámicamente el campo actual mediante su propiedad 'name'
+      [name]: value, // Actualiza dinámicamente el campo actual
     }));
 
-    /* Limpia los errores */
-    setError("");
+    /* Limpia los errores al escribir */
+    if (error) setError("");
   };
 
   const manejarEnvio = (evento) => {
-    /* Desactivamos la recarga automatica */
+    /* Desactivamos la recarga automática de la página */
     evento.preventDefault();
 
+    // Validar que ningún campo esté vacío
     if (
-      !formulario.nombre ||
-      !formulario.apellido ||
-      !formulario.nombre_usuario ||
-      !formulario.correo_electronico ||
+      !formulario.nombre.trim() ||
+      !formulario.nombre_usuario.trim() ||
+      !formulario.correo_electronico.trim() ||
       !formulario.contrasena ||
       !formulario.confirmar_contrasena
     ) {
@@ -45,20 +44,23 @@ function useRegistro() {
       return;
     }
 
+    // Validar coincidencia de contraseñas
     if (formulario.contrasena !== formulario.confirmar_contrasena) {
       setError("Las contraseñas no coinciden.");
       return;
     }
 
+    // Estructurar los datos limpios para el backend/servicio
     const datosRegistro = {
-      nombre: formulario.nombre,
-      apellido: formulario.apellido,
-      nombre_usuario: formulario.nombre_usuario,
-      correo_electronico: formulario.correo_electronico,
+      nombre_completo: formulario.nombre.trim(),
+      nombre_usuario: formulario.nombre_usuario.trim(),
+      correo_electronico: formulario.correo_electronico.trim(),
       contrasena: formulario.contrasena,
     };
 
-    console.log("Datos de registro:", datosRegistro);
+    console.log("Datos de registro procesados:", datosRegistro);
+
+    // Futura integración del servicio de autenticación/registro
   };
 
   return {
