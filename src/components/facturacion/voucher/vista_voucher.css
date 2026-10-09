@@ -1,0 +1,245 @@
+/* ==========================================================================
+   ESTILOS BASE DE VOUCHER Y VISTA PREVIA EN PANTALLA
+   ========================================================================== */
+
+.voucher {
+  display: none;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 4mm;
+  color: #000;
+  background: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  overflow-wrap: anywhere;
+}
+
+.voucher-58mm {
+  width: 58mm;
+}
+
+.voucher-80mm {
+  width: 80mm;
+}
+
+.voucher-a4 {
+  width: 182mm;
+  padding: 10mm;
+  font-size: 11pt;
+}
+
+.voucher-encabezado,
+.voucher-pie {
+  text-align: center;
+}
+
+.voucher-encabezado h2 {
+  margin: 0 0 4px;
+  font-size: 14pt;
+}
+
+.voucher-encabezado p,
+.voucher-pie p {
+  margin: 3px 0;
+}
+
+.voucher hr {
+  border: 0;
+  border-top: 1px dashed #000;
+  margin: 8px 0;
+}
+
+.voucher-datos p {
+  margin: 5px 0;
+}
+
+.voucher-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: inherit;
+}
+
+.voucher-tabla th,
+.voucher-tabla td {
+  padding: 4px 2px;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.voucher-tabla th:nth-child(1),
+.voucher-tabla td:nth-child(1) {
+  width: 52%;
+}
+
+.voucher-tabla th:nth-child(2),
+.voucher-tabla td:nth-child(2) {
+  width: 13%;
+  text-align: center;
+}
+
+.voucher-tabla th:nth-child(3),
+.voucher-tabla td:nth-child(3) {
+  width: 35%;
+  text-align: right;
+}
+
+.voucher-tabla small {
+  font-size: 8pt;
+}
+
+.voucher-total {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12pt;
+}
+
+/* ==========================================================================
+   REGLAS ESPECÍFICAS PARA IMPRESORAS TÉRMICAS DE 58 MM
+   ========================================================================== */
+
+.voucher-58mm {
+  width: 58mm;
+  padding: 2mm;
+  font-size: 8pt;
+  line-height: 1.25;
+}
+
+.voucher-58mm .voucher-encabezado h2 {
+  font-size: 10pt;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.voucher-58mm .voucher-encabezado p,
+.voucher-58mm .voucher-pie p {
+  font-size: 7.5pt;
+  margin: 2px 0;
+}
+
+.voucher-58mm .voucher-datos p {
+  margin: 3px 0;
+  font-size: 7.5pt;
+  overflow-wrap: anywhere;
+}
+
+.voucher-58mm .voucher-tabla {
+  font-size: 7pt;
+  table-layout: fixed;
+}
+
+.voucher-58mm .voucher-tabla th,
+.voucher-58mm .voucher-tabla td {
+  padding: 3px 1px;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.voucher-58mm .voucher-tabla th:nth-child(1),
+.voucher-58mm .voucher-tabla td:nth-child(1) {
+  width: 48%;
+}
+
+.voucher-58mm .voucher-tabla th:nth-child(2),
+.voucher-58mm .voucher-tabla td:nth-child(2) {
+  width: 14%;
+  text-align: center;
+}
+
+.voucher-58mm .voucher-tabla th:nth-child(3),
+.voucher-58mm .voucher-tabla td:nth-child(3) {
+  width: 38%;
+  text-align: right;
+}
+
+.voucher-58mm .voucher-tabla small {
+  font-size: 6.5pt;
+}
+
+.voucher-58mm .voucher-total {
+  gap: 3px;
+  font-size: 9pt;
+  overflow-wrap: anywhere;
+}
+
+.voucher-58mm hr {
+  margin: 5px 0;
+}
+
+/* ==========================================================================
+   REGLAS EXCLUSIVAS PARA IMPRESIÓN (@media print)
+   ========================================================================== */
+
+@media print {
+  @page {
+    margin: 0;
+  }
+
+  /* Oculta la vista web normal */
+  body.print-voucher * {
+    visibility: hidden !important;
+  }
+
+  /* Muestra únicamente el voucher térmico seleccionado */
+  body.print-voucher #vista-voucher,
+  body.print-voucher #vista-voucher * {
+    visibility: visible !important;
+  }
+
+  body.print-voucher #vista-voucher {
+    display: block !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    color: #000;
+    background: #fff;
+    box-shadow: none;
+  }
+
+  body.print-voucher #vista-voucher.voucher-58mm {
+    width: 58mm;
+    padding: 2mm;
+    font-size: 8pt;
+    box-sizing: border-box;
+  }
+
+  body.print-voucher #vista-voucher.voucher-80mm {
+    width: 80mm;
+  }
+
+  body.print-voucher #vista-voucher.voucher-a4 {
+    width: 182mm;
+  }
+
+  body.print-voucher .voucher,
+  body.print-voucher .voucher * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Muestra la factura convencional cuando se elige formato A4 */
+  body.print-factura #factura-imprimible,
+  body.print-factura #factura-imprimible * {
+    visibility: visible !important;
+  }
+
+  body.print-factura #factura-imprimible {
+    display: block !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 182mm;
+    margin: 0;
+    padding: 10mm;
+    color: #000;
+    background: #fff;
+    box-sizing: border-box;
+  }
+
+  body.print-factura #vista-voucher {
+    display: none !important;
+  }
+}
