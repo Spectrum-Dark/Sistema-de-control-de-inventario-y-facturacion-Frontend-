@@ -1,4 +1,3 @@
-
 import MigasPan from "./migajas_pan";
 import Notificaciones from "./notificaciones";
 import PerfilUsuario from "./perfil_usuario";
@@ -8,11 +7,6 @@ function Encabezado({
   alAlternarMenu = () => {},
   cantidadNotificaciones = 0,
   alCerrarSesion = () => {},
-  usuario = {
-    nombre: "Usuario",
-    correo: "usuario@ejemplo.com",
-    rol: "Administrador",
-  },
 }) {
   return (
     <header className="fixed left-0 right-0 top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200/80 bg-white/90 px-3 backdrop-blur-md transition-all duration-200 sm:px-6 lg:left-64">
@@ -50,15 +44,9 @@ function Encabezado({
       <div className="ml-2 flex shrink-0 items-center gap-2 sm:gap-3">
         <Notificaciones cantidad={cantidadNotificaciones} />
 
-        <div
-          aria-hidden="true"
-          className="h-7 w-px bg-slate-200"
-        />
+        <div aria-hidden="true" className="h-7 w-px bg-slate-200" />
 
-        <PerfilUsuario
-          usuario={usuario}
-          alCerrarSesion={alCerrarSesion}
-        />
+        <PerfilUsuario alCerrarSesion={alCerrarSesion} />
       </div>
     </header>
   );

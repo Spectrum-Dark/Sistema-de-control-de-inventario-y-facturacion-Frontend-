@@ -80,11 +80,6 @@ function useSesion() {
       localStorage.setItem("token", datos.token);
       localStorage.setItem("usuario", JSON.stringify(datos.usuario));
 
-      sileo.success({
-        title: "¡Bienvenido!",
-        description: datos.message || "Sesión iniciada correctamente.",
-      });
-
       navigate("/app");
     } catch (error) {
       sileo.error({

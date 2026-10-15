@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useSesion from "../../hooks/autenticacion/useSesion";
+import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 
-// =====================================================
-// LOGO PERSONALIZADO SVG (Astro / daily.dev)
-// =====================================================
+/**
+ * Logo personalizado SVG (Astro / daily.dev).
+ * Representa la identidad visual principal de la plataforma.
+ */
 const LogoAstroSVG = () => (
   <svg
     className="h-10 w-auto text-blue-600 shrink-0"
@@ -25,23 +27,28 @@ const LogoAstroSVG = () => (
   </svg>
 );
 
+/**
+ * Componente principal de Inicio de Sesión (Login).
+ * Maneja la autenticación de usuarios mediante credenciales (usuario y contraseña),
+ * conectándose al custom hook de sesión y ofreciendo una interfaz responsiva y moderna.
+ */
 function Iniciar_Sesion() {
   const { formulario, cargando, manejarCambio, manejarEnvio } = useSesion();
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
   return (
     <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-white px-4 py-8 text-slate-800 antialiased sm:py-12">
-      {/* Círculo estructural (solo pantallas medianas en adelante) */}
-      <div className="pointer-events-none absolute hidden h-125 w-125 rounded-full border border-slate-200/60 bg-transparent md:block"></div>
+      {/* Círculo estructural decorativo de fondo */}
+      <div className="pointer-events-none absolute hidden h-[500px] w-[500px] rounded-full border border-slate-200/60 bg-transparent md:block" />
 
       <div className="relative z-10 w-full max-w-md">
-        {/* Tarjetas rotadas decorativas (ocultas en móvil) */}
-        <div className="pointer-events-none absolute inset-0 hidden -rotate-6 transform rounded-3xl bg-[#1e232a] shadow-xl sm:block"></div>
-        <div className="pointer-events-none absolute inset-0 hidden rotate-3 transform rounded-3xl bg-blue-600/90 shadow-lg sm:block"></div>
+        {/* Tarjetas rotadas decorativas de fondo (efecto visual moderno) */}
+        <div className="pointer-events-none absolute inset-0 hidden -rotate-6 transform rounded-3xl bg-[#1e232a] shadow-xl sm:block" />
+        <div className="pointer-events-none absolute inset-0 hidden rotate-3 transform rounded-3xl bg-blue-600/90 shadow-lg sm:block" />
 
-        {/* Tarjeta del formulario */}
+        {/* Tarjeta principal del formulario */}
         <div className="relative rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xl sm:p-10">
-          {/* Marca e Identificación ASTRO */}
+          {/* Encabezado con Logo y Título */}
           <div className="flex flex-col items-center text-center">
             <div className="mb-2 flex items-center justify-center">
               <LogoAstroSVG />
@@ -60,8 +67,9 @@ function Iniciar_Sesion() {
             </p>
           </div>
 
-          {/* Formulario */}
+          {/* Formulario de autenticación */}
           <form onSubmit={manejarEnvio} className="mt-6 space-y-4 sm:mt-8">
+            {/* Campo de Usuario */}
             <div>
               <label
                 htmlFor="nombre_usuario"
@@ -76,11 +84,12 @@ function Iniciar_Sesion() {
                 value={formulario.nombre_usuario}
                 onChange={manejarCambio}
                 required
-                placeholder="Ingresa tu usuario o correo electronico"
+                placeholder="Ingresa tu usuario o correo electrónico"
                 className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-blue-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
 
+            {/* Campo de Contraseña */}
             <div>
               <div className="flex items-center justify-between">
                 <label
@@ -89,12 +98,22 @@ function Iniciar_Sesion() {
                 >
                   Contraseña <span className="text-rose-500">*</span>
                 </label>
+
+                {/* Botón interactivo con icono para mostrar/ocultar contraseña */}
                 <button
                   type="button"
                   onClick={() => setMostrarContrasena((prev) => !prev)}
-                  className="text-[11px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 transition hover:text-blue-700"
                 >
-                  {mostrarContrasena ? "Ocultar" : "Mostrar"}
+                  {mostrarContrasena ? (
+                    <>
+                      <EyeOff size={14} aria-hidden="true" /> Ocultar
+                    </>
+                  ) : (
+                    <>
+                      <Eye size={14} aria-hidden="true" /> Mostrar
+                    </>
+                  )}
                 </button>
               </div>
               <input
@@ -109,16 +128,27 @@ function Iniciar_Sesion() {
               />
             </div>
 
+            {/* Botón de Envío / Ingresar */}
             <button
               type="submit"
               disabled={cargando}
-              className="mt-2 w-full rounded-xl bg-blue-600 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-blue-600/25 transition hover:bg-blue-700 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-blue-600/50"
+              className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-blue-600/25 transition hover:bg-blue-700 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-blue-600/50 disabled:opacity-70"
             >
-              {cargando ? "Ingresando..." : "Ingresar"}
+              {cargando ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Ingresando...
+                </>
+              ) : (
+                <>
+                  <LogIn size={16} />
+                  Ingresar
+                </>
+              )}
             </button>
           </form>
 
-          {/* Registro */}
+          {/* Enlace de Solicitud de Registro */}
           <div className="mt-6 border-t border-slate-100 pt-4 text-center">
             <p className="text-xs text-slate-500">
               ¿No tienes cuenta?{" "}

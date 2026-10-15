@@ -1,45 +1,28 @@
 import { useState } from "react";
+import { Bell, X, BellOff } from "lucide-react";
 
+/**
+ * Componente Notificaciones.
+ * Muestra un botón con icono de campana y un badge indicador del número de alertas.
+ * Al hacer clic, despliega un panel flotante con la lista de notificaciones pendientes del sistema.
+ */
 function Notificaciones({ cantidad = 0 }) {
-  /* ========================================================================== */
-  /* LÓGICA Y ESTADOS                                                           */
-  /* ========================================================================== */
-
-  // Estado para controlar la visibilidad del panel desplegable de notificaciones
+  // Estado para controlar la visibilidad del panel desplegable
   const [abierto, setAbierto] = useState(false);
 
-  // Estado borrador para la lista de notificaciones (Listo para conectar con Laravel via Axios/Fetch)
-  // Ejemplo de estructura esperada de la API: [{ id: 1, titulo: '...', mensaje: '...', fecha: '...' }]
-  //const [listaNotificaciones, setListaNotificaciones] = useState([]);
-
   /**
-   * Alterna la visibilidad del desplegable de notificaciones
+   * Alterna la visibilidad del panel desplegable de notificaciones.
    */
   const alternarNotificaciones = () => {
     setAbierto((estadoActual) => !estadoActual);
   };
 
   /**
-   * Cierra el desplegable de notificaciones
+   * Cierra el panel desplegable de notificaciones.
    */
   const cerrarNotificaciones = () => {
     setAbierto(false);
   };
-
-  /* 
-    PUNTO DE CONEXIÓN FUTURO CON LARAVEL:
-    Aquí puedes agregar tu useEffect para obtener notificaciones desde la API:
-    
-    useEffect(() => {
-      fetch('/api/notificaciones')
-        .then(res => res.json())
-        .then(data => setListaNotificaciones(data));
-    }, []);
-  */
-
-  /* ========================================================================== */
-  /* DISEÑO E INTERFAZ DE USUARIO (UI)                                          */
-  /* ========================================================================== */
 
   return (
     <div className="relative inline-block text-left">
@@ -51,21 +34,10 @@ function Notificaciones({ cantidad = 0 }) {
           cantidad > 0 ? ` (${cantidad} nuevas)` : ""
         }`}
         aria-expanded={abierto}
-        className="relative rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+        className="relative rounded-xl p-2.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
       >
         {/* Icono de Campana */}
-        <svg
-          className="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-        </svg>
+        <Bell size={20} aria-hidden="true" />
 
         {/* Badge / Indicador de notificaciones pendientes */}
         {cantidad > 0 && (
@@ -86,15 +58,15 @@ function Notificaciones({ cantidad = 0 }) {
 
       {/* Panel Desplegable (Dropdown) de Notificaciones */}
       {abierto && (
-        <div className="absolute right-0 z-50 mt-2 w-80 rounded-lg border border-slate-200 bg-white shadow-lg sm:w-96">
+        <div className="absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10 sm:w-96 animate-in fade-in slide-in-from-top-2 duration-150">
           {/* Encabezado del Panel */}
-          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+          <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 bg-slate-50/50">
             <div className="flex items-center gap-2">
               <h2 className="text-sm font-semibold text-slate-900">
                 Notificaciones
               </h2>
               {cantidad > 0 && (
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-600 ring-1 ring-blue-100">
                   {cantidad} nuevas
                 </span>
               )}
@@ -104,55 +76,34 @@ function Notificaciones({ cantidad = 0 }) {
               type="button"
               onClick={cerrarNotificaciones}
               aria-label="Cerrar panel de notificaciones"
-              className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition"
+              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200/60 hover:text-slate-700 transition"
             >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
 
           {/* Cuerpo del Panel / Lista de Notificaciones */}
-          <div className="max-h-80 overflow-y-auto p-4 [scrollbar-color:#cbd5e1_transparent] scrollbar-thin">
+          <div className="max-h-80 overflow-y-auto p-4 scrollbar-thin">
             {cantidad > 0 ? (
               <div className="space-y-3">
-                {/* Mensaje informativo estático (Sustituir por el .map() de Laravel) */}
-                <div className="rounded-md border border-slate-100 bg-slate-50 p-3 text-xs text-slate-700">
-                  <p className="font-medium text-slate-900">
+                {/* Mensaje informativo estático (Listo para integrar el .map() con Laravel) */}
+                <div className="rounded-xl border border-slate-100 bg-slate-50 p-3.5 text-xs text-slate-700">
+                  <p className="font-semibold text-slate-900">
                     Notificaciones del Sistema
                   </p>
                   <p className="mt-1 text-slate-500">
-                    Tienes {cantidad} alerta(s) pendiente(s) de revisión.
+                    Tienes {cantidad} alerta(s) pendiente(s) de revisión en la
+                    plataforma.
                   </p>
                 </div>
               </div>
             ) : (
               /* Estado vacío cuando no hay notificaciones */
-              <div className="py-6 text-center">
-                <svg
-                  className="mx-auto h-8 w-8 text-slate-300"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                  />
-                </svg>
-                <p className="mt-2 text-xs font-medium text-slate-500">
+              <div className="py-8 text-center">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 mb-3">
+                  <BellOff size={22} aria-hidden="true" />
+                </div>
+                <p className="text-xs font-medium text-slate-500">
                   No tienes notificaciones pendientes
                 </p>
               </div>

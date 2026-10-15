@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useRegistro from "../../hooks/autenticacion/useRegistro";
+import { Eye, EyeOff, Loader2, UserPlus } from "lucide-react";
 
-// =====================================================
-// LOGO PERSONALIZADO SVG (Astro / daily.dev)
-// =====================================================
+/**
+ * Logo personalizado SVG (Astro / daily.dev).
+ * Representa la identidad visual principal de la plataforma.
+ */
 const LogoAstroSVG = () => (
   <svg
     className="h-10 w-auto text-blue-600 shrink-0"
@@ -25,23 +27,26 @@ const LogoAstroSVG = () => (
   </svg>
 );
 
+/**
+ * Componente principal de Registro de Usuarios (Sign Up).
+ * Permite a los nuevos usuarios ingresar su información personal, credenciales de acceso
+ * y gestionar la creación de su cuenta de manera segura conectándose al hook `useRegistro`.
+ */
 function Registrar_Usuarios() {
   const { formulario, cargando, manejarCambio, manejarEnvio } = useRegistro();
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
   return (
     <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-white px-4 py-8 text-slate-800 antialiased">
-      {/* =====================================================
-          CONTENEDOR DE LA TARJETA DE REGISTRO
-      ===================================================== */}
+      {/* Contenedor principal de la tarjeta de registro */}
       <div className="relative z-10 w-full max-w-lg">
-        {/* Resplandor difuminado gris detrás del formulario */}
-        <div className="pointer-events-none absolute -inset-4 rounded-[2.5rem] bg-gray-300/40 blur-2xl"></div>
-        <div className="pointer-events-none absolute -inset-2 -translate-y-2 rounded-[2.5rem] bg-gray-200/60 blur-2xl"></div>
+        {/* Efecto de resplandor difuminado de fondo */}
+        <div className="pointer-events-none absolute -inset-4 rounded-[2.5rem] bg-gray-300/40 blur-2xl" />
+        <div className="pointer-events-none absolute -inset-2 -translate-y-2 rounded-[2.5rem] bg-gray-200/60 blur-2xl" />
 
-        {/* Tarjeta */}
+        {/* Tarjeta contenedora */}
         <div className="relative rounded-3xl border border-gray-200/80 bg-white p-6 shadow-xl shadow-gray-900/5 sm:p-8">
-          {/* ENCABEZADO CENTRADO CON LOGO Y MARCA ASTRO */}
+          {/* Encabezado con Logo y Título */}
           <div className="flex flex-col items-center border-b border-slate-100 pb-5 text-center">
             <div className="mb-2 flex items-center justify-center">
               <LogoAstroSVG />
@@ -60,9 +65,9 @@ function Registrar_Usuarios() {
             </p>
           </div>
 
-          {/* FORMULARIO ESTRUCTURADO */}
+          {/* Formulario estructurado de registro */}
           <form onSubmit={manejarEnvio} className="mt-6 space-y-4">
-            {/* PRIMERA FILA: Nombre Completo + Usuario a la par */}
+            {/* Fila 1: Nombre Completo + Nombre de Usuario */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {/* Nombre Completo */}
               <div>
@@ -134,12 +139,22 @@ function Registrar_Usuarios() {
                 >
                   Contraseña <span className="text-rose-500">*</span>
                 </label>
+
+                {/* Botón para mostrar/ocultar contraseñas */}
                 <button
                   type="button"
                   onClick={() => setMostrarContrasena((prev) => !prev)}
-                  className="text-[11px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 transition hover:text-blue-700"
                 >
-                  {mostrarContrasena ? "Ocultar" : "Mostrar"}
+                  {mostrarContrasena ? (
+                    <>
+                      <EyeOff size={14} aria-hidden="true" /> Ocultar
+                    </>
+                  ) : (
+                    <>
+                      <Eye size={14} aria-hidden="true" /> Mostrar
+                    </>
+                  )}
                 </button>
               </div>
               <input
@@ -174,19 +189,29 @@ function Registrar_Usuarios() {
               />
             </div>
 
-            {/* Botón Principal */}
+            {/* Botón Principal de Envío */}
             <div className="pt-2">
               <button
                 type="submit"
                 disabled={cargando}
-                className="w-full rounded-xl bg-blue-600 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-blue-600/25 transition hover:bg-blue-700 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-blue-600/50"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-blue-600/25 transition hover:bg-blue-700 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-blue-600/50 disabled:opacity-70"
               >
-                {cargando ? "Registrando..." : "Registrarme"}
+                {cargando ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Registrando...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus size={16} />
+                    Registrarme
+                  </>
+                )}
               </button>
             </div>
           </form>
 
-          {/* Enlace a Login */}
+          {/* Enlace de redirección a Iniciar Sesión */}
           <div className="mt-6 border-t border-slate-100 pt-4 text-center">
             <p className="text-xs text-slate-500">
               ¿Ya tienes una cuenta?{" "}

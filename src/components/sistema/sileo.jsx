@@ -1,10 +1,10 @@
-/* Notificaciones SILEO */
 import { Toaster } from "sileo";
 
 function Sileo() {
   return (
     <Toaster
-      position="top-right"
+      position="bottom-right"
+      offset={20}
       options={{
         fill: "#1e232a",
         roundness: 16,
