@@ -7,7 +7,7 @@ import useSesion from "../../hooks/autenticacion/useSesion";
 // =====================================================
 const LogoAstroSVG = () => (
   <svg
-    className="h-10 w-auto text-indigo-600 shrink-0"
+    className="h-10 w-auto text-blue-600 shrink-0"
     viewBox="0 0 256 144"
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
@@ -26,7 +26,7 @@ const LogoAstroSVG = () => (
 );
 
 function Iniciar_Sesion() {
-  const { formulario, error, manejarCambio, manejarEnvio } = useSesion();
+  const { formulario, cargando, manejarCambio, manejarEnvio } = useSesion();
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
   return (
@@ -37,7 +37,7 @@ function Iniciar_Sesion() {
       <div className="relative z-10 w-full max-w-md">
         {/* Tarjetas rotadas decorativas (ocultas en móvil) */}
         <div className="pointer-events-none absolute inset-0 hidden -rotate-6 transform rounded-3xl bg-[#1e232a] shadow-xl sm:block"></div>
-        <div className="pointer-events-none absolute inset-0 hidden rotate-3 transform rounded-3xl bg-indigo-600/90 shadow-lg sm:block"></div>
+        <div className="pointer-events-none absolute inset-0 hidden rotate-3 transform rounded-3xl bg-blue-600/90 shadow-lg sm:block"></div>
 
         {/* Tarjeta del formulario */}
         <div className="relative rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xl sm:p-10">
@@ -76,8 +76,8 @@ function Iniciar_Sesion() {
                 value={formulario.nombre_usuario}
                 onChange={manejarCambio}
                 required
-                placeholder="Tu usuario"
-                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                placeholder="Ingresa tu usuario o correo electronico"
+                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-blue-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
 
@@ -92,7 +92,7 @@ function Iniciar_Sesion() {
                 <button
                   type="button"
                   onClick={() => setMostrarContrasena((prev) => !prev)}
-                  className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+                  className="text-[11px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
                 >
                   {mostrarContrasena ? "Ocultar" : "Mostrar"}
                 </button>
@@ -104,26 +104,17 @@ function Iniciar_Sesion() {
                 value={formulario.contrasena}
                 onChange={manejarCambio}
                 required
-                placeholder="••••••••"
-                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                placeholder="Ingresa tu contraseña"
+                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-blue-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
 
-            {error && (
-              <div
-                role="alert"
-                className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-700 animate-in fade-in"
-              >
-                <span className="h-2 w-2 shrink-0 rounded-full bg-rose-500"></span>
-                <span>{error}</span>
-              </div>
-            )}
-
             <button
               type="submit"
-              className="mt-2 w-full rounded-xl bg-indigo-600 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-700 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-indigo-600/50"
+              disabled={cargando}
+              className="mt-2 w-full rounded-xl bg-blue-600 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-blue-600/25 transition hover:bg-blue-700 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-blue-600/50"
             >
-              Ingresar
+              {cargando ? "Ingresando..." : "Ingresar"}
             </button>
           </form>
 
@@ -133,7 +124,7 @@ function Iniciar_Sesion() {
               ¿No tienes cuenta?{" "}
               <Link
                 to="/register"
-                className="font-bold text-indigo-600 hover:text-indigo-700 hover:underline"
+                className="font-bold text-blue-600 hover:text-blue-700 hover:underline"
               >
                 Solicitar registro
               </Link>

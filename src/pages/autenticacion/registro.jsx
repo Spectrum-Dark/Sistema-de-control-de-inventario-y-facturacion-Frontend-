@@ -7,7 +7,7 @@ import useRegistro from "../../hooks/autenticacion/useRegistro";
 // =====================================================
 const LogoAstroSVG = () => (
   <svg
-    className="h-10 w-auto text-indigo-600 shrink-0"
+    className="h-10 w-auto text-blue-600 shrink-0"
     viewBox="0 0 256 144"
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
@@ -26,7 +26,7 @@ const LogoAstroSVG = () => (
 );
 
 function Registrar_Usuarios() {
-  const { formulario, error, manejarCambio, manejarEnvio } = useRegistro();
+  const { formulario, cargando, manejarCambio, manejarEnvio } = useRegistro();
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
   return (
@@ -75,12 +75,12 @@ function Registrar_Usuarios() {
                 <input
                   type="text"
                   id="nombre"
-                  name="nombre"
-                  value={formulario.nombre}
+                  name="nombre_completo"
+                  value={formulario.nombre_completo}
                   onChange={manejarCambio}
                   required
                   placeholder="Ej. Carlos Mendoza"
-                  className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-blue-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
                 />
               </div>
 
@@ -100,7 +100,7 @@ function Registrar_Usuarios() {
                   onChange={manejarCambio}
                   required
                   placeholder="Ej. cmendoza"
-                  className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-blue-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
                 />
               </div>
             </div>
@@ -116,12 +116,12 @@ function Registrar_Usuarios() {
               <input
                 type="email"
                 id="correo_electronico"
-                name="correo_electronico"
-                value={formulario.correo_electronico}
+                name="correo"
+                value={formulario.correo}
                 onChange={manejarCambio}
                 required
                 placeholder="carlos@ejemplo.com"
-                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-blue-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
 
@@ -137,7 +137,7 @@ function Registrar_Usuarios() {
                 <button
                   type="button"
                   onClick={() => setMostrarContrasena((prev) => !prev)}
-                  className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+                  className="text-[11px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
                 >
                   {mostrarContrasena ? "Ocultar" : "Mostrar"}
                 </button>
@@ -150,7 +150,7 @@ function Registrar_Usuarios() {
                 onChange={manejarCambio}
                 required
                 placeholder="••••••••"
-                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-blue-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
 
@@ -170,28 +170,18 @@ function Registrar_Usuarios() {
                 onChange={manejarCambio}
                 required
                 placeholder="••••••••"
-                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 transition focus:border-blue-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
-
-            {/* Mensaje de Error */}
-            {error && (
-              <div
-                role="alert"
-                className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-700 animate-in fade-in"
-              >
-                <span className="h-2 w-2 shrink-0 rounded-full bg-rose-500"></span>
-                <span>{error}</span>
-              </div>
-            )}
 
             {/* Botón Principal */}
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full rounded-xl bg-indigo-600 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-700 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-indigo-600/50"
+                disabled={cargando}
+                className="w-full rounded-xl bg-blue-600 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-blue-600/25 transition hover:bg-blue-700 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-blue-600/50"
               >
-                Registrarme
+                {cargando ? "Registrando..." : "Registrarme"}
               </button>
             </div>
           </form>
@@ -202,7 +192,7 @@ function Registrar_Usuarios() {
               ¿Ya tienes una cuenta?{" "}
               <Link
                 to="/login"
-                className="font-bold text-indigo-600 hover:text-indigo-700 hover:underline"
+                className="font-bold text-blue-600 hover:text-blue-700 hover:underline"
               >
                 Iniciar sesión
               </Link>

@@ -19,57 +19,68 @@ import Clientes from "./pages/gestion/clientes";
 import Compras from "./pages/operaciones/compras";
 import Inventario from "./pages/operaciones/inventario";
 import Ventas from "./pages/operaciones/ventas";
+import Historial from "./pages/operaciones/historial";
 import Usuarios from "./pages/administracion/usuarios";
-import RolesPermisos from "./pages/administracion/roles_permisos";
 import Respaldo from "./pages/administracion/respaldo";
 import Facturas from "./pages/facturacion/facturas";
 import Reportes from "./pages/reportes/reportes";
 
+/* Notificaciones */
+import Sileo from "./components/sistema/sileo";
+
 function App() {
   return (
-    <Routes>
-      {/* Redirección inicial */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+    <>
+      {/* Componente notificaciones */}
+      <Sileo />
 
-      {/* Autenticación */}
-      <Route path="/login" element={<Sesion />} />
-      <Route path="/register" element={<Registro />} />
+      <Routes>
+        {/* Redirección inicial */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-      {/* Aplicación principal con Layout anidado */}
-      <Route path="/app" element={<Aplicacion />}>
-        {/* Redirecciona /app automáticamente al dashboard */}
-        <Route index element={<Navigate to="/app/dashboard" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
+        {/* Autenticación */}
+        <Route path="/login" element={<Sesion />} />
+        <Route path="/register" element={<Registro />} />
 
-        {/* Gestión */}
-        <Route path="gestion/productos" element={<Productos />} />
-        <Route path="gestion/categorias" element={<Categorias />} />
-        <Route path="gestion/marcas" element={<Marcas />} />
-        <Route path="gestion/modelos" element={<Modelos />} />
-        <Route path="gestion/compatibilidades" element={<Compatibilidades />} />
-        <Route path="gestion/proveedores" element={<Proveedores />} />
-        <Route path="gestion/clientes" element={<Clientes />} />
+        {/* Aplicación principal con Layout anidado */}
+        <Route path="/app" element={<Aplicacion />}>
+          {/* Redirecciona /app automáticamente al dashboard */}
+          <Route index element={<Navigate to="/app/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
 
-        {/* Operaciones */}
-        <Route path="operaciones/compras" element={<Compras />} />
-        <Route path="operaciones/inventario" element={<Inventario />} />
-        <Route path="operaciones/ventas" element={<Ventas />} />
+          {/* Gestión */}
+          <Route path="gestion/productos" element={<Productos />} />
+          <Route path="gestion/categorias" element={<Categorias />} />
+          <Route path="gestion/marcas" element={<Marcas />} />
+          <Route path="gestion/modelos" element={<Modelos />} />
+          <Route
+            path="gestion/compatibilidades"
+            element={<Compatibilidades />}
+          />
+          <Route path="gestion/proveedores" element={<Proveedores />} />
+          <Route path="gestion/clientes" element={<Clientes />} />
 
-        {/* Administración */}
-        <Route path="administracion/usuarios" element={<Usuarios />} />
-        <Route path="administracion/roles-permisos" element={<RolesPermisos />} />
-        <Route path="administracion/respaldo" element={<Respaldo />} />
+          {/* Operaciones */}
+          <Route path="operaciones/compras" element={<Compras />} />
+          <Route path="operaciones/inventario" element={<Inventario />} />
+          <Route path="operaciones/ventas" element={<Ventas />} />
+          <Route path="operaciones/historial" element={<Historial />} />
 
-        {/* Facturación */}
-        <Route path="facturacion/facturas" element={<Facturas />} />
+          {/* Administración */}
+          <Route path="administracion/usuarios" element={<Usuarios />} />
+          <Route path="administracion/respaldo" element={<Respaldo />} />
 
-        {/* Reportes */}
-        <Route path="reportes" element={<Reportes />} />
-      </Route>
+          {/* Facturación */}
+          <Route path="facturacion/facturas" element={<Facturas />} />
 
-      {/* Ruta 404 / Comodín */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
+          {/* Reportes */}
+          <Route path="reportes" element={<Reportes />} />
+        </Route>
+
+        {/* Ruta 404 / Comodín */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </>
   );
 }
 

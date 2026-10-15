@@ -1,6 +1,11 @@
 import { useMemo, useState } from "react";
 
-// 22 Facturas de prueba para evaluar paginación
+// ============================================================
+// FACTURAS DE PRUEBA
+// Datos temporales para desarrollar y probar el módulo.
+// Posteriormente se obtendrán desde la API REST de Laravel.
+// ============================================================
+
 const facturasPrueba = [
   {
     id_factura: 1,
@@ -416,6 +421,10 @@ const facturasPrueba = [
   },
 ];
 
+// ============================================================
+// UTILIDAD PARA BUSCAR SIN DIFERENCIAR MAYÚSCULAS NI TILDES
+// ============================================================
+
 function normalizarTexto(texto) {
   return String(texto ?? "")
     .normalize("NFD")
@@ -424,17 +433,20 @@ function normalizarTexto(texto) {
     .trim();
 }
 
-export default function useFacturas() {
-  const [busqueda, setBusqueda] = useState("");
-  const [fechaDesde, setFechaDesde] = useState("");
-  const [fechaHasta, setFechaHasta] = useState("");
-  const [facturaSeleccionada, setFacturaSeleccionada] = useState(null);
+// ============================================================
+// HOOK PRINCIPAL DE FACTURACIÓN
+// ============================================================
 
-  // Estado de Paginación (10 facturas por página)
+export default function useFacturas() {
+  const [busqueda, setBusquedaInterna] = useState("");
+  const [fechaDesde, setFechaDesdeInterna] = useState("");
+  const [fechaHasta, setFechaHastaInterna] = useState("");
+  const [facturaSeleccionada, setFacturaSeleccionada] = useState(null);
   const [paginaActual, setPaginaActual] = useState(1);
+
   const elementosPorPagina = 10;
 
-  // Filtra las facturas por número o cliente y rango de fechas
+  // Filtrar por número de factura, cliente y fechas.
   const facturasFiltradas = useMemo(() => {
     const texto = normalizarTexto(busqueda);
 
@@ -444,33 +456,57 @@ export default function useFacturas() {
       );
 
       const coincideFechaDesde = !fechaDesde || factura.fecha >= fechaDesde;
+
       const coincideFechaHasta = !fechaHasta || factura.fecha <= fechaHasta;
 
       return coincideBusqueda && coincideFechaDesde && coincideFechaHasta;
     });
   }, [busqueda, fechaDesde, fechaHasta]);
 
-  // Cálculo de total de páginas y datos paginados
-  const totalPaginas =
-    Math.ceil(facturasFiltradas.length / elementosPorPagina) || 1;
+  // Calcular páginas según el resultado de los filtros.
+  const totalRegistros = facturasFiltradas.length;
+  const totalPaginas = Math.ceil(totalRegistros / elementosPorPagina) || 1;
+
+  // Evitar que la página actual supere las páginas disponibles.
+  const paginaSegura = Math.min(paginaActual, totalPaginas);
 
   const facturasPaginadas = useMemo(() => {
-    const inicio = (paginaActual - 1) * elementosPorPagina;
-    return facturasFiltradas.slice(inicio, inicio + elementosPorPagina);
-  }, [facturasFiltradas, paginaActual]);
+    const inicio = (paginaSegura - 1) * elementosPorPagina;
 
+    return facturasFiltradas.slice(inicio, inicio + elementosPorPagina);
+  }, [facturasFiltradas, paginaSegura]);
+
+  // Seleccionar una factura o cerrar su detalle.
   function consultarFactura(factura) {
     setFacturaSeleccionada(factura);
   }
 
+  // Actualizar búsqueda y volver a la primera página.
+  function setBusqueda(valor) {
+    setBusquedaInterna(valor);
+    setPaginaActual(1);
+  }
+
+  function setFechaDesde(valor) {
+    setFechaDesdeInterna(valor);
+    setPaginaActual(1);
+  }
+
+  function setFechaHasta(valor) {
+    setFechaHastaInterna(valor);
+    setPaginaActual(1);
+  }
+
+  // Limpiar todos los filtros y la selección actual.
   function limpiarFiltros() {
-    setBusqueda("");
-    setFechaDesde("");
-    setFechaHasta("");
+    setBusquedaInterna("");
+    setFechaDesdeInterna("");
+    setFechaHastaInterna("");
     setFacturaSeleccionada(null);
     setPaginaActual(1);
   }
 
+  // Cambiar de página respetando los límites.
   function cambiarPagina(nuevaPagina) {
     if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
       setPaginaActual(nuevaPagina);
@@ -479,25 +515,16 @@ export default function useFacturas() {
 
   return {
     facturas: facturasPaginadas,
-    totalRegistros: facturasFiltradas.length,
-    paginaActual,
+    totalRegistros,
+    paginaActual: paginaSegura,
     totalPaginas,
     busqueda,
     fechaDesde,
     fechaHasta,
     facturaSeleccionada,
-    setBusqueda: (valor) => {
-      setBusqueda(valor);
-      setPaginaActual(1); // Reinicia a pag 1 al buscar
-    },
-    setFechaDesde: (valor) => {
-      setFechaDesde(valor);
-      setPaginaActual(1);
-    },
-    setFechaHasta: (valor) => {
-      setFechaHasta(valor);
-      setPaginaActual(1);
-    },
+    setBusqueda,
+    setFechaDesde,
+    setFechaHasta,
     consultarFactura,
     limpiarFiltros,
     cambiarPagina,

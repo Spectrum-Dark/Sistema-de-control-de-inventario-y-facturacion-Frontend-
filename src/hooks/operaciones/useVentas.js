@@ -1,13 +1,14 @@
+
 import { useMemo, useState } from "react";
 
-// Clientes de prueba con el 'Cliente Contado' predeterminado (ID: 1)
-const clientesPrueba = [
-  { id_cliente: 1, nombre: "Cliente Contado / Venta Rápida" },
-  { id_cliente: 2, nombre: "Taller Mecánico El Chino" },
-  { id_cliente: 3, nombre: "Distribuidora San José" },
+const clientesIniciales = [
+  { id_cliente: 1, nombre: "Taller Mecánico El Chino" },
+  { id_cliente: 2, nombre: "Distribuidora San José" },
+  { id_cliente: 3, nombre: "Cliente de contado" },
+  { id_cliente: 4, nombre: "Taller Automotriz Central" },
 ];
 
-const productosPrueba = [
+const productosIniciales = [
   {
     id_producto: 1,
     codigo_producto: "REP-001",
@@ -18,259 +19,619 @@ const productosPrueba = [
   {
     id_producto: 2,
     codigo_producto: "REP-002",
-    nombre: "Bujía Platino",
+    nombre: "Bujía de platino",
     precio_venta: 120,
-    existencia_actual: 5,
+    existencia_actual: 40,
   },
   {
     id_producto: 3,
     codigo_producto: "REP-003",
-    nombre: "Pastillas de freno delanteras",
+    nombre: "Pastillas de freno",
     precio_venta: 650,
-    existencia_actual: 0,
+    existencia_actual: 12,
+  },
+  {
+    id_producto: 4,
+    codigo_producto: "REP-004",
+    nombre: "Filtro de aire",
+    precio_venta: 200,
+    existencia_actual: 18,
+  },
+  {
+    id_producto: 5,
+    codigo_producto: "REP-005",
+    nombre: "Aceite para motor",
+    precio_venta: 180,
+    existencia_actual: 30,
   },
 ];
 
-function obtenerFechaActual() {
+const ventasIniciales = [
+  {
+    id_venta: 1,
+    numero_venta: "VTA-0001",
+    fecha: "2026-10-08",
+    id_cliente: 1,
+    cliente: "Taller Mecánico El Chino",
+    productos: [
+      {
+        id_producto: 1,
+        codigo_producto: "REP-001",
+        nombre: "Filtro de aceite",
+        cantidad: 5,
+        precio_unitario: 180,
+      },
+      {
+        id_producto: 2,
+        codigo_producto: "REP-002",
+        nombre: "Bujía de platino",
+        cantidad: 13,
+        precio_unitario: 120,
+      },
+    ],
+    total: 2460,
+    estado: "Procesada",
+  },
+  {
+    id_venta: 2,
+    numero_venta: "VTA-0002",
+    fecha: "2026-10-07",
+    id_cliente: 2,
+    cliente: "Distribuidora San José",
+    productos: [
+      {
+        id_producto: 3,
+        codigo_producto: "REP-003",
+        nombre: "Pastillas de freno",
+        cantidad: 1,
+        precio_unitario: 650,
+      },
+      {
+        id_producto: 4,
+        codigo_producto: "REP-004",
+        nombre: "Filtro de aire",
+        cantidad: 1,
+        precio_unitario: 200,
+      },
+    ],
+    total: 850,
+    estado: "Procesada",
+  },
+];
+
+const obtenerFechaActual = () => {
   const fecha = new Date();
   const anio = fecha.getFullYear();
   const mes = String(fecha.getMonth() + 1).padStart(2, "0");
   const dia = String(fecha.getDate()).padStart(2, "0");
 
   return `${anio}-${mes}-${dia}`;
-}
+};
 
-export default function useVentas() {
-  const [formulario, setFormulario] = useState({
-    id_cliente: "1",
-    nombre_cliente_comprobante: "",
-    fecha_venta: obtenerFechaActual(),
-    observacion: "",
-  });
+const calcularTotal = (productos) =>
+  productos.reduce(
+    (total, producto) =>
+      total + producto.cantidad * producto.precio_unitario,
+    0
+  );
 
-  const [idProductoSeleccionado, setIdProductoSeleccionado] = useState("");
-  const [detalles, setDetalles] = useState([]);
+export function useVentas() {
+  const [clientes] = useState(clientesIniciales);
+  const [productos, setProductos] = useState(productosIniciales);
+  const [ventas, setVentas] = useState(ventasIniciales);
+
+  const [idCliente, setIdCliente] = useState("");
+  const [fecha, setFecha] = useState(obtenerFechaActual());
+  const [productosVenta, setProductosVenta] = useState([]);
+
+  const [idProducto, setIdProducto] = useState("");
+  const [cantidadProducto, setCantidadProducto] = useState("1");
+
+  const [mostrarFormulario, setMostrarFormulario] = useState(true);
+  const [mostrarHistorial, setMostrarHistorial] = useState(false);
+
+  const [ventaSeleccionada, setVentaSeleccionada] = useState(null);
+  const [ventaEditando, setVentaEditando] = useState(null);
+
+  const [busqueda, setBusqueda] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState("Todos");
+  const [fechaDesde, setFechaDesde] = useState("");
+  const [fechaHasta, setFechaHasta] = useState("");
+
   const [mensaje, setMensaje] = useState("");
-  const [tipoMensaje, setTipoMensaje] = useState("");
+  const [tipoMensaje, setTipoMensaje] = useState("info");
 
-  const detallesCalculados = useMemo(() => {
-    return detalles.map((detalle) => ({
-      ...detalle,
-      subtotal:
-        (Number(detalle.cantidad) || 0) * (Number(detalle.precio_venta) || 0),
-    }));
-  }, [detalles]);
+  const mostrarMensaje = (texto, tipo = "info") => {
+    setMensaje(texto);
+    setTipoMensaje(tipo);
+  };
 
-  const totalVenta = useMemo(() => {
-    return detallesCalculados.reduce(
-      (total, detalle) => total + detalle.subtotal,
-      0,
-    );
-  }, [detallesCalculados]);
+  const totalVenta = useMemo(
+    () => calcularTotal(productosVenta),
+    [productosVenta]
+  );
 
-  function manejarCambioFormulario(evento) {
-    const { name, value } = evento.target;
+  const cantidadProductos = useMemo(
+    () =>
+      productosVenta.reduce(
+        (total, producto) => total + producto.cantidad,
+        0
+      ),
+    [productosVenta]
+  );
 
-    setFormulario((actual) => ({
-      ...actual,
-      [name]: value,
-    }));
+  const ventasFiltradas = useMemo(() => {
+    const termino = busqueda.trim().toLowerCase();
 
+    return ventas.filter((venta) => {
+      const coincideBusqueda =
+        venta.numero_venta.toLowerCase().includes(termino) ||
+        venta.cliente.toLowerCase().includes(termino);
+
+      const coincideEstado =
+        filtroEstado === "Todos" || venta.estado === filtroEstado;
+
+      const coincideDesde = !fechaDesde || venta.fecha >= fechaDesde;
+      const coincideHasta = !fechaHasta || venta.fecha <= fechaHasta;
+
+      return (
+        coincideBusqueda &&
+        coincideEstado &&
+        coincideDesde &&
+        coincideHasta
+      );
+    });
+  }, [ventas, busqueda, filtroEstado, fechaDesde, fechaHasta]);
+
+  const totalVentas = ventas.filter(
+    (venta) => venta.estado !== "Anulada"
+  ).length;
+
+  const montoTotalVentas = ventas
+    .filter((venta) => venta.estado !== "Anulada")
+    .reduce((total, venta) => total + venta.total, 0);
+
+  const productosDisponibles = productos.filter(
+    (producto) =>
+      producto.existencia_actual > 0 &&
+      !productosVenta.some(
+        (item) => item.id_producto === producto.id_producto
+      )
+  );
+
+  const limpiarFiltros = () => {
+    setBusqueda("");
+    setFiltroEstado("Todos");
+    setFechaDesde("");
+    setFechaHasta("");
+    setVentaSeleccionada(null);
+  };
+
+  const limpiarFormulario = () => {
+    setIdCliente("");
+    setFecha(obtenerFechaActual());
+    setProductosVenta([]);
+    setIdProducto("");
+    setCantidadProducto("1");
+    setVentaEditando(null);
     setMensaje("");
-    setTipoMensaje("");
-  }
+    setTipoMensaje("info");
+  };
 
-  function agregarProducto() {
-    setMensaje("");
-    setTipoMensaje("");
-
-    if (!idProductoSeleccionado) {
-      setTipoMensaje("error");
-      setMensaje("Selecciona un producto para agregarlo a la venta.");
-      return;
-    }
-
-    const producto = productosPrueba.find(
-      (item) => item.id_producto === Number(idProductoSeleccionado),
+  const agregarProducto = () => {
+    const producto = productos.find(
+      (item) => item.id_producto === Number(idProducto)
     );
 
     if (!producto) {
-      setTipoMensaje("error");
-      setMensaje("El producto seleccionado no existe.");
+      mostrarMensaje("Selecciona un producto.", "error");
       return;
     }
 
-    if (producto.existencia_actual <= 0) {
-      setTipoMensaje("error");
-      setMensaje(
-        `El producto ${producto.nombre} no tiene existencias disponibles.`,
+    const cantidad = Number(cantidadProducto);
+
+    if (!Number.isInteger(cantidad) || cantidad <= 0) {
+      mostrarMensaje(
+        "La cantidad debe ser un entero mayor que cero.",
+        "error"
       );
       return;
     }
 
-    const yaExiste = detalles.some(
-      (detalle) => detalle.id_producto === producto.id_producto,
+    const existente = productosVenta.find(
+      (item) => item.id_producto === producto.id_producto
     );
 
-    if (yaExiste) {
-      setTipoMensaje("error");
-      setMensaje("Este producto ya está en la venta. Modifica su cantidad.");
+    const cantidadActual = existente?.cantidad || 0;
+
+    const cantidadOriginal =
+      ventaEditando?.productos.find(
+        (item) => item.id_producto === producto.id_producto
+      )?.cantidad || 0;
+
+    const disponible = producto.existencia_actual + cantidadOriginal;
+
+    if (cantidadActual + cantidad > disponible) {
+      mostrarMensaje(
+        `Existencias insuficientes. Disponible: ${disponible}.`,
+        "error"
+      );
       return;
     }
 
-    setDetalles((actuales) => [
-      ...actuales,
-      {
-        id_producto: producto.id_producto,
-        codigo_producto: producto.codigo_producto,
-        nombre: producto.nombre,
-        cantidad: 1,
-        precio_venta: producto.precio_venta,
-        existencia_disponible: producto.existencia_actual,
-      },
-    ]);
+    if (existente) {
+      setProductosVenta((actuales) =>
+        actuales.map((item) =>
+          item.id_producto === producto.id_producto
+            ? { ...item, cantidad: item.cantidad + cantidad }
+            : item
+        )
+      );
+    } else {
+      setProductosVenta((actuales) => [
+        ...actuales,
+        {
+          id_producto: producto.id_producto,
+          codigo_producto: producto.codigo_producto,
+          nombre: producto.nombre,
+          cantidad,
+          precio_unitario: producto.precio_venta,
+        },
+      ]);
+    }
 
-    setIdProductoSeleccionado("");
-    setTipoMensaje("exito");
-    setMensaje("Producto agregado al detalle de la venta.");
-  }
+    setIdProducto("");
+    setCantidadProducto("1");
+    mostrarMensaje("Producto agregado correctamente.", "exito");
+  };
 
-  function manejarCambioDetalle(idProducto, campo, valor) {
-    const numero = valor === "" ? "" : Number(valor);
+  const cambiarCantidad = (idProductoVenta, valor) => {
+    const cantidad = Number(valor);
 
-    setDetalles((actuales) =>
-      actuales.map((detalle) =>
-        detalle.id_producto === idProducto
-          ? { ...detalle, [campo]: numero }
-          : detalle,
-      ),
+    if (!Number.isInteger(cantidad) || cantidad <= 0) {
+      mostrarMensaje(
+        "La cantidad debe ser un entero mayor que cero.",
+        "error"
+      );
+      return;
+    }
+
+    const producto = productos.find(
+      (item) => item.id_producto === idProductoVenta
+    );
+
+    if (!producto) return;
+
+    const cantidadOriginal =
+      ventaEditando?.productos.find(
+        (item) => item.id_producto === idProductoVenta
+      )?.cantidad || 0;
+
+    if (cantidad > producto.existencia_actual + cantidadOriginal) {
+      mostrarMensaje(
+        `Existencias insuficientes. Disponible: ${
+          producto.existencia_actual + cantidadOriginal
+        }.`,
+        "error"
+      );
+      return;
+    }
+
+    setProductosVenta((actuales) =>
+      actuales.map((item) =>
+        item.id_producto === idProductoVenta
+          ? { ...item, cantidad }
+          : item
+      )
     );
 
     setMensaje("");
-    setTipoMensaje("");
-  }
+  };
 
-  function eliminarProducto(idProducto) {
-    setDetalles((actuales) =>
-      actuales.filter((detalle) => detalle.id_producto !== idProducto),
+  const quitarProducto = (idProductoVenta) => {
+    setProductosVenta((actuales) =>
+      actuales.filter(
+        (item) => item.id_producto !== idProductoVenta
+      )
     );
 
     setMensaje("");
-    setTipoMensaje("");
-  }
+  };
 
-  // VALIDACIÓN ESTRICTA DE CLIENTE
-  function validarVenta() {
-    if (!formulario.id_cliente) {
-      return "Selecciona el cliente de la venta.";
+  const restaurarExistencias = (venta) => {
+    setProductos((actuales) =>
+      actuales.map((producto) => {
+        const itemVendido = venta.productos.find(
+          (item) => item.id_producto === producto.id_producto
+        );
+
+        if (!itemVendido) return producto;
+
+        return {
+          ...producto,
+          existencia_actual:
+            producto.existencia_actual + itemVendido.cantidad,
+        };
+      })
+    );
+  };
+
+  const aplicarExistencias = (productosDeVenta) => {
+    setProductos((actuales) =>
+      actuales.map((producto) => {
+        const itemVendido = productosDeVenta.find(
+          (item) => item.id_producto === producto.id_producto
+        );
+
+        if (!itemVendido) return producto;
+
+        return {
+          ...producto,
+          existencia_actual:
+            producto.existencia_actual - itemVendido.cantidad,
+        };
+      })
+    );
+  };
+
+  const guardarVenta = (evento) => {
+    evento?.preventDefault();
+
+    if (!idCliente) {
+      mostrarMensaje("Selecciona un cliente.", "error");
+      return;
     }
 
-    const idClienteNum = Number(formulario.id_cliente);
-    const tieneNombrePersonalizado =
-      formulario.nombre_cliente_comprobante.trim() !== "";
-
-    // Si NO es Cliente Contado (ID != 1) y además escribió un nombre personalizado
-    if (idClienteNum !== 1 && tieneNombrePersonalizado) {
-      return "Has seleccionado un cliente registrado. Por favor, deja vacío el campo 'Nombre en Factura / Cliente' o selecciona 'Cliente Contado / Venta Rápida' para ingresar un nombre personalizado.";
+    if (!fecha) {
+      mostrarMensaje("Selecciona la fecha de la venta.", "error");
+      return;
     }
 
-    if (!formulario.fecha_venta) {
-      return "La fecha de venta es obligatoria.";
+    if (productosVenta.length === 0) {
+      mostrarMensaje("Agrega al menos un producto.", "error");
+      return;
     }
 
-    if (detalles.length === 0) {
-      return "Agrega al menos un producto a la venta.";
+    const cliente = clientes.find(
+      (item) => item.id_cliente === Number(idCliente)
+    );
+
+    if (!cliente) {
+      mostrarMensaje("El cliente seleccionado no es válido.", "error");
+      return;
     }
 
-    for (const detalle of detalles) {
+    for (const item of productosVenta) {
+      const producto = productos.find(
+        (actual) => actual.id_producto === item.id_producto
+      );
+
+      const cantidadOriginal =
+        ventaEditando?.productos.find(
+          (anterior) => anterior.id_producto === item.id_producto
+        )?.cantidad || 0;
+
+      const disponible =
+        (producto?.existencia_actual || 0) + cantidadOriginal;
+
       if (
-        !Number.isInteger(Number(detalle.cantidad)) ||
-        Number(detalle.cantidad) <= 0
+        !producto ||
+        !Number.isInteger(item.cantidad) ||
+        item.cantidad <= 0 ||
+        item.cantidad > disponible
       ) {
-        return `La cantidad de ${detalle.nombre} debe ser un número entero mayor que cero.`;
-      }
-
-      if (Number(detalle.cantidad) > detalle.existencia_disponible) {
-        return `No hay existencias suficientes de ${detalle.nombre}. Disponibles: ${detalle.existencia_disponible}.`;
+        mostrarMensaje(
+          `No hay existencias suficientes para ${item.nombre}.`,
+          "error"
+        );
+        return;
       }
     }
 
-    return "";
-  }
+    const productosGuardados = productosVenta.map((item) => ({
+      ...item,
+    }));
 
-  function confirmarVenta(evento) {
-    evento.preventDefault();
+    const total = calcularTotal(productosGuardados);
 
-    const error = validarVenta();
+    if (ventaEditando) {
+      const ventaActualizada = {
+        ...ventaEditando,
+        id_cliente: Number(idCliente),
+        cliente: cliente.nombre,
+        fecha,
+        productos: productosGuardados,
+        total,
+        estado: "Modificada",
+      };
 
-    if (error) {
-      setTipoMensaje("error");
-      setMensaje(error);
+      setProductos((actuales) =>
+        actuales.map((producto) => {
+          const cantidadAnterior =
+            ventaEditando.productos.find(
+              (item) => item.id_producto === producto.id_producto
+            )?.cantidad || 0;
+
+          const cantidadNueva =
+            productosGuardados.find(
+              (item) => item.id_producto === producto.id_producto
+            )?.cantidad || 0;
+
+          return {
+            ...producto,
+            existencia_actual:
+              producto.existencia_actual +
+              cantidadAnterior -
+              cantidadNueva,
+          };
+        })
+      );
+
+      setVentas((actuales) =>
+        actuales.map((venta) =>
+          venta.id_venta === ventaEditando.id_venta
+            ? ventaActualizada
+            : venta
+        )
+      );
+
+      console.log("Actualizar venta:", ventaActualizada);
+
+      mostrarMensaje(
+        `${ventaActualizada.numero_venta} se actualizó correctamente.`,
+        "exito"
+      );
+    } else {
+      const siguienteId =
+        Math.max(0, ...ventas.map((venta) => venta.id_venta)) + 1;
+
+      const nuevaVenta = {
+        id_venta: siguienteId,
+        numero_venta: `VTA-${String(siguienteId).padStart(4, "0")}`,
+        id_cliente: Number(idCliente),
+        cliente: cliente.nombre,
+        fecha,
+        productos: productosGuardados,
+        total,
+        estado: "Procesada",
+      };
+
+      aplicarExistencias(productosGuardados);
+      setVentas((actuales) => [nuevaVenta, ...actuales]);
+
+      console.log("Registrar venta:", nuevaVenta);
+
+      mostrarMensaje(
+        `${nuevaVenta.numero_venta} se registró correctamente.`,
+        "exito"
+      );
+    }
+
+    setIdCliente("");
+    setFecha(obtenerFechaActual());
+    setProductosVenta([]);
+    setIdProducto("");
+    setCantidadProducto("1");
+    setVentaEditando(null);
+  };
+
+  const editarVenta = (venta) => {
+    if (venta.estado === "Anulada") {
+      mostrarMensaje("No se puede editar una venta anulada.", "error");
       return;
     }
 
-    const clienteObj = clientesPrueba.find(
-      (item) => item.id_cliente === Number(formulario.id_cliente),
+    setVentaEditando(venta);
+    setIdCliente(String(venta.id_cliente));
+    setFecha(venta.fecha);
+    setProductosVenta(venta.productos.map((item) => ({ ...item })));
+    setIdProducto("");
+    setCantidadProducto("1");
+    setMostrarFormulario(true);
+    setMostrarHistorial(false);
+    setVentaSeleccionada(null);
+    setMensaje("");
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const cancelarEdicion = () => {
+    limpiarFormulario();
+    mostrarMensaje("Edición cancelada.", "info");
+  };
+
+  const anularVenta = (venta) => {
+    if (venta.estado === "Anulada") {
+      mostrarMensaje("Esta venta ya está anulada.", "error");
+      return;
+    }
+
+    const confirmar = window.confirm(
+      `¿Deseas anular la venta ${venta.numero_venta}? Se devolverán sus productos al inventario.`
     );
 
-    // Determinar el nombre final único para la API
-    const clienteNombreFinal =
-      Number(formulario.id_cliente) === 1
-        ? formulario.nombre_cliente_comprobante.trim() || "Cliente Contado"
-        : clienteObj?.nombre;
+    if (!confirmar) return;
 
-    // Estructura limpia para la API (sin campos vacíos repetidos)
-    const ventaPreparada = {
-      id_cliente: Number(formulario.id_cliente),
-      cliente: clienteNombreFinal, // Nombre unificado único
-      fecha_venta: formulario.fecha_venta,
-      observacion: formulario.observacion,
-      detalles: detallesCalculados.map((detalle) => ({
-        id_producto: detalle.id_producto,
-        cantidad: Number(detalle.cantidad),
-        precio_venta: Number(detalle.precio_venta),
-        subtotal: detalle.subtotal,
-      })),
-      total: totalVenta,
+    restaurarExistencias(venta);
+
+    const ventaAnulada = {
+      ...venta,
+      estado: "Anulada",
     };
 
-    console.log("Venta preparada para la API:", ventaPreparada);
-
-    setTipoMensaje("exito");
-    setMensaje(
-      "Venta validada. Los datos están en la consola; todavía no se guardaron en la base de datos.",
+    setVentas((actuales) =>
+      actuales.map((item) =>
+        item.id_venta === venta.id_venta ? ventaAnulada : item
+      )
     );
-  }
 
-  function nuevaVenta() {
-    setFormulario({
-      id_cliente: "1",
-      nombre_cliente_comprobante: "",
-      fecha_venta: obtenerFechaActual(),
-      observacion: "",
-    });
+    if (ventaSeleccionada === venta.id_venta) {
+      setVentaSeleccionada(null);
+    }
 
-    setIdProductoSeleccionado("");
-    setDetalles([]);
+    if (ventaEditando?.id_venta === venta.id_venta) {
+      limpiarFormulario();
+    }
+
+    console.log("Anular venta:", ventaAnulada);
+
+    mostrarMensaje(
+      `${venta.numero_venta} fue anulada correctamente.`,
+      "exito"
+    );
+  };
+
+  const alternarHistorial = () => {
+    setMostrarHistorial((actual) => !actual);
     setMensaje("");
-    setTipoMensaje("");
-  }
+  };
 
   return {
-    clientes: clientesPrueba,
-    productos: productosPrueba,
-    formulario,
-    idProductoSeleccionado,
-    detalles: detallesCalculados,
-    totalVenta,
+    clientes,
+    productos,
+    ventas,
+    idCliente,
+    setIdCliente,
+    fecha,
+    setFecha,
+    productosVenta,
+    idProducto,
+    setIdProducto,
+    cantidadProducto,
+    setCantidadProducto,
+    mostrarFormulario,
+    setMostrarFormulario,
+    mostrarHistorial,
+    setMostrarHistorial,
+    ventaSeleccionada,
+    setVentaSeleccionada,
+    ventaEditando,
+    busqueda,
+    setBusqueda,
+    filtroEstado,
+    setFiltroEstado,
+    fechaDesde,
+    setFechaDesde,
+    fechaHasta,
+    setFechaHasta,
     mensaje,
     tipoMensaje,
-    setIdProductoSeleccionado,
-    manejarCambioFormulario,
+    totalVenta,
+    cantidadProductos,
+    ventasFiltradas,
+    totalVentas,
+    montoTotalVentas,
+    productosDisponibles,
+    mostrarMensaje,
+    limpiarFiltros,
+    limpiarFormulario,
     agregarProducto,
-    manejarCambioDetalle,
-    eliminarProducto,
-    confirmarVenta,
-    nuevaVenta,
+    cambiarCantidad,
+    quitarProducto,
+    guardarVenta,
+    editarVenta,
+    cancelarEdicion,
+    anularVenta,
+    alternarHistorial,
   };
 }

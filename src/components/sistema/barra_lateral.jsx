@@ -150,6 +150,7 @@ const secciones = [
       { to: "/app/operaciones/compras", texto: "Compras" },
       { to: "/app/operaciones/inventario", texto: "Inventario" },
       { to: "/app/operaciones/ventas", texto: "Ventas" },
+      { to: "/app/operaciones/historial", texto: "Historial" },
     ],
   },
   {
@@ -173,7 +174,6 @@ const secciones = [
     base: "/app/administracion",
     enlaces: [
       { to: "/app/administracion/usuarios", texto: "Usuarios" },
-      { to: "/app/administracion/roles-permisos", texto: "Roles y permisos" },
       { to: "/app/administracion/respaldo", texto: "Respaldo" },
     ],
   },

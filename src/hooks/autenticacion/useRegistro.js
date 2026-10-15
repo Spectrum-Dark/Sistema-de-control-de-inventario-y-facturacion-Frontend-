@@ -1,71 +1,137 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { sileo } from "sileo";
+
+const API_URL = "http://127.0.0.1:8000/api";
 
 function useRegistro() {
-  /* Estado para almacenar los valores del formulario */
+  const navigate = useNavigate();
+
   const [formulario, setFormulario] = useState({
-    nombre: "",
+    nombre_completo: "",
     nombre_usuario: "",
-    correo_electronico: "",
+    correo: "",
     contrasena: "",
     confirmar_contrasena: "",
   });
 
-  /* Mensaje de error */
-  const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
 
-  // Manejador que se ejecuta cada vez que el usuario escribe en un campo de texto
   const manejarCambio = (evento) => {
-    /* Extraemos el nombre del atributo 'name' y su valor */
     const { name, value } = evento.target;
 
-    // Actualiza el estado manteniendo el valor previo de los otros campos
-    setFormulario((formularioActual) => ({
-      ...formularioActual,
-      [name]: value, // Actualiza dinámicamente el campo actual
+    setFormulario((actual) => ({
+      ...actual,
+      [name]: value,
     }));
-
-    /* Limpia los errores al escribir */
-    if (error) setError("");
   };
 
-  const manejarEnvio = (evento) => {
-    /* Desactivamos la recarga automática de la página */
+  const manejarEnvio = async (evento) => {
     evento.preventDefault();
 
-    // Validar que ningún campo esté vacío
+    if (cargando) return;
+
     if (
-      !formulario.nombre.trim() ||
+      !formulario.nombre_completo.trim() ||
       !formulario.nombre_usuario.trim() ||
-      !formulario.correo_electronico.trim() ||
+      !formulario.correo.trim() ||
       !formulario.contrasena ||
       !formulario.confirmar_contrasena
     ) {
-      setError("Debe completar todos los campos.");
+      sileo.error({
+        title: "Campos incompletos",
+        description: "Completa todos los campos del formulario.",
+      });
       return;
     }
 
-    // Validar coincidencia de contraseñas
+    if (formulario.contrasena.length < 8) {
+      sileo.error({
+        title: "Contraseña no válida",
+        description: "La contraseña debe tener al menos 8 caracteres.",
+      });
+      return;
+    }
+
     if (formulario.contrasena !== formulario.confirmar_contrasena) {
-      setError("Las contraseñas no coinciden.");
+      sileo.error({
+        title: "Contraseñas diferentes",
+        description: "Verifica que ambas contraseñas coincidan.",
+      });
       return;
     }
 
-    // Estructurar los datos limpios para el backend/servicio
     const datosRegistro = {
-      nombre_completo: formulario.nombre.trim(),
+      nombre_completo: formulario.nombre_completo.trim(),
       nombre_usuario: formulario.nombre_usuario.trim(),
-      correo_electronico: formulario.correo_electronico.trim(),
+      correo: formulario.correo.trim(),
       contrasena: formulario.contrasena,
+      confirmar_contrasena: formulario.confirmar_contrasena,
     };
 
-    console.log("Datos de registro procesados:", datosRegistro);
+    setCargando(true);
 
-    // Futura integración del servicio de autenticación/registro
+    try {
+      const respuesta = await fetch(`${API_URL}/registro`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(datosRegistro),
+      });
+
+      let datos;
+
+      try {
+        datos = await respuesta.json();
+      } catch {
+        throw new Error("El servidor devolvió una respuesta no válida.");
+      }
+
+      if (!respuesta.ok) {
+        const mensajeErrores = datos.errors
+          ? Object.values(datos.errors).flat()[0]
+          : "";
+
+        throw new Error(
+          mensajeErrores ||
+            datos.message ||
+            "No fue posible completar el registro.",
+        );
+      }
+
+      setFormulario({
+        nombre_completo: "",
+        nombre_usuario: "",
+        correo: "",
+        contrasena: "",
+        confirmar_contrasena: "",
+      });
+
+      sileo.success({
+        title: "¡Cuenta creada!",
+        description: datos.message || "Ya puedes iniciar sesión.",
+      });
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    } catch (error) {
+      sileo.error({
+        title: "No se pudo registrar",
+        description:
+          error.message ||
+          "No fue posible conectar con el servidor. Inténtalo nuevamente.",
+      });
+    } finally {
+      setCargando(false);
+    }
   };
 
   return {
     formulario,
-    error,
+    cargando,
     manejarCambio,
     manejarEnvio,
   };

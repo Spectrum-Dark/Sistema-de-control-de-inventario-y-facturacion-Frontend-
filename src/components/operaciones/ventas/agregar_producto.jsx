@@ -43,8 +43,11 @@ export default function Agregar_Producto({
   };
 
   const manejarBotonAgregar = () => {
-    agregarProducto();
-    setBusqueda(""); // Limpia la búsqueda al agregar exitosamente
+    const agregado = agregarProducto();
+
+    if (agregado) {
+      setBusqueda("");
+    }
   };
 
   return (
