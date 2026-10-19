@@ -1,0 +1,82 @@
+import { Pencil } from "lucide-react";
+import InsigniaEstadoMarca from "./InsigniaEstadoMarca";
+
+export default function TablaMarcas({ marcas, puedeEditar, onEditar }) {
+  return (
+    <>
+      {/* Tablet y escritorio */}
+      <div className="hidden overflow-x-auto rounded-xl border border-slate-200 bg-white md:block">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+            <tr>
+              <th className="px-4 py-3 font-medium">Marca</th>
+              <th className="px-4 py-3 font-medium">Descripción</th>
+              <th className="px-4 py-3 font-medium">Estado</th>
+              {puedeEditar && (
+                <th className="px-4 py-3 text-right font-medium">Acciones</th>
+              )}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {marcas.map((m) => (
+              <tr key={m.id_marca} className="hover:bg-slate-50">
+                <td className="px-4 py-3 font-medium text-slate-900">
+                  {m.nombre_marca}
+                </td>
+                <td className="max-w-xs px-4 py-3 text-slate-600">
+                  {m.descripcion || <span className="text-slate-400">—</span>}
+                </td>
+                <td className="px-4 py-3">
+                  <InsigniaEstadoMarca estado={m.estado} />
+                </td>
+                {puedeEditar && (
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => onEditar(m)}
+                      title="Editar"
+                      aria-label={`Editar ${m.nombre_marca}`}
+                      className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Móvil */}
+      <div className="space-y-3 md:hidden">
+        {marcas.map((m) => (
+          <div
+            key={m.id_marca}
+            className="rounded-xl border border-slate-200 bg-white p-4"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <p className="font-medium text-slate-900">{m.nombre_marca}</p>
+              <InsigniaEstadoMarca estado={m.estado} />
+            </div>
+
+            <p className="mt-2 text-sm text-slate-600">
+              {m.descripcion || (
+                <span className="text-slate-400">Sin descripción</span>
+              )}
+            </p>
+
+            {puedeEditar && (
+              <button
+                onClick={() => onEditar(m)}
+                className="mt-3 flex items-center gap-2 text-sm font-medium text-slate-700"
+              >
+                <Pencil size={14} />
+                Editar
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}

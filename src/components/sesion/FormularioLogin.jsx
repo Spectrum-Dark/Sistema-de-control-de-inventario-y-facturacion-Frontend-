@@ -1,19 +1,43 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { AtSign, Lock, Eye, EyeOff } from "lucide-react";
-import CampoFormulario from "./CampoFormulario";
+import { Link, useNavigate } from "react-router-dom";
+import { AtSign, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { sileo } from "sileo";
+import CampoFormulario from "../compartido/CampoFormulario";
+import { solicitarInicioSesion } from "../../services/sesion/sesionService";
+import { useAuth } from "../../hooks/sesion/useAuth";
 
 export default function FormularioLogin() {
   const [form, setForm] = useState({ identificador: "", contrasena: "" });
   const [vercontrasena, setVercontrasena] = useState(false);
+  const [cargando, setCargando] = useState(false);
+
+  const { iniciarSesion } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Más adelante aquí llamaremos al backend
-    console.log(form);
+    setCargando(true);
+
+    try {
+      const datos = await solicitarInicioSesion(form);
+      iniciarSesion(datos.token, datos.usuario);
+
+      sileo.success({
+        title: "Inicio de sesión exitoso",
+      });
+
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      sileo.error({
+        title: "No se pudo iniciar sesión",
+        description: error.message,
+      });
+    } finally {
+      setCargando(false);
+    }
   };
 
   return (
@@ -55,9 +79,11 @@ export default function FormularioLogin() {
 
       <button
         type="submit"
-        className="w-full rounded-lg bg-slate-800 py-2.5 text-sm font-medium text-white transition hover:bg-slate-900"
+        disabled={cargando}
+        className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 py-2.5 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Iniciar sesión
+        {cargando && <Loader2 size={18} className="animate-spin" />}
+        {cargando ? "Ingresando..." : "Iniciar sesión"}
       </button>
 
       <p className="text-center text-sm text-slate-600">

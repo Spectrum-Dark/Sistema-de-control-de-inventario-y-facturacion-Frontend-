@@ -3,6 +3,7 @@ export default function CampoFormulario({
   label,
   icono: Icono,
   accionDerecha,
+  error,
   ...props
 }) {
   return (
@@ -22,7 +23,12 @@ export default function CampoFormulario({
         <input
           id={id}
           name={id}
-          className="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200"
+          aria-invalid={Boolean(error)}
+          className={`w-full rounded-lg border bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
+            error
+              ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+              : "border-slate-300 focus:border-slate-700 focus:ring-slate-200"
+          }`}
           {...props}
         />
 
@@ -32,6 +38,8 @@ export default function CampoFormulario({
           </div>
         )}
       </div>
+
+      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
-  )
+  );
 }

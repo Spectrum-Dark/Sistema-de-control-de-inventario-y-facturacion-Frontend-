@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { User, AtSign, Mail, Lock, Eye, EyeOff } from "lucide-react";
-import CampoFormulario from "./CampoFormulario";
+import { Link, useNavigate } from "react-router-dom";
+import { User, AtSign, Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { sileo } from "sileo";
+import CampoFormulario from "../compartido/CampoFormulario";
+import { solicitarRegistro } from "../../services/sesion/sesionService";
 
 export default function FormularioRegistro() {
   const [form, setForm] = useState({
@@ -12,23 +14,43 @@ export default function FormularioRegistro() {
     confirmar_contrasena: "",
   });
   const [vercontrasena, setVercontrasena] = useState(false);
-  const [error, setError] = useState("");
+  const [errorConfirmacion, setErrorConfirmacion] = useState("");
+  const [cargando, setCargando] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setError("");
+    setErrorConfirmacion("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (form.contrasena !== form.confirmar_contrasena) {
-      setError("Las contraseñas no coinciden");
+      setErrorConfirmacion("Las contraseñas no coinciden");
       return;
     }
 
-    // Más adelante aquí llamaremos al backend
-    console.log(form);
+    setCargando(true);
+
+    try {
+      await solicitarRegistro(form);
+
+      sileo.success({
+        title: "Cuenta creada",
+        description: "Ya puedes iniciar sesión",
+      });
+
+      navigate("/login", { replace: true });
+    } catch (error) {
+      sileo.error({
+        title: "No se pudo crear la cuenta",
+        description: error.message,
+      });
+    } finally {
+      setCargando(false);
+    }
   };
 
   const botonOjo = (
@@ -50,6 +72,7 @@ export default function FormularioRegistro() {
         icono={User}
         type="text"
         placeholder="Tu nombre"
+        maxLength={200}
         value={form.nombre_completo}
         onChange={handleChange}
         required
@@ -62,6 +85,7 @@ export default function FormularioRegistro() {
         type="text"
         placeholder="Ej: jperez"
         autoComplete="username"
+        maxLength={80}
         value={form.nombre_usuario}
         onChange={handleChange}
         required
@@ -73,6 +97,7 @@ export default function FormularioRegistro() {
         icono={Mail}
         type="email"
         placeholder="correo@ejemplo.com"
+        maxLength={150}
         value={form.correo}
         onChange={handleChange}
         required
@@ -83,7 +108,9 @@ export default function FormularioRegistro() {
         label="Contraseña"
         icono={Lock}
         type={vercontrasena ? "text" : "password"}
-        placeholder="Crea una contraseña"
+        placeholder="Mínimo 8 caracteres"
+        autoComplete="new-password"
+        minLength={8}
         value={form.contrasena}
         onChange={handleChange}
         required
@@ -96,18 +123,20 @@ export default function FormularioRegistro() {
         icono={Lock}
         type={vercontrasena ? "text" : "password"}
         placeholder="Repite la contraseña"
+        autoComplete="new-password"
         value={form.confirmar_contrasena}
         onChange={handleChange}
+        error={errorConfirmacion}
         required
       />
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
-
       <button
         type="submit"
-        className="w-full rounded-lg bg-slate-800 py-2.5 text-sm font-medium text-white transition hover:bg-slate-900"
+        disabled={cargando}
+        className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 py-2.5 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Crear cuenta
+        {cargando && <Loader2 size={18} className="animate-spin" />}
+        {cargando ? "Creando cuenta..." : "Crear cuenta"}
       </button>
 
       <p className="text-center text-sm text-slate-600">
