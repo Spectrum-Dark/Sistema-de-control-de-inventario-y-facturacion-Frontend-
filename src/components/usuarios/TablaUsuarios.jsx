@@ -2,7 +2,7 @@ import { Pencil, KeyRound } from "lucide-react";
 import { ROLES } from "../../utils/sesion/roles";
 import { formatearFecha } from "../../utils/usuarios/formato";
 import { esMismaCuenta, puedeModificar } from "../../utils/usuarios/permisos";
-import InsigniaEstado from "./InsigniaEstado";
+import InsigniaEstado from "../compartido/InsigniaEstado";
 
 function Etiqueta({ children }) {
   return (

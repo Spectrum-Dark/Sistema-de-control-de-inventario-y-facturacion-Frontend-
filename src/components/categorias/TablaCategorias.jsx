@@ -1,7 +1,20 @@
-import { Pencil } from "lucide-react";
-import InsigniaEstadoCategoria from "./InsigniaEstadoCategoria";
+import { Pencil, Trash2 } from "lucide-react";
+import InsigniaEstadoCategoria from "../compartido/InsigniaEstado";
 
-export default function TablaCategorias({ categorias, puedeEditar, onEditar }) {
+const claseIcono =
+  "rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900";
+const claseIconoPeligro =
+  "rounded-lg p-2 text-slate-500 transition hover:bg-red-50 hover:text-red-600";
+
+export default function TablaCategorias({
+  categorias,
+  puedeEditar,
+  puedeEliminar,
+  onEditar,
+  onEliminar,
+}) {
+  const hayAcciones = puedeEditar || puedeEliminar;
+
   return (
     <>
       {/* Tablet y escritorio */}
@@ -12,7 +25,7 @@ export default function TablaCategorias({ categorias, puedeEditar, onEditar }) {
               <th className="px-4 py-3 font-medium">Categoría</th>
               <th className="px-4 py-3 font-medium">Descripción</th>
               <th className="px-4 py-3 font-medium">Estado</th>
-              {puedeEditar && (
+              {hayAcciones && (
                 <th className="px-4 py-3 text-right font-medium">Acciones</th>
               )}
             </tr>
@@ -29,16 +42,30 @@ export default function TablaCategorias({ categorias, puedeEditar, onEditar }) {
                 <td className="px-4 py-3">
                   <InsigniaEstadoCategoria estado={c.estado} />
                 </td>
-                {puedeEditar && (
-                  <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => onEditar(c)}
-                      title="Editar"
-                      aria-label={`Editar ${c.nombre_categoria}`}
-                      className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
-                    >
-                      <Pencil size={16} />
-                    </button>
+                {hayAcciones && (
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-1">
+                      {puedeEditar && (
+                        <button
+                          onClick={() => onEditar(c)}
+                          title="Editar"
+                          aria-label={`Editar ${c.nombre_categoria}`}
+                          className={claseIcono}
+                        >
+                          <Pencil size={16} />
+                        </button>
+                      )}
+                      {puedeEliminar && (
+                        <button
+                          onClick={() => onEliminar(c)}
+                          title="Eliminar"
+                          aria-label={`Eliminar ${c.nombre_categoria}`}
+                          className={claseIconoPeligro}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 )}
               </tr>
@@ -60,17 +87,32 @@ export default function TablaCategorias({ categorias, puedeEditar, onEditar }) {
             </div>
 
             <p className="mt-2 text-sm text-slate-600">
-              {c.descripcion || <span className="text-slate-400">Sin descripción</span>}
+              {c.descripcion || (
+                <span className="text-slate-400">Sin descripción</span>
+              )}
             </p>
 
-            {puedeEditar && (
-              <button
-                onClick={() => onEditar(c)}
-                className="mt-3 flex items-center gap-2 text-sm font-medium text-slate-700"
-              >
-                <Pencil size={14} />
-                Editar
-              </button>
+            {hayAcciones && (
+              <div className="mt-3 flex gap-4">
+                {puedeEditar && (
+                  <button
+                    onClick={() => onEditar(c)}
+                    className="flex items-center gap-2 text-sm font-medium text-slate-700"
+                  >
+                    <Pencil size={14} />
+                    Editar
+                  </button>
+                )}
+                {puedeEliminar && (
+                  <button
+                    onClick={() => onEliminar(c)}
+                    className="flex items-center gap-2 text-sm font-medium text-red-600"
+                  >
+                    <Trash2 size={14} />
+                    Eliminar
+                  </button>
+                )}
+              </div>
             )}
           </div>
         ))}

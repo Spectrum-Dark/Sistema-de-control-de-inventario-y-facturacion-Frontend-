@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { Loader2, Plus, RefreshCw } from "lucide-react";
+import { sileo } from "sileo";
 import { useMarcas } from "../../hooks/marcas/useMarcas";
 import { useAuth } from "../../hooks/sesion/useAuth";
 import { usePaginacion } from "../../hooks/compartido/usePaginacion";
+import { eliminarMarca } from "../../services/marcas/marcasService";
 import {
   FILTROS_INICIALES,
   filtrarMarcas,
@@ -11,10 +13,12 @@ import {
 import {
   puedeCrearMarca,
   puedeEditarMarca,
+  puedeEliminarMarca,
 } from "../../utils/marcas/permisos";
 import FiltrosMarcas from "../../components/marcas/FiltrosMarcas";
 import TablaMarcas from "../../components/marcas/TablaMarcas";
 import ModalMarca from "../../components/marcas/ModalMarca";
+import ModalConfirmacion from "../../components/compartido/ModalConfirmacion";
 import Paginacion from "../../components/compartido/Paginacion";
 
 export default function Marcas() {
@@ -23,14 +27,16 @@ export default function Marcas() {
 
   const puedeCrear = puedeCrearMarca(usuario?.id_rol);
   const puedeEditar = puedeEditarMarca(usuario?.id_rol);
+  const puedeEliminar = puedeEliminarMarca(usuario?.id_rol);
 
   // null = ventana cerrada; { marca: null } = nueva; { marca } = editar
   const [modal, setModal] = useState(null);
+  const [eliminando, setEliminando] = useState(null);
   const [filtros, setFiltros] = useState(FILTROS_INICIALES);
 
   const filtradas = useMemo(
     () => filtrarMarcas(marcas, filtros),
-    [marcas, filtros]
+    [marcas, filtros],
   );
   const paginacion = usePaginacion(filtradas, 10);
   const hayFiltros = hayFiltrosActivos(filtros);
@@ -53,6 +59,17 @@ export default function Marcas() {
       actualizarEnLista(datos);
     }
     setModal(null);
+  };
+
+  // Si el backend rechaza (409), el error lo muestra la propia ventana de confirmación
+  const confirmarEliminar = async () => {
+    const respuesta = await eliminarMarca(eliminando.id_marca);
+    sileo.success({
+      title: "Marca eliminada",
+      description: respuesta.message,
+    });
+    setEliminando(null);
+    recargar();
   };
 
   return (
@@ -121,7 +138,9 @@ export default function Marcas() {
               <TablaMarcas
                 marcas={paginacion.visibles}
                 puedeEditar={puedeEditar}
+                puedeEliminar={puedeEliminar}
                 onEditar={(marca) => setModal({ marca })}
+                onEliminar={setEliminando}
               />
               <Paginacion {...paginacion} onCambiar={paginacion.irAPagina} />
             </>
@@ -135,6 +154,22 @@ export default function Marcas() {
           marca={modal.marca}
           onCerrar={() => setModal(null)}
           onGuardado={handleGuardado}
+        />
+      )}
+
+      {eliminando && (
+        <ModalConfirmacion
+          key={eliminando.id_marca}
+          titulo="Eliminar marca"
+          mensaje={
+            <>
+              ¿Seguro que quieres eliminar la marca{" "}
+              <strong>{eliminando.nombre_marca}</strong>? Esta acción no se
+              puede deshacer.
+            </>
+          }
+          onConfirmar={confirmarEliminar}
+          onCerrar={() => setEliminando(null)}
         />
       )}
     </div>

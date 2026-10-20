@@ -6,3 +6,6 @@ export const puedeCrearCategoria = (idRol) =>
 
 // Solo el Administrador puede actualizar (incluye el estado)
 export const puedeEditarCategoria = (idRol) => idRol === ID_ROL.ADMINISTRADOR;
+
+// Solo el Administrador puede eliminar
+export const puedeEliminarCategoria = (idRol) => idRol === ID_ROL.ADMINISTRADOR;

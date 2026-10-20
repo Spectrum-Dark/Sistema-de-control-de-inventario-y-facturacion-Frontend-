@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { Loader2, Plus, RefreshCw } from "lucide-react";
+import { sileo } from "sileo";
 import { useCategorias } from "../../hooks/categorias/useCategorias";
 import { useAuth } from "../../hooks/sesion/useAuth";
 import { usePaginacion } from "../../hooks/compartido/usePaginacion";
+import { eliminarCategoria } from "../../services/categorias/categoriasService";
 import {
   FILTROS_INICIALES,
   filtrarCategorias,
@@ -11,10 +13,12 @@ import {
 import {
   puedeCrearCategoria,
   puedeEditarCategoria,
+  puedeEliminarCategoria,
 } from "../../utils/categorias/permisos";
 import FiltrosCategorias from "../../components/categorias/FiltrosCategorias";
 import TablaCategorias from "../../components/categorias/TablaCategorias";
 import ModalCategoria from "../../components/categorias/ModalCategoria";
+import ModalConfirmacion from "../../components/compartido/ModalConfirmacion";
 import Paginacion from "../../components/compartido/Paginacion";
 
 export default function Categorias() {
@@ -24,9 +28,11 @@ export default function Categorias() {
 
   const puedeCrear = puedeCrearCategoria(usuario?.id_rol);
   const puedeEditar = puedeEditarCategoria(usuario?.id_rol);
+  const puedeEliminar = puedeEliminarCategoria(usuario?.id_rol);
 
   // null = ventana cerrada; { categoria: null } = nueva; { categoria } = editar
   const [modal, setModal] = useState(null);
+  const [eliminando, setEliminando] = useState(null);
   const [filtros, setFiltros] = useState(FILTROS_INICIALES);
 
   const filtradas = useMemo(
@@ -54,6 +60,17 @@ export default function Categorias() {
       actualizarEnLista(datos);
     }
     setModal(null);
+  };
+
+  // Si el backend rechaza (409), el error lo muestra la propia ventana de confirmación
+  const confirmarEliminar = async () => {
+    const respuesta = await eliminarCategoria(eliminando.id_categoria);
+    sileo.success({
+      title: "Categoría eliminada",
+      description: respuesta.message,
+    });
+    setEliminando(null);
+    recargar();
   };
 
   return (
@@ -124,7 +141,9 @@ export default function Categorias() {
               <TablaCategorias
                 categorias={paginacion.visibles}
                 puedeEditar={puedeEditar}
+                puedeEliminar={puedeEliminar}
                 onEditar={(categoria) => setModal({ categoria })}
+                onEliminar={setEliminando}
               />
               <Paginacion {...paginacion} onCambiar={paginacion.irAPagina} />
             </>
@@ -138,6 +157,22 @@ export default function Categorias() {
           categoria={modal.categoria}
           onCerrar={() => setModal(null)}
           onGuardado={handleGuardado}
+        />
+      )}
+
+      {eliminando && (
+        <ModalConfirmacion
+          key={eliminando.id_categoria}
+          titulo="Eliminar categoría"
+          mensaje={
+            <>
+              ¿Seguro que quieres eliminar la categoría{" "}
+              <strong>{eliminando.nombre_categoria}</strong>? Esta acción no se
+              puede deshacer.
+            </>
+          }
+          onConfirmar={confirmarEliminar}
+          onCerrar={() => setEliminando(null)}
         />
       )}
     </div>

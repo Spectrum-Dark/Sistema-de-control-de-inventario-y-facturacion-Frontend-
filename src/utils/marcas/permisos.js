@@ -6,3 +6,6 @@ export const puedeCrearMarca = (idRol) =>
 
 // Solo el Administrador puede actualizar (incluye el estado)
 export const puedeEditarMarca = (idRol) => idRol === ID_ROL.ADMINISTRADOR;
+
+// Solo el Administrador puede eliminar
+export const puedeEliminarMarca = (idRol) => idRol === ID_ROL.ADMINISTRADOR;
