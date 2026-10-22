@@ -5,6 +5,7 @@ export default function Modal({
   titulo,
   onCerrar,
   bloqueado = false,
+  ancho = "max-w-md",
   children,
 }) {
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={titulo}
-        className="w-full max-w-md rounded-xl bg-white shadow-xl"
+        className={`w-full ${ancho} rounded-xl bg-white shadow-xl`}
       >
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
           <h2 className="text-base font-semibold text-slate-900">{titulo}</h2>

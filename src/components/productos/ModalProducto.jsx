@@ -169,7 +169,7 @@ export default function ModalProducto({
         <div className="grid grid-cols-2 gap-4">
           <CampoFormulario
             id="precio_compra"
-            label="Precio de compra"
+            label="Precio de compra (C$)"
             type="number"
             min={0}
             step="0.01"
@@ -179,7 +179,7 @@ export default function ModalProducto({
           />
           <CampoFormulario
             id="precio_venta"
-            label="Precio de venta"
+            label="Precio de venta (C$)"
             type="number"
             min={0}
             step="0.01"

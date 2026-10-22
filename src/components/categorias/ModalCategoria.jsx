@@ -3,13 +3,13 @@ import { Tag, Loader2 } from "lucide-react";
 import { sileo } from "sileo";
 import Modal from "../compartido/Modal";
 import CampoFormulario from "../compartido/CampoFormulario";
+import CampoSelect from "../compartido/CampoSelect";
+import CampoTextarea from "../compartido/CampoTextarea";
+import { obtenerCambios } from "../../utils/compartido/formulario";
 import {
   crearCategoria,
   actualizarCategoria,
 } from "../../services/categorias/categoriasService";
-
-const claseCampo =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200";
 
 export default function ModalCategoria({ categoria, onCerrar, onGuardado }) {
   const esEdicion = Boolean(categoria);
@@ -30,23 +30,22 @@ export default function ModalCategoria({ categoria, onCerrar, onGuardado }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const nombre = form.nombre_categoria.trim();
-    const descripcion = form.descripcion.trim();
+    const valores = {
+      nombre_categoria: form.nombre_categoria.trim(),
+      descripcion: form.descripcion.trim() || null,
+    };
 
-    // Al editar, solo se envía lo que cambió
-    const cambios = {};
+    let datos = valores;
+
     if (esEdicion) {
-      if (nombre !== categoria.nombre_categoria) {
-        cambios.nombre_categoria = nombre;
-      }
-      if (descripcion !== (categoria.descripcion ?? "")) {
-        cambios.descripcion = descripcion || null;
-      }
-      if (form.estado !== categoria.estado) {
-        cambios.estado = form.estado;
-      }
+      // Al editar, solo se envía lo que cambió
+      datos = obtenerCambios(valores, {
+        nombre_categoria: categoria.nombre_categoria,
+        descripcion: categoria.descripcion ?? null,
+      });
+      if (form.estado !== categoria.estado) datos.estado = form.estado;
 
-      if (Object.keys(cambios).length === 0) {
+      if (Object.keys(datos).length === 0) {
         setError("No hay cambios para guardar.");
         return;
       }
@@ -56,11 +55,8 @@ export default function ModalCategoria({ categoria, onCerrar, onGuardado }) {
 
     try {
       const respuesta = esEdicion
-        ? await actualizarCategoria(categoria.id_categoria, cambios)
-        : await crearCategoria({
-            nombre_categoria: nombre,
-            descripcion: descripcion || null,
-          });
+        ? await actualizarCategoria(categoria.id_categoria, datos)
+        : await crearCategoria(datos);
 
       sileo.success({
         title: esEdicion ? "Categoría actualizada" : "Categoría registrada",
@@ -93,48 +89,25 @@ export default function ModalCategoria({ categoria, onCerrar, onGuardado }) {
           required
         />
 
-        <div>
-          <label
-            htmlFor="descripcion"
-            className="mb-1.5 block text-sm font-medium text-slate-700"
-          >
-            Descripción{" "}
-            <span className="font-normal text-slate-400">(opcional)</span>
-          </label>
-          <textarea
-            id="descripcion"
-            name="descripcion"
-            rows={3}
-            maxLength={255}
-            placeholder="Describe brevemente la categoría"
-            value={form.descripcion}
-            onChange={handleChange}
-            className={`${claseCampo} resize-none`}
-          />
-          <p className="mt-1 text-right text-xs text-slate-400">
-            {form.descripcion.length}/255
-          </p>
-        </div>
+        <CampoTextarea
+          id="descripcion"
+          label="Descripción (opcional)"
+          maxLength={255}
+          placeholder="Describe brevemente la categoría"
+          value={form.descripcion}
+          onChange={handleChange}
+        />
 
         {esEdicion && (
-          <div>
-            <label
-              htmlFor="estado"
-              className="mb-1.5 block text-sm font-medium text-slate-700"
-            >
-              Estado
-            </label>
-            <select
-              id="estado"
-              name="estado"
-              value={form.estado}
-              onChange={handleChange}
-              className={claseCampo}
-            >
-              <option value="Activa">Activa</option>
-              <option value="Inactiva">Inactiva</option>
-            </select>
-          </div>
+          <CampoSelect
+            id="estado"
+            label="Estado"
+            value={form.estado}
+            onChange={handleChange}
+          >
+            <option value="Activa">Activa</option>
+            <option value="Inactiva">Inactiva</option>
+          </CampoSelect>
         )}
 
         {error && (
@@ -162,8 +135,8 @@ export default function ModalCategoria({ categoria, onCerrar, onGuardado }) {
             {cargando
               ? "Guardando..."
               : esEdicion
-                ? "Guardar cambios"
-                : "Registrar"}
+              ? "Guardar cambios"
+              : "Registrar"}
           </button>
         </div>
       </form>

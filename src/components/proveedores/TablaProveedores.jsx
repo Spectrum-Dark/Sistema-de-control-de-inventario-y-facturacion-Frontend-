@@ -1,10 +1,5 @@
-import { Pencil, Trash2 } from "lucide-react";
 import InsigniaEstado from "../compartido/InsigniaEstado";
-
-const claseIcono =
-  "rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900";
-const claseIconoPeligro =
-  "rounded-lg p-2 text-slate-500 transition hover:bg-red-50 hover:text-red-600";
+import AccionesFila from "../compartido/AccionesFila";
 
 const Vacio = () => <span className="text-slate-400">—</span>;
 
@@ -58,28 +53,13 @@ export default function TablaProveedores({
                 </td>
                 {hayAcciones && (
                   <td className="px-4 py-3">
-                    <div className="flex justify-end gap-1">
-                      {puedeEditar && (
-                        <button
-                          onClick={() => onEditar(p)}
-                          title="Editar"
-                          aria-label={`Editar ${p.nombre_proveedor}`}
-                          className={claseIcono}
-                        >
-                          <Pencil size={16} />
-                        </button>
-                      )}
-                      {puedeEliminar && (
-                        <button
-                          onClick={() => onEliminar(p)}
-                          title="Eliminar"
-                          aria-label={`Eliminar ${p.nombre_proveedor}`}
-                          className={claseIconoPeligro}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      )}
-                    </div>
+                    <AccionesFila
+                      nombre={p.nombre_proveedor}
+                      puedeEditar={puedeEditar}
+                      puedeEliminar={puedeEliminar}
+                      onEditar={() => onEditar(p)}
+                      onEliminar={() => onEliminar(p)}
+                    />
                   </td>
                 )}
               </tr>
@@ -97,9 +77,7 @@ export default function TablaProveedores({
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="font-medium text-slate-900">
-                  {p.nombre_proveedor}
-                </p>
+                <p className="font-medium text-slate-900">{p.nombre_proveedor}</p>
                 <p className="text-xs text-slate-500">
                   {p.identificacion || "Sin identificación"}
                 </p>
@@ -114,26 +92,13 @@ export default function TablaProveedores({
             </div>
 
             {hayAcciones && (
-              <div className="mt-3 flex gap-4">
-                {puedeEditar && (
-                  <button
-                    onClick={() => onEditar(p)}
-                    className="flex items-center gap-2 text-sm font-medium text-slate-700"
-                  >
-                    <Pencil size={14} />
-                    Editar
-                  </button>
-                )}
-                {puedeEliminar && (
-                  <button
-                    onClick={() => onEliminar(p)}
-                    className="flex items-center gap-2 text-sm font-medium text-red-600"
-                  >
-                    <Trash2 size={14} />
-                    Eliminar
-                  </button>
-                )}
-              </div>
+              <AccionesFila
+                variante="tarjeta"
+                puedeEditar={puedeEditar}
+                puedeEliminar={puedeEliminar}
+                onEditar={() => onEditar(p)}
+                onEliminar={() => onEliminar(p)}
+              />
             )}
           </div>
         ))}

@@ -1,16 +1,25 @@
 import { useState } from "react";
-import { Loader2, Trash2 } from "lucide-react";
+import { Check, Loader2, Trash2 } from "lucide-react";
 import Modal from "./Modal";
+
+const ESTILOS = {
+  peligro: "bg-red-600 hover:bg-red-700",
+  normal: "bg-slate-800 hover:bg-slate-900",
+};
 
 export default function ModalConfirmacion({
   titulo,
   mensaje,
   textoConfirmar = "Eliminar",
+  textoProceso = "Eliminando...",
+  variante = "peligro",
   onConfirmar,
   onCerrar,
 }) {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
+
+  const Icono = variante === "peligro" ? Trash2 : Check;
 
   const handleConfirmar = async () => {
     setCargando(true);
@@ -19,7 +28,7 @@ export default function ModalConfirmacion({
     try {
       await onConfirmar();
     } catch (err) {
-      // Si el backend rechaza (por ejemplo, registros relacionados), se muestra aquí
+      // Si el backend rechaza, el mensaje se muestra aquí
       setError(err.message);
       setCargando(false);
     }
@@ -50,14 +59,14 @@ export default function ModalConfirmacion({
             type="button"
             onClick={handleConfirmar}
             disabled={cargando}
-            className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${ESTILOS[variante]}`}
           >
             {cargando ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
-              <Trash2 size={16} />
+              <Icono size={16} />
             )}
-            {cargando ? "Eliminando..." : textoConfirmar}
+            {cargando ? textoProceso : textoConfirmar}
           </button>
         </div>
       </div>

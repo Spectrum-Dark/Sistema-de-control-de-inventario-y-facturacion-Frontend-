@@ -1,27 +1,17 @@
-import { normalizarTexto } from "../compartido/texto";
+import { coincideTexto } from "../compartido/filtros";
 
 export const FILTROS_INICIALES = { busqueda: "", marca: "" };
 
-export const hayFiltrosActivos = (filtros) =>
-  Boolean(filtros.busqueda.trim() || filtros.marca);
-
-export function filtrarCompatibilidades(filas, filtros) {
-  const texto = normalizarTexto(filtros.busqueda);
-
-  return filas.filter((c) => {
-    const coincideTexto =
-      !texto ||
-      [
+// Las filas llegan completadas con producto, modelo y nombre_marca desde la página
+export const filtrarCompatibilidades = (filas, filtros) =>
+  filas.filter(
+    (c) =>
+      coincideTexto(filtros.busqueda, [
         c.producto?.codigo_producto,
         c.producto?.nombre_producto,
         c.modelo?.nombre_modelo,
         c.nombre_marca,
         c.observaciones,
-      ].some((campo) => normalizarTexto(campo).includes(texto));
-
-    const coincideMarca =
-      !filtros.marca || String(c.modelo?.id_marca) === filtros.marca;
-
-    return coincideTexto && coincideMarca;
-  });
-}
+      ]) &&
+      (!filtros.marca || String(c.modelo?.id_marca) === filtros.marca)
+  );

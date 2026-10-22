@@ -1,10 +1,5 @@
-import { Pencil, Trash2 } from "lucide-react";
-import InsigniaEstadoMarca from "../compartido/InsigniaEstado";
-
-const claseIcono =
-  "rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900";
-const claseIconoPeligro =
-  "rounded-lg p-2 text-slate-500 transition hover:bg-red-50 hover:text-red-600";
+import InsigniaEstado from "../compartido/InsigniaEstado";
+import AccionesFila from "../compartido/AccionesFila";
 
 export default function TablaMarcas({
   marcas,
@@ -40,32 +35,17 @@ export default function TablaMarcas({
                   {m.descripcion || <span className="text-slate-400">—</span>}
                 </td>
                 <td className="px-4 py-3">
-                  <InsigniaEstadoMarca estado={m.estado} />
+                  <InsigniaEstado estado={m.estado} />
                 </td>
                 {hayAcciones && (
                   <td className="px-4 py-3">
-                    <div className="flex justify-end gap-1">
-                      {puedeEditar && (
-                        <button
-                          onClick={() => onEditar(m)}
-                          title="Editar"
-                          aria-label={`Editar ${m.nombre_marca}`}
-                          className={claseIcono}
-                        >
-                          <Pencil size={16} />
-                        </button>
-                      )}
-                      {puedeEliminar && (
-                        <button
-                          onClick={() => onEliminar(m)}
-                          title="Eliminar"
-                          aria-label={`Eliminar ${m.nombre_marca}`}
-                          className={claseIconoPeligro}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      )}
-                    </div>
+                    <AccionesFila
+                      nombre={m.nombre_marca}
+                      puedeEditar={puedeEditar}
+                      puedeEliminar={puedeEliminar}
+                      onEditar={() => onEditar(m)}
+                      onEliminar={() => onEliminar(m)}
+                    />
                   </td>
                 )}
               </tr>
@@ -83,7 +63,7 @@ export default function TablaMarcas({
           >
             <div className="flex items-start justify-between gap-3">
               <p className="font-medium text-slate-900">{m.nombre_marca}</p>
-              <InsigniaEstadoMarca estado={m.estado} />
+              <InsigniaEstado estado={m.estado} />
             </div>
 
             <p className="mt-2 text-sm text-slate-600">
@@ -93,26 +73,13 @@ export default function TablaMarcas({
             </p>
 
             {hayAcciones && (
-              <div className="mt-3 flex gap-4">
-                {puedeEditar && (
-                  <button
-                    onClick={() => onEditar(m)}
-                    className="flex items-center gap-2 text-sm font-medium text-slate-700"
-                  >
-                    <Pencil size={14} />
-                    Editar
-                  </button>
-                )}
-                {puedeEliminar && (
-                  <button
-                    onClick={() => onEliminar(m)}
-                    className="flex items-center gap-2 text-sm font-medium text-red-600"
-                  >
-                    <Trash2 size={14} />
-                    Eliminar
-                  </button>
-                )}
-              </div>
+              <AccionesFila
+                variante="tarjeta"
+                puedeEditar={puedeEditar}
+                puedeEliminar={puedeEliminar}
+                onEditar={() => onEditar(m)}
+                onEliminar={() => onEliminar(m)}
+              />
             )}
           </div>
         ))}

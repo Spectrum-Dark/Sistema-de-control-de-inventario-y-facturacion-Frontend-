@@ -3,16 +3,12 @@ import { Truck, Hash, Phone, Mail, MapPin, Loader2 } from "lucide-react";
 import { sileo } from "sileo";
 import Modal from "../compartido/Modal";
 import CampoFormulario from "../compartido/CampoFormulario";
+import CampoSelect from "../compartido/CampoSelect";
+import { obtenerCambios } from "../../utils/compartido/formulario";
 import {
   crearProveedor,
   actualizarProveedor,
 } from "../../services/proveedores/proveedoresService";
-
-const claseCampo =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200";
-
-// Campos que el backend acepta vacíos (se envían como null)
-const CAMPOS_OPCIONALES = ["identificacion", "telefono", "correo", "direccion"];
 
 export default function ModalProveedor({ proveedor, onCerrar, onGuardado }) {
   const esEdicion = Boolean(proveedor);
@@ -36,41 +32,40 @@ export default function ModalProveedor({ proveedor, onCerrar, onGuardado }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const nombre = form.nombre_proveedor.trim();
-    const cambios = {};
+    // Los campos opcionales vacíos se envían como null
+    const valores = {
+      nombre_proveedor: form.nombre_proveedor.trim(),
+      identificacion: form.identificacion.trim() || null,
+      telefono: form.telefono.trim() || null,
+      correo: form.correo.trim() || null,
+      direccion: form.direccion.trim() || null,
+    };
+
+    let datos = valores;
 
     if (esEdicion) {
       // Al editar, solo se envía lo que cambió
-      if (nombre !== proveedor.nombre_proveedor) {
-        cambios.nombre_proveedor = nombre;
-      }
-      CAMPOS_OPCIONALES.forEach((campo) => {
-        const valor = form[campo].trim();
-        if (valor !== (proveedor[campo] ?? "")) {
-          cambios[campo] = valor || null;
-        }
+      datos = obtenerCambios(valores, {
+        nombre_proveedor: proveedor.nombre_proveedor,
+        identificacion: proveedor.identificacion ?? null,
+        telefono: proveedor.telefono ?? null,
+        correo: proveedor.correo ?? null,
+        direccion: proveedor.direccion ?? null,
       });
-      if (form.estado !== proveedor.estado) {
-        cambios.estado = form.estado;
-      }
+      if (form.estado !== proveedor.estado) datos.estado = form.estado;
 
-      if (Object.keys(cambios).length === 0) {
+      if (Object.keys(datos).length === 0) {
         setError("No hay cambios para guardar.");
         return;
       }
     }
 
-    const datosNuevos = { nombre_proveedor: nombre };
-    CAMPOS_OPCIONALES.forEach((campo) => {
-      datosNuevos[campo] = form[campo].trim() || null;
-    });
-
     setCargando(true);
 
     try {
       const respuesta = esEdicion
-        ? await actualizarProveedor(proveedor.id_proveedor, cambios)
-        : await crearProveedor(datosNuevos);
+        ? await actualizarProveedor(proveedor.id_proveedor, datos)
+        : await crearProveedor(datos);
 
       sileo.success({
         title: esEdicion ? "Proveedor actualizado" : "Proveedor registrado",
@@ -145,24 +140,15 @@ export default function ModalProveedor({ proveedor, onCerrar, onGuardado }) {
         />
 
         {esEdicion && (
-          <div>
-            <label
-              htmlFor="estado"
-              className="mb-1.5 block text-sm font-medium text-slate-700"
-            >
-              Estado
-            </label>
-            <select
-              id="estado"
-              name="estado"
-              value={form.estado}
-              onChange={handleChange}
-              className={claseCampo}
-            >
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
-            </select>
-          </div>
+          <CampoSelect
+            id="estado"
+            label="Estado"
+            value={form.estado}
+            onChange={handleChange}
+          >
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </CampoSelect>
         )}
 
         {error && (
@@ -190,8 +176,8 @@ export default function ModalProveedor({ proveedor, onCerrar, onGuardado }) {
             {cargando
               ? "Guardando..."
               : esEdicion
-                ? "Guardar cambios"
-                : "Registrar"}
+              ? "Guardar cambios"
+              : "Registrar"}
           </button>
         </div>
       </form>

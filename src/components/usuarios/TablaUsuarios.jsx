@@ -1,8 +1,9 @@
-import { Pencil, KeyRound } from "lucide-react";
+import { KeyRound } from "lucide-react";
 import { ROLES } from "../../utils/sesion/roles";
 import { formatearFecha } from "../../utils/usuarios/formato";
 import { esMismaCuenta, puedeModificar } from "../../utils/usuarios/permisos";
 import InsigniaEstado from "../compartido/InsigniaEstado";
+import AccionesFila from "../compartido/AccionesFila";
 
 function Etiqueta({ children }) {
   return (
@@ -22,22 +23,21 @@ function NombreUsuario({ usuario, usuarioActual }) {
   );
 }
 
-const claseIcono =
-  "rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900";
-
 export default function TablaUsuarios({
   usuarios,
   usuarioActual,
   onEditar,
   onCambiarContrasena,
 }) {
-  if (usuarios.length === 0) {
-    return (
-      <p className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">
-        No hay usuarios registrados.
-      </p>
-    );
-  }
+  // Acción adicional de cada fila, además de editar
+  const extrasDe = (u) => [
+    {
+      titulo: "Restablecer contraseña",
+      textoCorto: "Contraseña",
+      icono: KeyRound,
+      onClick: () => onCambiarContrasena(u),
+    },
+  ];
 
   return (
     <>
@@ -75,24 +75,12 @@ export default function TablaUsuarios({
                 </td>
                 <td className="px-4 py-3">
                   {puedeModificar(u, usuarioActual) && (
-                    <div className="flex justify-end gap-1">
-                      <button
-                        onClick={() => onEditar(u)}
-                        title="Editar"
-                        aria-label={`Editar a ${u.nombre_completo}`}
-                        className={claseIcono}
-                      >
-                        <Pencil size={16} />
-                      </button>
-                      <button
-                        onClick={() => onCambiarContrasena(u)}
-                        title="Restablecer contraseña"
-                        aria-label={`Restablecer contraseña de ${u.nombre_completo}`}
-                        className={claseIcono}
-                      >
-                        <KeyRound size={16} />
-                      </button>
-                    </div>
+                    <AccionesFila
+                      nombre={u.nombre_completo}
+                      puedeEditar
+                      onEditar={() => onEditar(u)}
+                      extras={extrasDe(u)}
+                    />
                   )}
                 </td>
               </tr>
@@ -122,22 +110,12 @@ export default function TablaUsuarios({
             <p className="mt-1 text-xs text-slate-500">{ROLES[u.id_rol]}</p>
 
             {puedeModificar(u, usuarioActual) && (
-              <div className="mt-3 flex gap-4">
-                <button
-                  onClick={() => onEditar(u)}
-                  className="flex items-center gap-2 text-sm font-medium text-slate-700"
-                >
-                  <Pencil size={14} />
-                  Editar
-                </button>
-                <button
-                  onClick={() => onCambiarContrasena(u)}
-                  className="flex items-center gap-2 text-sm font-medium text-slate-700"
-                >
-                  <KeyRound size={14} />
-                  Contraseña
-                </button>
-              </div>
+              <AccionesFila
+                variante="tarjeta"
+                puedeEditar
+                onEditar={() => onEditar(u)}
+                extras={extrasDe(u)}
+              />
             )}
           </div>
         ))}

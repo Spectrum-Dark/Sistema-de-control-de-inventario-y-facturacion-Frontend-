@@ -1,28 +1,19 @@
-import { useMemo, useState } from "react";
-import { Loader2, Plus, RefreshCw } from "lucide-react";
-import { sileo } from "sileo";
+import { useMemo } from "react";
 import { useCompatibilidades } from "../../hooks/compatibilidades/useCompatibilidades";
 import { useProductos } from "../../hooks/productos/useProductos";
 import { useModelos } from "../../hooks/modelos/useModelos";
 import { useMarcas } from "../../hooks/marcas/useMarcas";
-import { useAuth } from "../../hooks/sesion/useAuth";
-import { usePaginacion } from "../../hooks/compartido/usePaginacion";
+import { usePermisos } from "../../hooks/sesion/usePermisos";
+import { useGestionCrud } from "../../hooks/compartido/useGestionCrud";
 import { eliminarCompatibilidad } from "../../services/compatibilidades/compatibilidadesService";
 import {
   FILTROS_INICIALES,
   filtrarCompatibilidades,
-  hayFiltrosActivos,
 } from "../../utils/compatibilidades/filtros";
-import {
-  puedeCrearCompatibilidad,
-  puedeEditarCompatibilidad,
-  puedeEliminarCompatibilidad,
-} from "../../utils/compatibilidades/permisos";
+import PaginaCrud from "../../components/compartido/PaginaCrud";
 import FiltrosCompatibilidades from "../../components/compatibilidades/FiltrosCompatibilidades";
 import TablaCompatibilidades from "../../components/compatibilidades/TablaCompatibilidades";
 import ModalCompatibilidad from "../../components/compatibilidades/ModalCompatibilidad";
-import ModalConfirmacion from "../../components/compartido/ModalConfirmacion";
-import Paginacion from "../../components/compartido/Paginacion";
 
 export default function Compatibilidades() {
   const { compatibilidades, cargando, error, recargar, actualizarEnLista } =
@@ -30,29 +21,20 @@ export default function Compatibilidades() {
   const { productos } = useProductos();
   const { modelos } = useModelos();
   const { marcas } = useMarcas();
-  const { usuario } = useAuth();
-
-  const puedeCrear = puedeCrearCompatibilidad(usuario?.id_rol);
-  const puedeEditar = puedeEditarCompatibilidad(usuario?.id_rol);
-  const puedeEliminar = puedeEliminarCompatibilidad(usuario?.id_rol);
-
-  // null = ventana cerrada; { compatibilidad: null } = nueva; { compatibilidad } = editar
-  const [modal, setModal] = useState(null);
-  const [eliminando, setEliminando] = useState(null);
-  const [filtros, setFiltros] = useState(FILTROS_INICIALES);
+  const permisos = usePermisos();
 
   const nombresMarcas = useMemo(
     () => Object.fromEntries(marcas.map((m) => [m.id_marca, m.nombre_marca])),
-    [marcas],
+    [marcas]
   );
 
   // Cada compatibilidad se completa con su producto, su modelo y el nombre de la marca
   const filas = useMemo(() => {
     const productosPorId = Object.fromEntries(
-      productos.map((p) => [p.id_producto, p]),
+      productos.map((p) => [p.id_producto, p])
     );
     const modelosPorId = Object.fromEntries(
-      modelos.map((m) => [m.id_modelo, m]),
+      modelos.map((m) => [m.id_modelo, m])
     );
 
     return compatibilidades.map((c) => {
@@ -66,158 +48,76 @@ export default function Compatibilidades() {
     });
   }, [compatibilidades, productos, modelos, nombresMarcas]);
 
-  const filtradas = useMemo(
-    () => filtrarCompatibilidades(filas, filtros),
-    [filas, filtros],
-  );
-  const paginacion = usePaginacion(filtradas, 10);
-  const hayFiltros = hayFiltrosActivos(filtros);
-
-  const cambiarFiltro = (campo, valor) => {
-    setFiltros((anteriores) => ({ ...anteriores, [campo]: valor }));
-    paginacion.irAPagina(1);
-  };
-
-  const limpiarFiltros = () => {
-    setFiltros(FILTROS_INICIALES);
-    paginacion.irAPagina(1);
-  };
-
-  const handleGuardado = (datos, esNueva) => {
-    if (esNueva) {
-      recargar();
-    } else {
-      actualizarEnLista(datos);
-    }
-    setModal(null);
-  };
-
-  const confirmarEliminar = async () => {
-    const respuesta = await eliminarCompatibilidad(
-      eliminando.id_compatibilidad,
-    );
-    sileo.success({
-      title: "Compatibilidad eliminada",
-      description: respuesta.message,
-    });
-    setEliminando(null);
-    recargar();
-  };
+  const g = useGestionCrud({
+    items: filas,
+    filtrosIniciales: FILTROS_INICIALES,
+    filtrar: filtrarCompatibilidades,
+    recargar,
+    actualizarEnLista,
+    claveId: "id_compatibilidad",
+    eliminar: eliminarCompatibilidad,
+    tituloEliminado: "Compatibilidad eliminada",
+  });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">
-            Compatibilidades
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Vehículos y productos · Productos compatibles con cada modelo.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={recargar}
-            disabled={cargando}
-            className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
-          >
-            <RefreshCw size={16} className={cargando ? "animate-spin" : ""} />
-            <span className="hidden sm:inline">Actualizar</span>
-          </button>
-
-          {puedeCrear && (
-            <button
-              onClick={() => setModal({ compatibilidad: null })}
-              className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-900"
-            >
-              <Plus size={16} />
-              <span className="hidden sm:inline">Nueva compatibilidad</span>
-              <span className="sm:hidden">Nueva</span>
-            </button>
-          )}
-        </div>
-      </div>
-
-      {cargando && compatibilidades.length === 0 ? (
-        <div className="flex items-center justify-center gap-2 py-16 text-sm text-slate-500">
-          <Loader2 size={20} className="animate-spin" />
-          Cargando compatibilidades...
-        </div>
-      ) : error ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
-          <p className="text-sm text-red-700">{error}</p>
-          <button
-            onClick={recargar}
-            className="mt-3 text-sm font-medium text-red-700 underline"
-          >
-            Reintentar
-          </button>
-        </div>
-      ) : (
+    <PaginaCrud
+      titulo="Compatibilidades"
+      subtitulo="Vehículos y productos · Productos compatibles con cada modelo."
+      textoNuevo="Nueva compatibilidad"
+      textoCarga="Cargando compatibilidades..."
+      mensajeVacio="Aún no hay compatibilidades registradas."
+      mensajeSinResultados="Ninguna compatibilidad coincide con la búsqueda o el filtro."
+      cargando={cargando}
+      error={error}
+      recargar={recargar}
+      hayDatos={compatibilidades.length > 0}
+      puedeCrear={permisos.puedeCrear}
+      onNuevo={g.abrirModal}
+      filtros={
+        <FiltrosCompatibilidades
+          filtros={g.filtros}
+          marcas={marcas}
+          onCambiar={g.cambiarFiltro}
+          onLimpiar={g.limpiarFiltros}
+          hayFiltros={g.hayFiltros}
+        />
+      }
+      hayFiltros={g.hayFiltros}
+      hayResultados={g.filtrados.length > 0}
+      tabla={
+        <TablaCompatibilidades
+          filas={g.paginacion.visibles}
+          puedeEditar={permisos.puedeEditar}
+          puedeEliminar={permisos.puedeEliminar}
+          onEditar={g.abrirModal}
+          onEliminar={g.pedirEliminar}
+        />
+      }
+      paginacion={g.paginacion}
+      eliminando={g.eliminando}
+      tituloEliminar="Eliminar compatibilidad"
+      mensajeEliminar={(c) => (
         <>
-          <FiltrosCompatibilidades
-            filtros={filtros}
-            marcas={marcas}
-            onCambiar={cambiarFiltro}
-            onLimpiar={limpiarFiltros}
-            hayFiltros={hayFiltros}
-          />
-
-          {filtradas.length === 0 ? (
-            <p className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">
-              {hayFiltros
-                ? "Ninguna compatibilidad coincide con la búsqueda o el filtro."
-                : "Aún no hay compatibilidades registradas."}
-            </p>
-          ) : (
-            <>
-              <TablaCompatibilidades
-                filas={paginacion.visibles}
-                puedeEditar={puedeEditar}
-                puedeEliminar={puedeEliminar}
-                onEditar={(compatibilidad) => setModal({ compatibilidad })}
-                onEliminar={setEliminando}
-              />
-              <Paginacion {...paginacion} onCambiar={paginacion.irAPagina} />
-            </>
-          )}
+          ¿Seguro que quieres eliminar la compatibilidad de{" "}
+          <strong>{c.producto?.nombre_producto ?? "este producto"}</strong> con{" "}
+          <strong>{c.modelo?.nombre_modelo ?? "este modelo"}</strong>? Esta
+          acción no se puede deshacer.
         </>
       )}
-
-      {modal && (
+      onConfirmarEliminar={g.confirmarEliminar}
+      onCancelarEliminar={g.cancelarEliminar}
+    >
+      {g.modal && (
         <ModalCompatibilidad
-          key={modal.compatibilidad?.id_compatibilidad ?? "nueva"}
-          compatibilidad={modal.compatibilidad}
+          key={g.modal.registro?.id_compatibilidad ?? "nueva"}
+          compatibilidad={g.modal.registro}
           productos={productos}
           modelos={modelos}
           nombresMarcas={nombresMarcas}
-          onCerrar={() => setModal(null)}
-          onGuardado={handleGuardado}
+          onCerrar={g.cerrarModal}
+          onGuardado={g.guardado}
         />
       )}
-
-      {eliminando && (
-        <ModalConfirmacion
-          key={eliminando.id_compatibilidad}
-          titulo="Eliminar compatibilidad"
-          mensaje={
-            <>
-              ¿Seguro que quieres eliminar la compatibilidad de{" "}
-              <strong>
-                {eliminando.producto?.nombre_producto ?? "este producto"}
-              </strong>{" "}
-              con{" "}
-              <strong>
-                {eliminando.modelo?.nombre_modelo ?? "este modelo"}
-              </strong>
-              ? Esta acción no se puede deshacer.
-            </>
-          }
-          onConfirmar={confirmarEliminar}
-          onCerrar={() => setEliminando(null)}
-        />
-      )}
-    </div>
+    </PaginaCrud>
   );
 }

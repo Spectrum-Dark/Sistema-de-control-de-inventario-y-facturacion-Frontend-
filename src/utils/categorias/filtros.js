@@ -1,22 +1,10 @@
-import { normalizarTexto } from "../compartido/texto";
+import { coincideTexto } from "../compartido/filtros";
 
 export const FILTROS_INICIALES = { busqueda: "", estado: "" };
 
-export const hayFiltrosActivos = (filtros) =>
-  Boolean(filtros.busqueda.trim() || filtros.estado);
-
-export function filtrarCategorias(categorias, filtros) {
-  const texto = normalizarTexto(filtros.busqueda);
-
-  return categorias.filter((c) => {
-    const coincideTexto =
-      !texto ||
-      [c.nombre_categoria, c.descripcion].some((campo) =>
-        normalizarTexto(campo).includes(texto)
-      );
-
-    const coincideEstado = !filtros.estado || c.estado === filtros.estado;
-
-    return coincideTexto && coincideEstado;
-  });
-}
+export const filtrarCategorias = (categorias, filtros) =>
+  categorias.filter(
+    (c) =>
+      coincideTexto(filtros.busqueda, [c.nombre_categoria, c.descripcion]) &&
+      (!filtros.estado || c.estado === filtros.estado)
+  );

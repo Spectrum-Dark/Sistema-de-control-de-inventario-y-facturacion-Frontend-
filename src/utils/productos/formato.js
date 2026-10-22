@@ -1,8 +1,9 @@
+// Precio en córdobas nicaragüenses
 export const formatearPrecio = (valor) =>
-  Number(valor ?? 0).toLocaleString("es", {
+  `C$ ${Number(valor ?? 0).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  });
+  })}`;
 
 // Stock bajo: solo si se definió una mínima mayor a 0
 export const tieneStockBajo = (producto) =>

@@ -3,15 +3,14 @@ import { User, AtSign, Mail, Loader2 } from "lucide-react";
 import { sileo } from "sileo";
 import Modal from "../compartido/Modal";
 import CampoFormulario from "../compartido/CampoFormulario";
+import CampoSelect from "../compartido/CampoSelect";
+import { obtenerCambios } from "../../utils/compartido/formulario";
 import { actualizarUsuario } from "../../services/usuarios/usuariosService";
 import {
   puedeCambiarEstado,
   rolesAsignables,
 } from "../../utils/usuarios/permisos";
 import { ROLES } from "../../utils/sesion/roles";
-
-const claseSelect =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200";
 
 export default function ModalEditarUsuario({
   usuario,
@@ -29,6 +28,7 @@ export default function ModalEditarUsuario({
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
 
+  // Solo el Administrador principal puede cambiar el estado
   const puedeEstado = puedeCambiarEstado(usuario, usuarioActual);
 
   const handleChange = (e) => {
@@ -40,14 +40,20 @@ export default function ModalEditarUsuario({
     e.preventDefault();
 
     // Solo se envía lo que realmente cambió
-    const cambios = {};
-    ["nombre_completo", "nombre_usuario", "correo"].forEach((campo) => {
-      const valor = form[campo].trim();
-      if (valor !== usuario[campo]) cambios[campo] = valor;
-    });
-    if (Number(form.id_rol) !== usuario.id_rol) {
-      cambios.id_rol = Number(form.id_rol);
-    }
+    const cambios = obtenerCambios(
+      {
+        nombre_completo: form.nombre_completo.trim(),
+        nombre_usuario: form.nombre_usuario.trim(),
+        correo: form.correo.trim(),
+        id_rol: Number(form.id_rol),
+      },
+      {
+        nombre_completo: usuario.nombre_completo,
+        nombre_usuario: usuario.nombre_usuario,
+        correo: usuario.correo,
+        id_rol: Number(usuario.id_rol),
+      }
+    );
     if (puedeEstado && form.estado !== usuario.estado) {
       cambios.estado = form.estado;
     }
@@ -109,46 +115,30 @@ export default function ModalEditarUsuario({
           required
         />
 
-        <div>
-          <label
-            htmlFor="id_rol"
-            className="mb-1.5 block text-sm font-medium text-slate-700"
-          >
-            Rol
-          </label>
-          <select
-            id="id_rol"
-            name="id_rol"
-            value={form.id_rol}
-            onChange={handleChange}
-            className={claseSelect}
-          >
-            {rolesAsignables(usuario, usuarioActual).map((id) => (
-              <option key={id} value={id}>
-                {ROLES[id]}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CampoSelect
+          id="id_rol"
+          label="Rol"
+          value={form.id_rol}
+          onChange={handleChange}
+        >
+          {rolesAsignables(usuario, usuarioActual).map((id) => (
+            <option key={id} value={id}>
+              {ROLES[id]}
+            </option>
+          ))}
+        </CampoSelect>
 
         {puedeEstado && (
           <div>
-            <label
-              htmlFor="estado"
-              className="mb-1.5 block text-sm font-medium text-slate-700"
-            >
-              Estado
-            </label>
-            <select
+            <CampoSelect
               id="estado"
-              name="estado"
+              label="Estado"
               value={form.estado}
               onChange={handleChange}
-              className={claseSelect}
             >
               <option value="Activo">Activo</option>
               <option value="Inactivo">Inactivo</option>
-            </select>
+            </CampoSelect>
             <p className="mt-1 text-xs text-slate-500">
               Un usuario inactivo no puede iniciar sesión.
             </p>
