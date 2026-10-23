@@ -6,6 +6,7 @@ import {
   FILTROS_INICIALES,
   filtrarUsuarios,
 } from "../../utils/usuarios/filtros";
+import { esMismaCuenta } from "../../utils/usuarios/permisos";
 import PaginaCrud from "../../components/compartido/PaginaCrud";
 import FiltrosUsuarios from "../../components/usuarios/FiltrosUsuarios";
 import TablaUsuarios from "../../components/usuarios/TablaUsuarios";
@@ -17,9 +18,12 @@ export default function Usuarios() {
     useUsuarios();
   const { usuario: usuarioActual } = useAuth();
   const [contrasenaDe, setContrasenaDe] = useState(null);
+  const otrosUsuarios = usuarios.filter(
+    (fila) => !esMismaCuenta(fila, usuarioActual)
+  );
 
   const g = useGestionCrud({
-    items: usuarios,
+    items: otrosUsuarios,
     filtrosIniciales: FILTROS_INICIALES,
     filtrar: filtrarUsuarios,
     recargar,
@@ -32,12 +36,12 @@ export default function Usuarios() {
       titulo="Usuarios"
       subtitulo="Administración de usuarios del sistema."
       textoCarga="Cargando usuarios..."
-      mensajeVacio="No hay usuarios registrados."
+      mensajeVacio="No hay otros usuarios registrados."
       mensajeSinResultados="Ningún usuario coincide con la búsqueda o los filtros."
       cargando={cargando}
       error={error}
       recargar={recargar}
-      hayDatos={usuarios.length > 0}
+      hayDatos={otrosUsuarios.length > 0}
       puedeCrear={false}
       filtros={
         <FiltrosUsuarios

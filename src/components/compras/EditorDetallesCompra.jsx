@@ -16,12 +16,19 @@ export default function EditorDetallesCompra({ filas, productos, onChange }) {
     actualizarFila(indice, {
       id_producto: idProducto,
       // Al cambiar de producto, el precio pasa a ser el precio de compra del nuevo producto
-      ...(producto && { precio_unitario: String(Number(producto.precio_compra)) }),
+      precio_unitario: producto ? String(Number(producto.precio_compra)) : "",
     });
   };
 
   const agregarFila = () => onChange([...filas, { ...FILA_VACIA }]);
-  const quitarFila = (indice) => onChange(filas.filter((_, i) => i !== indice));
+  const quitarOLimpiarFila = (indice) => {
+    if (filas[indice]?.id_producto && filas.length > 1) {
+      onChange(filas.filter((_, i) => i !== indice));
+      return;
+    }
+
+    onChange(filas.map((fila, i) => (i === indice ? { ...FILA_VACIA } : fila)));
+  };
 
   // Productos ya elegidos: no se pueden repetir en otra fila
   const idsElegidos = filas.map((f) => f.id_producto);
@@ -95,11 +102,9 @@ export default function EditorDetallesCompra({ filas, productos, onChange }) {
                 min={0}
                 step="0.01"
                 value={fila.precio_unitario}
-                onChange={(e) =>
-                  actualizarFila(i, { precio_unitario: e.target.value })
-                }
+                readOnly
                 required
-                className={claseInput}
+                className={`${claseInput} cursor-not-allowed bg-slate-100 text-slate-500`}
               />
             </div>
 
@@ -115,8 +120,7 @@ export default function EditorDetallesCompra({ filas, productos, onChange }) {
 
               <button
                 type="button"
-                onClick={() => quitarFila(i)}
-                disabled={filas.length === 1}
+                onClick={() => quitarOLimpiarFila(i)}
                 aria-label="Quitar producto"
                 className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
               >

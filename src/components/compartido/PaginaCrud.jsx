@@ -1,4 +1,4 @@
-import { Loader2, Plus, RefreshCw } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import Paginacion from "./Paginacion";
 import ModalConfirmacion from "./ModalConfirmacion";
 
@@ -28,27 +28,18 @@ export default function PaginaCrud({
   children,
 }) {
   return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+    <div className="space-y-5">
+      <div className="flex flex-col gap-4 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{titulo}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{titulo}</h1>
           <p className="mt-1 text-sm text-slate-500">{subtitulo}</p>
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={recargar}
-            disabled={cargando}
-            className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
-          >
-            <RefreshCw size={16} className={cargando ? "animate-spin" : ""} />
-            <span className="hidden sm:inline">Actualizar</span>
-          </button>
-
           {puedeCrear && (
             <button
               onClick={() => onNuevo()}
-              className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-900"
+            className="flex items-center gap-2 rounded-xl bg-slate-800 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-900"
             >
               <Plus size={16} />
               <span className="hidden sm:inline">{textoNuevo}</span>
@@ -79,7 +70,7 @@ export default function PaginaCrud({
           {filtros}
 
           {!hayResultados ? (
-            <p className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">
+          <p className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center text-sm text-slate-500">
               {hayFiltros ? mensajeSinResultados : mensajeVacio}
             </p>
           ) : (

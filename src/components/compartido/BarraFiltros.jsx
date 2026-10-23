@@ -10,7 +10,7 @@ export default function BarraFiltros({
   children,
 }) {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center">
       <div className="sm:flex-1">
         <CampoBusqueda
           valor={busqueda}

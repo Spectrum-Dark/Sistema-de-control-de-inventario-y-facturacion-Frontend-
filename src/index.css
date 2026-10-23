@@ -1,2 +1,59 @@
 /* Importamos tailwind css para la app en general */
 @import "tailwindcss";
+
+html[data-tema="oscuro"] {
+  color-scheme: dark;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+html[data-tema="oscuro"] body,
+html[data-tema="oscuro"] .bg-slate-50,
+html[data-tema="oscuro"] .bg-slate-100 {
+  background-color: #0f172a;
+}
+
+html[data-tema="oscuro"] .bg-white,
+html[data-tema="oscuro"] .bg-white\/95 {
+  background-color: #111c30;
+}
+
+html[data-tema="oscuro"] .bg-slate-200 { background-color: #263449; }
+html[data-tema="oscuro"] .bg-slate-800 { background-color: #334155; }
+html[data-tema="oscuro"] .hover\:bg-slate-50:hover,
+html[data-tema="oscuro"] .hover\:bg-slate-100:hover { background-color: #1e293b; }
+html[data-tema="oscuro"] .hover\:bg-slate-900:hover { background-color: #475569; }
+
+html[data-tema="oscuro"] .text-slate-900,
+html[data-tema="oscuro"] .text-slate-800 { color: #f1f5f9; }
+html[data-tema="oscuro"] .text-slate-700,
+html[data-tema="oscuro"] .text-slate-600 { color: #cbd5e1; }
+html[data-tema="oscuro"] .text-slate-500,
+html[data-tema="oscuro"] .text-slate-400 { color: #94a3b8; }
+html[data-tema="oscuro"] .border-slate-100,
+html[data-tema="oscuro"] .border-slate-200,
+html[data-tema="oscuro"] .border-slate-300,
+html[data-tema="oscuro"] .border-slate-400 { border-color: #334155; }
+html[data-tema="oscuro"] .divide-slate-100 > :not(:last-child),
+html[data-tema="oscuro"] .divide-slate-200 > :not(:last-child) { border-color: #334155; }
+html[data-tema="oscuro"] input,
+html[data-tema="oscuro"] select,
+html[data-tema="oscuro"] textarea {
+  color-scheme: dark;
+  background-color: #111c30;
+  color: #e2e8f0;
+}
+html[data-tema="oscuro"] input::placeholder,
+html[data-tema="oscuro"] textarea::placeholder { color: #64748b; }
+
+html[data-tema="oscuro"] .bg-red-50 { background-color: #3b1d27; }
+html[data-tema="oscuro"] .border-red-200 { border-color: #7f3342; }
+html[data-tema="oscuro"] .text-red-700,
+html[data-tema="oscuro"] .text-red-600 { color: #fda4af; }
+html[data-tema="oscuro"] .hover\:bg-red-50:hover { background-color: #4a202d; }
+html[data-tema="oscuro"] .bg-green-50 { background-color: #12332b; }
+html[data-tema="oscuro"] .border-green-200 { border-color: #27604d; }
+html[data-tema="oscuro"] .text-green-700 { color: #86efac; }
+html[data-tema="oscuro"] .bg-amber-50 { background-color: #3a2d16; }
+html[data-tema="oscuro"] .border-amber-200 { border-color: #715522; }
+html[data-tema="oscuro"] .text-amber-700 { color: #fcd34d; }

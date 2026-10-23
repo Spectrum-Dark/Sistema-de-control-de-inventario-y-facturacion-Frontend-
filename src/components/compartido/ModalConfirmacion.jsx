@@ -40,7 +40,7 @@ export default function ModalConfirmacion({
         <p className="text-sm text-slate-600">{mensaje}</p>
 
         {error && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">
             {error}
           </p>
         )}
@@ -50,7 +50,7 @@ export default function ModalConfirmacion({
             type="button"
             onClick={onCerrar}
             disabled={cargando}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+            className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
           >
             Cancelar
           </button>
@@ -59,7 +59,7 @@ export default function ModalConfirmacion({
             type="button"
             onClick={handleConfirmar}
             disabled={cargando}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${ESTILOS[variante]}`}
+          className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 ${ESTILOS[variante]}`}
           >
             {cargando ? (
               <Loader2 size={16} className="animate-spin" />

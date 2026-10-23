@@ -10,7 +10,7 @@ export default function LayoutPrincipal() {
     <div className="min-h-screen bg-slate-50">
       <Sidebar abierto={menuAbierto} onCerrar={() => setMenuAbierto(false)} />
 
-      <div className="lg:pl-64">
+      <div className="lg:pl-72">
         <Encabezado onAbrirMenu={() => setMenuAbierto(true)} />
         <main className="p-4 sm:p-6">
           <Outlet />

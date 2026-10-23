@@ -24,7 +24,7 @@ export default function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/50 p-4 sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/55 p-3 backdrop-blur-[2px] sm:items-center sm:p-5"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget && !bloqueado) onCerrar();
       }}
@@ -33,21 +33,21 @@ export default function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={titulo}
-        className={`w-full ${ancho} rounded-xl bg-white shadow-xl`}
+        className={`w-full ${ancho} overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-950/15`}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-          <h2 className="text-base font-semibold text-slate-900">{titulo}</h2>
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-5 py-4 sm:px-6">
+          <h2 className="text-base font-semibold tracking-tight text-slate-900">{titulo}</h2>
           <button
             onClick={onCerrar}
             disabled={bloqueado}
             aria-label="Cerrar"
-            className="text-slate-400 hover:text-slate-600 disabled:opacity-50"
+            className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-200/70 hover:text-slate-700 disabled:opacity-50"
           >
             <X size={20} />
           </button>
         </div>
 
-        <div className="max-h-[80vh] overflow-y-auto p-5">{children}</div>
+        <div className="max-h-[82vh] overflow-y-auto p-5 sm:p-6">{children}</div>
       </div>
     </div>
   );

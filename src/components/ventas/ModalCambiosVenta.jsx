@@ -1,0 +1,167 @@
+import Modal from "../compartido/Modal";
+import { formatearFechaHora } from "../../utils/compartido/fecha";
+import { formatearPrecio } from "../../utils/productos/formato";
+
+const leer = (valor) => {
+  if (!valor) return {};
+  if (typeof valor !== "string") return valor;
+  try {
+    return JSON.parse(valor);
+  } catch {
+    return {};
+  }
+};
+
+const texto = (valor) =>
+  valor === undefined || valor === null || valor === "" ? "Sin dato registrado" : String(valor);
+const dinero = (valor) =>
+  valor === undefined || valor === null ? "Sin dato registrado" : formatearPrecio(valor);
+
+const nombreCliente = (datos, nombresClientes) =>
+  datos.cliente?.nombre_cliente ??
+  nombresClientes[datos.id_cliente] ??
+  (datos.id_cliente ? `Cliente ${datos.id_cliente}` : "Cliente sin información");
+
+const indexarDetalles = (detalles = []) => {
+  const ocurrencias = {};
+  return detalles.map((detalle) => {
+    const id = String(detalle.id_producto ?? "sin-id");
+    ocurrencias[id] = (ocurrencias[id] ?? 0) + 1;
+    return { ...detalle, clave: `${id}-${ocurrencias[id]}` };
+  });
+};
+
+function Dato({ etiqueta, children }) {
+  return (
+    <div>
+      <p className="text-xs text-slate-500">{etiqueta}</p>
+      <div className="text-sm text-slate-900">{children}</div>
+    </div>
+  );
+}
+
+export default function ModalCambiosVenta({ registro, nombresClientes, onCerrar }) {
+  const antes = leer(registro.datos_anteriores);
+  const despues = leer(registro.datos_nuevos);
+  const campos = [
+    { etiqueta: "Estado", antes: antes.estado, despues: despues.estado },
+    {
+      etiqueta: "Cliente",
+      antes: nombreCliente(antes, nombresClientes),
+      despues: nombreCliente(despues, nombresClientes),
+    },
+    {
+      etiqueta: "Fecha de venta",
+      antes: antes.fecha_venta
+        ? formatearFechaHora(antes.fecha_venta, { hora12: true })
+        : undefined,
+      despues: despues.fecha_venta
+        ? formatearFechaHora(despues.fecha_venta, { hora12: true })
+        : undefined,
+    },
+    {
+      etiqueta: "Observaciones",
+      antes: antes.observaciones || "Sin observaciones",
+      despues: despues.observaciones || "Sin observaciones",
+    },
+    { etiqueta: "Subtotal", antes: dinero(antes.subtotal), despues: dinero(despues.subtotal) },
+    { etiqueta: "Impuesto", antes: dinero(antes.impuesto), despues: dinero(despues.impuesto) },
+    { etiqueta: "Total", antes: dinero(antes.total), despues: dinero(despues.total) },
+  ];
+
+  const detallesAntes = indexarDetalles(antes.detalles);
+  const detallesDespues = indexarDetalles(despues.detalles);
+  const porClave = (detalles) => Object.fromEntries(detalles.map((detalle) => [detalle.clave, detalle]));
+  const mapaAntes = porClave(detallesAntes);
+  const mapaDespues = porClave(detallesDespues);
+  const claves = [...new Set([...detallesAntes, ...detallesDespues].map((detalle) => detalle.clave))];
+
+  const resumenDetalle = (detalle) =>
+    detalle
+      ? `${detalle.cantidad} × ${dinero(detalle.precio_unitario)} · Subtotal ${dinero(detalle.subtotal)}`
+      : "No estaba en la venta";
+
+  return (
+    <Modal
+      titulo={registro.tipo_operacion === "Anulacion" ? "Cambios de la anulación" : "Cambios de la corrección"}
+      onCerrar={onCerrar}
+      ancho="max-w-3xl"
+    >
+      <div className="space-y-5">
+        <div className="grid grid-cols-1 gap-3 text-sm text-slate-600 sm:grid-cols-2">
+          <Dato etiqueta="Venta">{registro.venta?.numero_venta ?? "Venta sin número"}</Dato>
+          <Dato etiqueta="Operación">{registro.tipo_operacion === "Anulacion" ? "Anulación" : "Corrección"}</Dato>
+          <Dato etiqueta="Fecha y hora">
+            {formatearFechaHora(registro.fecha_operacion, { hora12: true })}
+          </Dato>
+          <Dato etiqueta="Usuario">{registro.usuario?.nombre_completo ?? "Usuario no disponible"}</Dato>
+          <div className="rounded-xl bg-slate-50 p-3 sm:col-span-2"><Dato etiqueta="Motivo">{registro.motivo || "Sin motivo registrado"}</Dato></div>
+        </div>
+
+        <div className="overflow-x-auto rounded-lg border border-slate-200">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+              <tr>
+                <th className="px-3 py-2 font-medium">Campo</th>
+                <th className="px-3 py-2 font-medium">Antes</th>
+                <th className="px-3 py-2 font-medium">Después</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {campos.map((campo) => {
+                const cambio = texto(campo.antes) !== texto(campo.despues);
+                return (
+                  <tr key={campo.etiqueta} className={cambio ? "bg-slate-50" : ""}>
+                    <td className="px-3 py-2 font-medium text-slate-700">{campo.etiqueta}</td>
+                    <td className="px-3 py-2 text-slate-600">{texto(campo.antes)}</td>
+                    <td className="px-3 py-2 text-slate-900">{texto(campo.despues)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <p className="mb-2 text-sm font-medium text-slate-900">Productos</p>
+          <div className="overflow-x-auto rounded-lg border border-slate-200">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                <tr>
+                  <th className="px-3 py-2 font-medium">Producto</th>
+                  <th className="px-3 py-2 font-medium">Antes</th>
+                  <th className="px-3 py-2 font-medium">Después</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {claves.length ? claves.map((clave) => {
+                  const anterior = mapaAntes[clave];
+                  const nuevo = mapaDespues[clave];
+                  const producto = nuevo?.producto ?? anterior?.producto;
+                  const nombre = producto?.nombre_producto ?? `Producto ${producto?.id_producto ?? nuevo?.id_producto ?? anterior?.id_producto ?? "sin identificar"}`;
+                  const cambio = resumenDetalle(anterior) !== resumenDetalle(nuevo);
+                  return (
+                    <tr key={clave} className={cambio ? "bg-slate-50" : ""}>
+                      <td className="px-3 py-2 font-medium text-slate-700">
+                        {nombre}
+                        {producto?.codigo_producto && <span className="block text-xs font-normal text-slate-500">{producto.codigo_producto}</span>}
+                      </td>
+                      <td className="px-3 py-2 text-slate-600">{resumenDetalle(anterior)}</td>
+                      <td className="px-3 py-2 text-slate-900">{resumenDetalle(nuevo)}</td>
+                    </tr>
+                  );
+                }) : (
+                  <tr><td colSpan="3" className="px-3 py-4 text-center text-slate-500">Este registro no contiene detalles de productos.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="flex justify-end">
+          <button type="button" onClick={onCerrar} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">Cerrar</button>
+        </div>
+      </div>
+    </Modal>
+  );
+}

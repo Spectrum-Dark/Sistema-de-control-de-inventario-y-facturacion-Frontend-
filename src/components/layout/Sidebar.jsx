@@ -1,39 +1,13 @@
-import { useState } from "react";
-import { Package, X, LogOut, Loader2 } from "lucide-react";
-import { sileo } from "sileo";
+import { Package, X } from "lucide-react";
 import { menuPrincipal, filtrarMenuPorRol } from "../../utils/layout/menu";
 import { useAuth } from "../../hooks/sesion/useAuth";
-import { solicitarCierreSesion } from "../../services/sesion/sesionService";
 import ItemMenu from "./ItemMenu";
 import GrupoMenu from "./GrupoMenu";
 
 export default function Sidebar({ abierto, onCerrar }) {
-  const [cerrando, setCerrando] = useState(false);
-  const { cerrarSesion, usuario } = useAuth();
+  const { usuario } = useAuth();
 
   const opcionesVisibles = filtrarMenuPorRol(menuPrincipal, usuario?.id_rol);
-
-  const handleCerrarSesion = async () => {
-    setCerrando(true);
-
-    try {
-      await solicitarCierreSesion();
-      sileo.success({ title: "Sesión cerrada" });
-    } catch (error) {
-      if (error.estado === 401) {
-        // El token ya no era válido en el servidor: igual se cierra
-        sileo.success({ title: "Sesión cerrada" });
-      } else {
-        sileo.warning({
-          title: "Sesión cerrada solo en este equipo",
-          description: error.message,
-        });
-      }
-    } finally {
-      onCerrar();
-      cerrarSesion();
-    }
-  };
 
   return (
     <>
@@ -46,7 +20,7 @@ export default function Sidebar({ abierto, onCerrar }) {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-slate-200 bg-white transition-transform lg:translate-x-0 ${
           abierto ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -81,21 +55,6 @@ export default function Sidebar({ abierto, onCerrar }) {
           )}
         </nav>
 
-        {/* Cerrar sesión */}
-        <div className="border-t border-slate-200 p-3">
-          <button
-            onClick={handleCerrarSesion}
-            disabled={cerrando}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 disabled:opacity-60"
-          >
-            {cerrando ? (
-              <Loader2 size={18} className="animate-spin" />
-            ) : (
-              <LogOut size={18} />
-            )}
-            {cerrando ? "Cerrando..." : "Cerrar sesión"}
-          </button>
-        </div>
       </aside>
     </>
   );

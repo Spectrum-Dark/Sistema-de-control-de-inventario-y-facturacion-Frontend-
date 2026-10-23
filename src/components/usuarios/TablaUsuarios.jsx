@@ -29,7 +29,6 @@ export default function TablaUsuarios({
   onEditar,
   onCambiarContrasena,
 }) {
-  // Acción adicional de cada fila, además de editar
   const extrasDe = (u) => [
     {
       titulo: "Restablecer contraseña",
@@ -74,14 +73,14 @@ export default function TablaUsuarios({
                   {formatearFecha(u.fecha_creacion)}
                 </td>
                 <td className="px-4 py-3">
-                  {puedeModificar(u, usuarioActual) && (
-                    <AccionesFila
-                      nombre={u.nombre_completo}
-                      puedeEditar
-                      onEditar={() => onEditar(u)}
-                      extras={extrasDe(u)}
-                    />
-                  )}
+                  <AccionesFila
+                    nombre={u.nombre_completo}
+                    deshabilitado={!puedeModificar(u, usuarioActual)}
+                    motivoDeshabilitado="Por seguridad, esta cuenta no se puede modificar ni restablecer desde las operaciones disponibles."
+                    puedeEditar
+                    onEditar={() => onEditar(u)}
+                    extras={extrasDe(u)}
+                  />
                 </td>
               </tr>
             ))}
@@ -109,14 +108,15 @@ export default function TablaUsuarios({
             <p className="mt-3 truncate text-sm text-slate-600">{u.correo}</p>
             <p className="mt-1 text-xs text-slate-500">{ROLES[u.id_rol]}</p>
 
-            {puedeModificar(u, usuarioActual) && (
-              <AccionesFila
-                variante="tarjeta"
-                puedeEditar
-                onEditar={() => onEditar(u)}
-                extras={extrasDe(u)}
-              />
-            )}
+            <AccionesFila
+              variante="tarjeta"
+              nombre={u.nombre_completo}
+              deshabilitado={!puedeModificar(u, usuarioActual)}
+              motivoDeshabilitado="Por seguridad, esta cuenta no se puede modificar ni restablecer desde las operaciones disponibles."
+              puedeEditar
+              onEditar={() => onEditar(u)}
+              extras={extrasDe(u)}
+            />
           </div>
         ))}
       </div>

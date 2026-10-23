@@ -4,6 +4,7 @@ export default function CampoFormulario({
   icono: Icono,
   accionDerecha,
   error,
+  sinIcono = false,
   ...props
 }) {
   return (
@@ -24,10 +25,10 @@ export default function CampoFormulario({
           id={id}
           name={id}
           aria-invalid={Boolean(error)}
-          className={`w-full rounded-lg border bg-white py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
+          className={`w-full rounded-xl border bg-white py-2.5 ${sinIcono ? "pl-3" : "pl-10"} pr-10 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 transition focus:outline-none focus:ring-2 ${
             error
-              ? "border-red-500 focus:border-red-500 focus:ring-red-100"
-              : "border-slate-300 focus:border-slate-700 focus:ring-slate-200"
+              ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+              : "border-slate-200 focus:border-slate-500 focus:ring-slate-200"
           }`}
           {...props}
         />

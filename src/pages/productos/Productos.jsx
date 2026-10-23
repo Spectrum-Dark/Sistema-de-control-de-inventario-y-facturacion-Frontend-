@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useProductos } from "../../hooks/productos/useProductos";
 import { useCategorias } from "../../hooks/categorias/useCategorias";
+import { useProveedores } from "../../hooks/proveedores/useProveedores";
 import { usePermisos } from "../../hooks/sesion/usePermisos";
 import { useGestionCrud } from "../../hooks/compartido/useGestionCrud";
 import { eliminarProducto } from "../../services/productos/productosService";
@@ -17,6 +18,7 @@ export default function Productos() {
   const { productos, cargando, error, recargar, actualizarEnLista } =
     useProductos();
   const { categorias } = useCategorias();
+  const { proveedores } = useProveedores();
   const permisos = usePermisos();
 
   // { id_categoria: "Frenos", ... } para mostrar el nombre de cada categoría
@@ -93,6 +95,8 @@ export default function Productos() {
           key={g.modal.registro?.id_producto ?? "nuevo"}
           producto={g.modal.registro}
           categorias={categorias}
+          proveedores={proveedores}
+          productos={productos}
           onCerrar={g.cerrarModal}
           onGuardado={g.guardado}
         />

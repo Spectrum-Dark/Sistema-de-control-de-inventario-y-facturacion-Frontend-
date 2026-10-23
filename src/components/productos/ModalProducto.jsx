@@ -9,6 +9,7 @@ import {
   aNumeroONull,
   obtenerCambios,
 } from "../../utils/compartido/formulario";
+import { generarCodigoAutomatico } from "../../utils/compartido/codigoAutomatico";
 import {
   crearProducto,
   actualizarProducto,
@@ -17,14 +18,18 @@ import {
 export default function ModalProducto({
   producto,
   categorias,
+  proveedores,
+  productos,
   onCerrar,
   onGuardado,
 }) {
   const esEdicion = Boolean(producto);
+  const proveedorActual = producto?.proveedores?.[0]?.id_proveedor;
 
   const [form, setForm] = useState({
     id_categoria: String(producto?.id_categoria ?? ""),
-    codigo_producto: producto?.codigo_producto ?? "",
+    id_proveedor: String(proveedorActual ?? ""),
+    codigo_producto: producto?.codigo_producto ?? generarCodigoAutomatico(productos, "codigo_producto", "PROD-"),
     nombre_producto: producto?.nombre_producto ?? "",
     descripcion: producto?.descripcion ?? "",
     precio_compra: producto?.precio_compra ?? "",
@@ -36,9 +41,16 @@ export default function ModalProducto({
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
 
+  const codigoProducto = esEdicion
+    ? form.codigo_producto
+    : generarCodigoAutomatico(productos, "codigo_producto", "PROD-");
+
   // Para un producto nuevo, solo categorías activas; al editar se incluye la actual
   const opcionesCategoria = categorias.filter(
     (c) => c.estado === "Activa" || c.id_categoria === producto?.id_categoria,
+  );
+  const opcionesProveedor = proveedores.filter(
+    (p) => p.estado === "Activo" || p.id_proveedor === proveedorActual,
   );
 
   const handleChange = (e) => {
@@ -51,7 +63,8 @@ export default function ModalProducto({
 
     const valores = {
       id_categoria: Number(form.id_categoria),
-      codigo_producto: form.codigo_producto.trim(),
+      ...(form.id_proveedor && { id_proveedor: Number(form.id_proveedor) }),
+      codigo_producto: codigoProducto.trim(),
       nombre_producto: form.nombre_producto.trim(),
       descripcion: form.descripcion.trim() || null,
       precio_compra: Number(form.precio_compra),
@@ -76,6 +89,7 @@ export default function ModalProducto({
       // Al editar, solo se envía lo que cambió
       const original = {
         id_categoria: Number(producto.id_categoria),
+        id_proveedor: Number(proveedorActual),
         codigo_producto: producto.codigo_producto,
         nombre_producto: producto.nombre_producto,
         descripcion: producto.descripcion ?? null,
@@ -85,6 +99,11 @@ export default function ModalProducto({
         existencia_maxima: aNumeroONull(producto.existencia_maxima),
       };
       datos = obtenerCambios(valores, original);
+      if (valores.id_proveedor !== original.id_proveedor) {
+        datos.id_proveedor = valores.id_proveedor;
+      } else {
+        delete datos.id_proveedor;
+      }
       if (form.estado !== producto.estado) datos.estado = form.estado;
 
       if (Object.keys(datos).length === 0) {
@@ -134,15 +153,31 @@ export default function ModalProducto({
           ))}
         </CampoSelect>
 
+        <CampoSelect
+          id="id_proveedor"
+          label="Proveedor"
+          value={form.id_proveedor}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Selecciona un proveedor</option>
+          {opcionesProveedor.map((p) => (
+            <option key={p.id_proveedor} value={p.id_proveedor}>
+              {p.nombre_proveedor}
+            </option>
+          ))}
+        </CampoSelect>
+
         <CampoFormulario
           id="codigo_producto"
           label="Código"
           icono={Barcode}
           type="text"
-          placeholder="Ej: FR-0001"
+          placeholder="PROD-001"
           maxLength={50}
-          value={form.codigo_producto}
+          value={codigoProducto}
           onChange={handleChange}
+          readOnly={!esEdicion}
           required
         />
 

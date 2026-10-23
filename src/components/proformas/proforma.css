@@ -1,0 +1,62 @@
+.proforma-impresion {
+  display: none;
+  box-sizing: border-box;
+  color: #111;
+  background: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.proforma-impresion__encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12mm;
+  border-bottom: 2px solid #1e293b;
+  padding-bottom: 6mm;
+}
+
+.proforma-impresion__encabezado h1 { margin: 0; font-size: 22pt; letter-spacing: 1px; }
+.proforma-impresion__encabezado p { margin: 1mm 0 0; color: #555; }
+.proforma-impresion__fecha { display: grid; gap: 1mm; text-align: right; }
+.proforma-impresion__fecha span { color: #555; font-size: 9pt; }
+.proforma-impresion__cliente { margin: 8mm 0; }
+.proforma-impresion h2 { margin: 0 0 2mm; font-size: 10pt; text-transform: uppercase; letter-spacing: .4px; }
+.proforma-impresion__cliente p,
+.proforma-impresion__observaciones p { margin: 1mm 0; }
+.proforma-impresion table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.proforma-impresion th,
+.proforma-impresion td { padding: 3mm 2mm; border-bottom: 1px solid #cbd5e1; text-align: left; vertical-align: top; }
+.proforma-impresion th { background: #f1f5f9; font-size: 8pt; text-transform: uppercase; }
+.proforma-impresion th:first-child,
+.proforma-impresion td:first-child { width: 43%; }
+.proforma-impresion th:nth-child(n+2),
+.proforma-impresion td:nth-child(n+2) { text-align: right; }
+.proforma-impresion td small { display: block; margin-top: 1mm; color: #64748b; }
+.proforma-impresion__totales { width: min(100%, 78mm); margin: 7mm 0 0 auto; }
+.proforma-impresion__totales p { display: flex; justify-content: space-between; gap: 6mm; margin: 2mm 0; }
+.proforma-impresion__total { border-top: 1px solid #111; padding-top: 3mm; font-size: 12pt; }
+.proforma-impresion__observaciones { margin-top: 9mm; }
+.proforma-impresion footer { margin-top: 16mm; border-top: 1px solid #cbd5e1; padding-top: 3mm; color: #555; text-align: center; font-size: 8pt; }
+
+@page { size: A4 portrait; margin: 16mm; }
+
+@media print {
+  html, body, #root { min-height: 0 !important; height: auto !important; background: #fff !important; }
+  body * { visibility: hidden !important; }
+  #area-impresion-proforma,
+  #area-impresion-proforma * { visibility: visible !important; }
+  #area-impresion-proforma {
+    display: block !important;
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #111 !important;
+    background: #fff !important;
+  }
+}

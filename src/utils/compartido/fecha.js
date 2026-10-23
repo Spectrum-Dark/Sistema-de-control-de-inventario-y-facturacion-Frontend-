@@ -1,7 +1,7 @@
 const dos = (numero) => String(numero).padStart(2, "0");
 
 // Acepta "2026-10-20 15:30:00" o formato ISO y lo muestra en hora local
-export function formatearFechaHora(valor) {
+export function formatearFechaHora(valor, { hora12 = false } = {}) {
   if (!valor) return "—";
 
   const texto = String(valor);
@@ -14,6 +14,7 @@ export function formatearFechaHora(valor) {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    hour12: hora12,
   });
 }
 

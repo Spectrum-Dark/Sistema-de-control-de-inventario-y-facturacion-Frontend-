@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Hash, Calendar, Loader2 } from "lucide-react";
 import { sileo } from "sileo";
 import Modal from "../compartido/Modal";
@@ -9,6 +9,7 @@ import EditorDetallesCompra from "./EditorDetallesCompra";
 import {
   registrarCompra,
   corregirCompra,
+  listarProductosPorProveedor,
 } from "../../services/compras/comprasService";
 import { calcularTotales, TASA_IVA } from "../../utils/compras/calculos";
 import {
@@ -24,9 +25,11 @@ import {
   deInputAFechaHora,
 } from "../../utils/compartido/fecha";
 import { formatearPrecio } from "../../utils/productos/formato";
+import { generarCodigoAutomatico } from "../../utils/compartido/codigoAutomatico";
 
 export default function ModalCompra({
   compra,
+  compras,
   proveedores,
   productos,
   onCerrar,
@@ -51,12 +54,57 @@ export default function ModalCompra({
   );
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
+  const [estadoProductosProveedor, setEstadoProductosProveedor] = useState(() => ({
+    id: String(compra?.id_proveedor ?? ""),
+    estado: compra?.id_proveedor ? "cargando" : "inactivo",
+    datos: [],
+    error: "",
+  }));
+  const numeroCompra = esCorreccion
+    ? form.numero_compra
+    : generarCodigoAutomatico(compras, "numero_compra", `COMP-${new Date().getFullYear()}-`);
+
+  useEffect(() => {
+    if (!form.id_proveedor) {
+      return undefined;
+    }
+
+    let activo = true;
+    listarProductosPorProveedor(form.id_proveedor)
+      .then((respuesta) => activo && setEstadoProductosProveedor({
+        id: String(form.id_proveedor), estado: "listo", datos: respuesta.datos, error: "",
+      }))
+      .catch((e) => activo && setEstadoProductosProveedor({
+        id: String(form.id_proveedor), estado: "error", datos: [], error: e.message,
+      }));
+
+    return () => { activo = false; };
+  }, [form.id_proveedor]);
 
   // Solo activos, más los que ya tenía la compra al corregirla
-  const idsEnCompra = (compra?.detalles ?? []).map((d) => d.id_producto);
-  const opcionesProducto = productos.filter(
-    (p) => p.estado === "Activo" || idsEnCompra.includes(p.id_producto)
+  const idsEnCompra = new Set(
+    String(form.id_proveedor) === String(compra?.id_proveedor ?? "")
+      ? (compra?.detalles ?? []).map((d) => String(d.id_producto))
+      : [],
   );
+  const idsSeleccionados = new Set(filas.map((fila) => String(fila.id_producto)));
+  const productosDelProveedor = estadoProductosProveedor.id === form.id_proveedor
+    ? estadoProductosProveedor.datos
+    : [];
+  const productosSeleccionados = productos.filter((p) =>
+    idsSeleccionados.has(String(p.id_producto)) || idsEnCompra.has(String(p.id_producto))
+  );
+  const disponibles = new Map();
+  [...productosDelProveedor, ...productosSeleccionados].forEach((p) => {
+    if (
+      p.estado === "Activo" ||
+      idsEnCompra.has(String(p.id_producto)) ||
+      idsSeleccionados.has(String(p.id_producto))
+    ) {
+      disponibles.set(String(p.id_producto), p);
+    }
+  });
+  const opcionesProducto = [...disponibles.values()];
   const opcionesProveedor = proveedores.filter(
     (p) => p.estado === "Activo" || p.id_proveedor === compra?.id_proveedor
   );
@@ -64,6 +112,15 @@ export default function ModalCompra({
   const totales = calcularTotales(filas);
 
   const handleChange = (e) => {
+    if (e.target.name === "id_proveedor" && e.target.value !== form.id_proveedor) {
+      setFilas([{ ...FILA_VACIA }]);
+      setEstadoProductosProveedor({
+        id: e.target.value,
+        estado: e.target.value ? "cargando" : "inactivo",
+        datos: [],
+        error: "",
+      });
+    }
     setForm({ ...form, [e.target.name]: e.target.value });
     setError("");
   };
@@ -115,7 +172,7 @@ export default function ModalCompra({
     } else {
       datos = {
         id_proveedor: Number(form.id_proveedor),
-        numero_compra: form.numero_compra.trim(),
+        numero_compra: numeroCompra.trim(),
         observaciones,
         detalles,
       };
@@ -177,10 +234,11 @@ export default function ModalCompra({
               label="Número de compra"
               icono={Hash}
               type="text"
-              placeholder="Ej: COMPRA-001"
+              placeholder={`COMP-${new Date().getFullYear()}-001`}
               maxLength={50}
-              value={form.numero_compra}
+              value={numeroCompra}
               onChange={handleChange}
+              readOnly
               required
             />
           )}
@@ -209,6 +267,8 @@ export default function ModalCompra({
           productos={opcionesProducto}
           onChange={cambiarFilas}
         />
+        {estadoProductosProveedor.id === form.id_proveedor && estadoProductosProveedor.estado === "cargando" && <p className="text-xs text-slate-500">Cargando productos de este proveedor...</p>}
+        {estadoProductosProveedor.id === form.id_proveedor && estadoProductosProveedor.error && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">No se pudieron cargar los productos del proveedor: {estadoProductosProveedor.error}</p>}
 
         <div className="ml-auto w-full space-y-1 rounded-lg bg-slate-50 p-4 text-sm sm:w-72">
           <div className="flex justify-between text-slate-600">

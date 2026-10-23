@@ -7,6 +7,8 @@ import {
   ReceiptText,
   ClipboardList,
   Users,
+  Database,
+  Settings,
 } from "lucide-react";
 import { ID_ROL } from "../sesion/roles";
 
@@ -35,8 +37,20 @@ export const menuPrincipal = [
     ],
   },
 
-  // Fase 4: clientes
-  { nombre: "Clientes", ruta: "/clientes", icono: UserRound },
+  // Fase 4: clientes y proformas
+  {
+    nombre: "Clientes y proformas",
+    icono: UserRound,
+    roles: [ID_ROL.ADMINISTRADOR, ID_ROL.OPERADOR, ID_ROL.CONSULTOR],
+    hijos: [
+      { nombre: "Clientes", ruta: "/clientes" },
+      {
+        nombre: "Proformas",
+        ruta: "/proformas",
+        roles: [ID_ROL.ADMINISTRADOR, ID_ROL.OPERADOR, ID_ROL.CONSULTOR],
+      },
+    ],
+  },
 
   // Fase 5: operaciones de compra e inventario
   {
@@ -44,7 +58,7 @@ export const menuPrincipal = [
     icono: Warehouse,
     hijos: [
       { nombre: "Compras", ruta: "/compras" },
-      { nombre: "Historial de compras", ruta: "/historial-compras" },
+      { nombre: "Correcciones", ruta: "/historial-compras" },
       { nombre: "Movimientos de inventario", ruta: "/movimientos-inventario" },
     ],
   },
@@ -55,7 +69,7 @@ export const menuPrincipal = [
     icono: ReceiptText,
     hijos: [
       { nombre: "Ventas", ruta: "/ventas" },
-      { nombre: "Historial de ventas", ruta: "/historial-ventas" },
+      { nombre: "Correcciones", ruta: "/historial-ventas" },
       { nombre: "Facturación", ruta: "/facturacion" },
     ],
   },
@@ -69,20 +83,36 @@ export const menuPrincipal = [
       { nombre: "Compras", ruta: "/reportes/compras" },
       { nombre: "Ventas", ruta: "/reportes/ventas" },
       { nombre: "Facturación", ruta: "/reportes/facturacion" },
+      { nombre: "Clientes y proveedores", ruta: "/reportes/catalogos" },
     ],
   },
 
-  // Fase 1: seguridad y acceso
+  // Fase 1: seguridad y configuración del sistema
   {
-    nombre: "Usuarios",
-    ruta: "/usuarios",
-    icono: Users,
+    nombre: "Sistema",
+    icono: Settings,
     roles: [ID_ROL.ADMINISTRADOR],
+    hijos: [
+      {
+        nombre: "Usuarios",
+        ruta: "/usuarios",
+        icono: Users,
+        roles: [ID_ROL.ADMINISTRADOR],
+      },
+      {
+        nombre: "Respaldos",
+        ruta: "/respaldo",
+        icono: Database,
+        roles: [ID_ROL.ADMINISTRADOR],
+      },
+    ],
   },
 ];
 
 const puedeVerOpcion = (opcion, idRol) =>
-  !opcion.roles || opcion.roles.includes(idRol);
+  opcion.roles
+    ? opcion.roles.includes(idRol)
+    : idRol !== ID_ROL.CONSULTOR;
 
 // Deja solo lo que el rol puede ver, también dentro de los grupos.
 // Si a un grupo no le queda ningún sub-link visible, el grupo desaparece.

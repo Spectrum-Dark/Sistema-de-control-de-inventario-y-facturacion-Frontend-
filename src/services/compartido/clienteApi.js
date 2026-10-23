@@ -1,4 +1,5 @@
 import { obtenerToken } from "../../utils/sesion/almacenSesion";
+import { invalidarCacheListados } from "./cacheListados";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -28,6 +29,8 @@ export async function peticion(endpoint, { metodo = "GET", cuerpo } = {}) {
     error.errores = datos.errors;
     throw error;
   }
+
+  if (metodo !== "GET") invalidarCacheListados();
 
   return datos;
 }

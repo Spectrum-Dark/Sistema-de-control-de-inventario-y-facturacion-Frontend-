@@ -10,3 +10,9 @@ export const restablecerContrasena = (id, datos) =>
     metodo: "PUT",
     cuerpo: datos,
   });
+
+export const actualizarPerfilPropio = (cambios) =>
+  peticion("/perfil", { metodo: "PUT", cuerpo: cambios });
+
+export const cambiarContrasenaPropia = (datos) =>
+  peticion("/perfil/contrasena", { metodo: "PUT", cuerpo: datos });

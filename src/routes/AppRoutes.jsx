@@ -19,7 +19,11 @@ import ReporteInventario from "../pages/reportes/ReporteInventario";
 import ReporteCompras from "../pages/reportes/ReporteCompras";
 import ReporteVentas from "../pages/reportes/ReporteVentas";
 import ReporteFacturacion from "../pages/reportes/ReporteFacturacion";
+import ReporteCatalogos from "../pages/reportes/ReporteCatalogos";
+import Respaldo from "../pages/respaldo/Respaldo";
 import Usuarios from "../pages/usuarios/Usuarios";
+import Perfil from "../pages/perfil/Perfil";
+import Proformas from "../pages/proformas/Proformas";
 import LayoutPrincipal from "../components/layout/LayoutPrincipal";
 import RutaProtegida from "./RutaProtegida";
 import RutaPublica from "./RutaPublica";
@@ -71,10 +75,23 @@ export default function AppRoutes() {
           <Route path="/reportes/compras" element={<ReporteCompras />} />
           <Route path="/reportes/ventas" element={<ReporteVentas />} />
           <Route path="/reportes/facturacion" element={<ReporteFacturacion />} />
+          <Route path="/reportes/catalogos" element={<ReporteCatalogos />} />
+
+          <Route path="/respaldo" element={<RutaPorRol rolesPermitidos={[ID_ROL.ADMINISTRADOR]} />}>
+            <Route index element={<Respaldo />} />
+          </Route>
 
           {/* Fase 1: solo Administrador */}
           <Route path="/usuarios" element={<RutaPorRol rolesPermitidos={[ID_ROL.ADMINISTRADOR]} />}>
             <Route index element={<Usuarios />} />
+          </Route>
+
+          <Route path="/perfil" element={<RutaPorRol rolesPermitidos={[ID_ROL.ADMINISTRADOR]} />}>
+            <Route index element={<Perfil />} />
+          </Route>
+
+          <Route path="/proformas" element={<RutaPorRol rolesPermitidos={[ID_ROL.ADMINISTRADOR, ID_ROL.OPERADOR, ID_ROL.CONSULTOR]} />}>
+            <Route index element={<Proformas />} />
           </Route>
         </Route>
       </Route>

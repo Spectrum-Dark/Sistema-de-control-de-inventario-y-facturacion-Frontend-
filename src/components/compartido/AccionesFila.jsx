@@ -1,9 +1,9 @@
 import { Pencil, Trash2 } from "lucide-react";
 
 const claseIcono =
-  "rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900";
+  "rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900";
 const claseIconoPeligro =
-  "rounded-lg p-2 text-slate-500 transition hover:bg-red-50 hover:text-red-600";
+  "rounded-xl p-2 text-slate-500 transition hover:bg-red-50 hover:text-red-600";
 
 // extras: acciones adicionales [{ titulo, textoCorto, icono, onClick }]
 export default function AccionesFila({
@@ -14,6 +14,8 @@ export default function AccionesFila({
   onEliminar,
   extras = [],
   variante = "tabla",
+  deshabilitado = false,
+  motivoDeshabilitado,
 }) {
   if (variante === "tarjeta") {
     return (
@@ -21,7 +23,9 @@ export default function AccionesFila({
         {puedeEditar && (
           <button
             onClick={onEditar}
-            className="flex items-center gap-2 text-sm font-medium text-slate-700"
+            disabled={deshabilitado}
+            title={motivoDeshabilitado}
+            className="flex items-center gap-2 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Pencil size={14} />
             Editar
@@ -31,7 +35,9 @@ export default function AccionesFila({
           <button
             key={titulo}
             onClick={onClick}
-            className="flex items-center gap-2 text-sm font-medium text-slate-700"
+            disabled={deshabilitado}
+            title={motivoDeshabilitado}
+            className="flex items-center gap-2 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Icono size={14} />
             {textoCorto ?? titulo}
@@ -40,7 +46,9 @@ export default function AccionesFila({
         {puedeEliminar && (
           <button
             onClick={onEliminar}
-            className="flex items-center gap-2 text-sm font-medium text-red-600"
+            disabled={deshabilitado}
+            title={motivoDeshabilitado}
+            className="flex items-center gap-2 text-sm font-medium text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Trash2 size={14} />
             Eliminar
@@ -55,9 +63,10 @@ export default function AccionesFila({
       {puedeEditar && (
         <button
           onClick={onEditar}
-          title="Editar"
+          disabled={deshabilitado}
+          title={deshabilitado ? motivoDeshabilitado : "Editar"}
           aria-label={`Editar ${nombre}`}
-          className={claseIcono}
+          className={`${claseIcono} disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500`}
         >
           <Pencil size={16} />
         </button>
@@ -66,9 +75,10 @@ export default function AccionesFila({
         <button
           key={titulo}
           onClick={onClick}
-          title={titulo}
+          disabled={deshabilitado}
+          title={deshabilitado ? motivoDeshabilitado : titulo}
           aria-label={`${titulo}: ${nombre}`}
-          className={claseIcono}
+          className={`${claseIcono} disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500`}
         >
           <Icono size={16} />
         </button>
@@ -76,9 +86,10 @@ export default function AccionesFila({
       {puedeEliminar && (
         <button
           onClick={onEliminar}
-          title="Eliminar"
+          disabled={deshabilitado}
+          title={deshabilitado ? motivoDeshabilitado : "Eliminar"}
           aria-label={`Eliminar ${nombre}`}
-          className={claseIconoPeligro}
+          className={`${claseIconoPeligro} disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500`}
         >
           <Trash2 size={16} />
         </button>

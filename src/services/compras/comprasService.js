@@ -2,6 +2,9 @@ import { peticion } from "../compartido/clienteApi";
 
 export const listarCompras = () => peticion("/compras/listar");
 
+export const listarProductosPorProveedor = (id) =>
+  peticion(`/compras/proveedores/${id}/productos`);
+
 export const registrarCompra = (datos) =>
   peticion("/compras/registrar", { metodo: "POST", cuerpo: datos });
 

@@ -1,0 +1,53 @@
+.factura-impresion {
+  display: none;
+  box-sizing: border-box;
+  color: #111;
+  background: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.factura-impresion__encabezado { margin-bottom: 5mm; text-align: center; }
+.factura-impresion__encabezado h1 { margin: 0; font-size: 18pt; }
+.factura-impresion__encabezado p { margin: 2mm 0 0; font-weight: 700; }
+.factura-impresion__datos { margin: 4mm 0; }
+.factura-impresion__datos p { margin: 1mm 0; }
+.factura-impresion table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.factura-impresion th, .factura-impresion td { padding: 2mm 1mm; border-bottom: 1px solid #bbb; text-align: left; vertical-align: top; }
+.factura-impresion th:nth-child(n+2), .factura-impresion td:nth-child(n+2) { text-align: right; }
+.factura-impresion th:first-child, .factura-impresion td:first-child { width: 40%; }
+.factura-impresion td small { display: block; color: #555; }
+.factura-impresion__totales { width: min(100%, 75mm); margin: 5mm 0 0 auto; }
+.factura-impresion__totales p { display: flex; justify-content: space-between; gap: 6mm; margin: 1.5mm 0; }
+.factura-impresion__total { border-top: 1px solid #111; padding-top: 2mm; font-size: 12pt; }
+.factura-impresion__observaciones { margin-top: 5mm; }
+.factura-impresion footer { margin-top: 7mm; text-align: center; }
+
+@page { size: A4 portrait; margin: 14mm; }
+
+@media print {
+  html, body, #root { min-height: 0 !important; height: auto !important; background: #fff !important; }
+  body * { visibility: hidden !important; }
+  #area-impresion-factura,
+  #area-impresion-factura * { visibility: visible !important; }
+  #area-impresion-factura {
+    display: block !important;
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #111 !important;
+    background: #fff !important;
+  }
+  .factura-impresion--58mm { width: 58mm !important; padding: 2mm !important; font-size: 7.5pt !important; }
+  .factura-impresion--80mm { width: 80mm !important; padding: 3mm !important; font-size: 9pt !important; }
+  .factura-impresion--58mm .factura-impresion__totales { width: 100%; }
+  .factura-impresion--58mm th, .factura-impresion--58mm td { padding: 1.2mm 0.5mm; }
+  .factura-impresion--58mm th:first-child, .factura-impresion--58mm td:first-child { width: 55%; }
+  .factura-impresion--58mm th:nth-child(2), .factura-impresion--58mm td:nth-child(2) { width: 15%; }
+  .factura-impresion--58mm th:nth-child(3), .factura-impresion--58mm td:nth-child(3) { width: 30%; }
+}

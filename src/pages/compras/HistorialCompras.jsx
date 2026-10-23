@@ -38,8 +38,8 @@ export default function HistorialCompras() {
 
   return (
     <PaginaCrud
-      titulo="Historial de compras"
-      subtitulo="Compras e inventario · Historial y correcciones."
+      titulo="Correcciones"
+      subtitulo="Compras e inventario · Correcciones registradas."
       textoCarga="Cargando historial..."
       mensajeVacio="Aún no hay correcciones de compras registradas."
       mensajeSinResultados="Ningún registro coincide con la búsqueda."

@@ -88,6 +88,7 @@ export default function Compras() {
         <ModalCompra
           key={g.modal.registro?.id_compra ?? "nueva"}
           compra={g.modal.registro}
+          compras={compras}
           proveedores={proveedores}
           productos={productos}
           onCerrar={g.cerrarModal}

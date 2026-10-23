@@ -17,7 +17,7 @@ export default function GrupoMenu({ nombre, icono: Icono, hijos, onNavegar }) {
         type="button"
         onClick={() => setAbierto(!abierto)}
         aria-expanded={abierto}
-        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+        className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 ${
           // CAMBIO 1: gris suave cuando estás dentro del grupo
           grupoActivo
             ? "bg-slate-100 text-slate-900"
