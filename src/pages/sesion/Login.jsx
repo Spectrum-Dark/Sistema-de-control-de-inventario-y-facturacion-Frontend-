@@ -1,22 +1,15 @@
-import { Package } from 'lucide-react'
 import FormularioLogin from '../../components/sesion/FormularioLogin'
+import PanelSesion from '../../components/sesion/PanelSesion'
+import '../../components/sesion/sesion.css'
 
 export default function Login() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-4">
-      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-slate-800 text-white">
-            <Package size={24} />
-          </div>
-          <h1 className="text-2xl font-semibold text-slate-900">Iniciar sesión</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Sistema de inventario y facturación
-          </p>
-        </div>
-
-        <FormularioLogin />
-      </div>
-    </div>
+    <PanelSesion
+      etiqueta="Qué bueno verte de nuevo"
+      titulo="Inicia sesión"
+      descripcion="Ingresa tus datos para continuar con tu espacio de trabajo."
+    >
+      <FormularioLogin />
+    </PanelSesion>
   )
 }

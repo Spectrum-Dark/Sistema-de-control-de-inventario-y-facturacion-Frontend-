@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Lock, Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 import { sileo } from "sileo";
 import Modal from "../compartido/Modal";
 import CampoFormulario from "../compartido/CampoFormulario";
@@ -61,12 +61,17 @@ export default function ModalContrasena({ usuario, onCerrar }) {
       bloqueado={cargando}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <p className="text-sm text-slate-600">
-          Nueva contraseña para{" "}
-          <span className="font-medium text-slate-900">
-            {usuario.nombre_completo}
+        <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-slate-600 shadow-sm"><Lock size={17} /></span>
+          <span className="min-w-0">
+            <span className="block text-xs font-semibold text-slate-800">Restablecer acceso</span>
+            <span className="mt-0.5 block truncate text-xs text-slate-500">{usuario.nombre_completo} · @{usuario.nombre_usuario}</span>
           </span>
-          . Sus sesiones abiertas se cerrarán.
+        </div>
+
+        <p className="flex items-start gap-2 text-xs leading-relaxed text-slate-500">
+          <ShieldCheck size={15} className="mt-0.5 shrink-0 text-slate-400" />
+          Al guardar la nueva contraseña, se cerrarán las sesiones abiertas de esta cuenta.
         </p>
 
         <CampoFormulario
@@ -96,17 +101,17 @@ export default function ModalContrasena({ usuario, onCerrar }) {
         />
 
         {error && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-700">
             {error}
           </p>
         )}
 
-        <div className="flex justify-end gap-3 pt-2">
+        <div className="flex justify-end gap-2 border-t border-slate-100 pt-4">
           <button
             type="button"
             onClick={onCerrar}
             disabled={cargando}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+            className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
           >
             Cancelar
           </button>
@@ -114,7 +119,7 @@ export default function ModalContrasena({ usuario, onCerrar }) {
           <button
             type="submit"
             disabled={cargando}
-            className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {cargando && <Loader2 size={16} className="animate-spin" />}
             {cargando ? "Guardando..." : "Restablecer"}

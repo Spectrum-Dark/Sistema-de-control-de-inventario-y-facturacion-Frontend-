@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BadgeCheck, Ban, Clock3, ReceiptText } from "lucide-react";
 import { sileo } from "sileo";
 import { useVentas } from "../../hooks/ventas/useVentas";
 import { useClientes } from "../../hooks/clientes/useClientes";
@@ -20,6 +21,16 @@ import TablaVentas from "../../components/ventas/TablaVentas";
 import ModalVenta from "../../components/ventas/ModalVenta";
 import ModalDetalleVenta from "../../components/ventas/ModalDetalleVenta";
 import ModalMotivoVenta from "../../components/ventas/ModalMotivoVenta";
+
+function ResumenVentas({ ventas }) {
+  const metricas = [
+    { etiqueta: "Ventas registradas", valor: ventas.length, Icono: ReceiptText },
+    { etiqueta: "Por confirmar", valor: ventas.filter((v) => v.estado === "Registrada").length, Icono: Clock3 },
+    { etiqueta: "Confirmadas", valor: ventas.filter((v) => v.estado === "Confirmada").length, Icono: BadgeCheck },
+    { etiqueta: "Canceladas", valor: ventas.filter((v) => v.estado === "Cancelada").length, Icono: Ban },
+  ];
+  return <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Resumen de ventas">{metricas.map(({ etiqueta, valor, Icono }) => <article key={etiqueta} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-sm"><span className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600"><Icono size={18} /></span><span><span className="block text-[11px] font-medium text-slate-500">{etiqueta}</span><span className="mt-0.5 block text-xl font-semibold tracking-tight text-slate-900">{valor}</span></span></article>)}</section>;
+}
 
 export default function Ventas() {
   const { ventas, cargando, error, recargar, actualizarEnLista } = useVentas();
@@ -57,8 +68,9 @@ export default function Ventas() {
 
   return (
     <PaginaCrud
-      titulo="Ventas"
+      titulo={<span className="inline-flex items-center gap-2.5"><span className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><ReceiptText size={18} /></span>Ventas</span>}
       subtitulo="Ventas y facturación · Registro y seguimiento de ventas."
+      resumen={!cargando && !error ? <ResumenVentas ventas={ventas} /> : null}
       textoNuevo="Nueva venta"
       textoCarga="Cargando ventas..."
       mensajeVacio="Aún no hay ventas registradas."
@@ -69,12 +81,15 @@ export default function Ventas() {
       hayDatos={ventas.length > 0}
       puedeCrear={puedeOperar}
       onNuevo={g.abrirModal}
+      nuevoEnFiltros
       filtros={
         <FiltrosVentas
           filtros={g.filtros}
           onCambiar={g.cambiarFiltro}
           onLimpiar={g.limpiarFiltros}
           hayFiltros={g.hayFiltros}
+          puedeCrear={puedeOperar}
+          onNuevo={g.abrirModal}
         />
       }
       hayFiltros={g.hayFiltros}

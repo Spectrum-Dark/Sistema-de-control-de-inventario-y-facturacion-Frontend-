@@ -65,7 +65,7 @@ export default function FormularioRegistro() {
   );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="auth-form">
       <CampoFormulario
         id="nombre_completo"
         label="Nombre completo"
@@ -133,15 +133,15 @@ export default function FormularioRegistro() {
       <button
         type="submit"
         disabled={cargando}
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 py-2.5 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+        className="auth-submit w-full disabled:cursor-not-allowed disabled:opacity-60"
       >
         {cargando && <Loader2 size={18} className="animate-spin" />}
         {cargando ? "Creando cuenta..." : "Crear cuenta"}
       </button>
 
-      <p className="text-center text-sm text-slate-600">
+      <p className="auth-form-footer">
         ¿Ya tienes una cuenta?{" "}
-        <Link to="/login" className="font-medium text-slate-900 underline">
+        <Link to="/login">
           Inicia sesión
         </Link>
       </p>

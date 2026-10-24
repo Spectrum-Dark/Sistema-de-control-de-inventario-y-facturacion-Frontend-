@@ -1,15 +1,19 @@
-const ESTILOS = {
-  Entrada: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200",
-  Salida: "bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200",
+import { ArrowDownToLine, ArrowLeftRight, ArrowUpFromLine } from "lucide-react";
+
+const CONFIGURACION = {
+  Entrada: { Icono: ArrowDownToLine, color: "text-emerald-700" },
+  Salida: { Icono: ArrowUpFromLine, color: "text-red-600" },
 };
 
 export default function InsigniaTipoMovimiento({ tipo }) {
+  const { Icono, color } = CONFIGURACION[tipo] ?? {
+    Icono: ArrowLeftRight,
+    color: "text-slate-500",
+  };
+
   return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${
-        ESTILOS[tipo] ?? "bg-slate-100 text-slate-600"
-      }`}
-    >
+    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold ${color}`}>
+      <Icono size={14} strokeWidth={2} />
       {tipo}
     </span>
   );

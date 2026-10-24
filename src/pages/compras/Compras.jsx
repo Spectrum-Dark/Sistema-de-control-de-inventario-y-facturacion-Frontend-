@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BadgeCheck, Clock3, ShoppingCart } from "lucide-react";
 import { sileo } from "sileo";
 import { useCompras } from "../../hooks/compras/useCompras";
 import { useProveedores } from "../../hooks/proveedores/useProveedores";
@@ -13,6 +14,24 @@ import FiltrosCompras from "../../components/compras/FiltrosCompras";
 import TablaCompras from "../../components/compras/TablaCompras";
 import ModalCompra from "../../components/compras/ModalCompra";
 import ModalDetalleCompra from "../../components/compras/ModalDetalleCompra";
+
+function ResumenCompras({ compras }) {
+  const metricas = [
+    { etiqueta: "Compras registradas", valor: compras.length, Icono: ShoppingCart },
+    { etiqueta: "Por confirmar", valor: compras.filter((c) => c.estado === "Registrada").length, Icono: Clock3 },
+    { etiqueta: "Confirmadas", valor: compras.filter((c) => c.estado === "Confirmada").length, Icono: BadgeCheck },
+  ];
+  return (
+    <section className="grid gap-3 sm:grid-cols-3" aria-label="Resumen de compras">
+      {metricas.map(({ etiqueta, valor, Icono }) => (
+        <article key={etiqueta} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-sm">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600"><Icono size={18} /></span>
+          <span><span className="block text-[11px] font-medium text-slate-500">{etiqueta}</span><span className="mt-0.5 block text-xl font-semibold tracking-tight text-slate-900">{valor}</span></span>
+        </article>
+      ))}
+    </section>
+  );
+}
 
 export default function Compras() {
   const { compras, cargando, error, recargar, actualizarEnLista } =
@@ -51,8 +70,9 @@ export default function Compras() {
 
   return (
     <PaginaCrud
-      titulo="Compras"
+      titulo={<span className="inline-flex items-center gap-2.5"><span className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><ShoppingCart size={18} /></span>Compras</span>}
       subtitulo="Compras e inventario · Registro de compras a proveedores."
+      resumen={!cargando && !error ? <ResumenCompras compras={compras} /> : null}
       textoNuevo="Nueva compra"
       textoCarga="Cargando compras..."
       mensajeVacio="Aún no hay compras registradas."
@@ -63,12 +83,15 @@ export default function Compras() {
       hayDatos={compras.length > 0}
       puedeCrear={puedeOperar}
       onNuevo={g.abrirModal}
+      nuevoEnFiltros
       filtros={
         <FiltrosCompras
           filtros={g.filtros}
           onCambiar={g.cambiarFiltro}
           onLimpiar={g.limpiarFiltros}
           hayFiltros={g.hayFiltros}
+          puedeCrear={puedeOperar}
+          onNuevo={g.abrirModal}
         />
       }
       hayFiltros={g.hayFiltros}

@@ -3,7 +3,7 @@ import { Calendar, Hash, Loader2 } from "lucide-react";
 import { sileo } from "sileo";
 import Modal from "../compartido/Modal";
 import CampoFormulario from "../compartido/CampoFormulario";
-import CampoSelect from "../compartido/CampoSelect";
+import CampoSeleccionable from "../compartido/CampoSeleccionable";
 import CampoTextarea from "../compartido/CampoTextarea";
 import EditorDetallesVenta from "./EditorDetallesVenta";
 import { registrarVenta, corregirVenta } from "../../services/ventas/ventasService";
@@ -98,10 +98,15 @@ export default function ModalVenta({ venta, ventas, clientes, productos, onCerra
       titulo={esCorreccion ? `Corregir venta ${venta.numero_venta}` : "Nueva venta"}
       onCerrar={onCerrar}
       bloqueado={cargando}
-      ancho="max-w-3xl"
+      ancho="max-w-4xl"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <section className="space-y-3 border-b border-slate-200 pb-4">
+          <div className="flex items-center justify-between gap-3">
+            <div><h3 className="text-xs font-semibold text-slate-800">Información de venta</h3><p className="mt-0.5 text-[11px] text-slate-500">Cliente y datos del registro.</p></div>
+            {!esCorreccion && <span className="rounded-md border border-slate-200 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-slate-500">Nueva operación</span>}
+          </div>
+          <div className={`grid grid-cols-1 gap-3 ${esCorreccion ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
           {esCorreccion ? (
             <CampoFormulario
               id="id_cliente"
@@ -111,12 +116,19 @@ export default function ModalVenta({ venta, ventas, clientes, productos, onCerra
               readOnly
             />
           ) : (
-            <CampoSelect id="id_cliente" label="Cliente" value={form.id_cliente} onChange={handleChange} required>
-              <option value="">Selecciona un cliente</option>
-              {clientes.map((cliente) => (
-                <option key={cliente.id_cliente} value={cliente.id_cliente}>{cliente.nombre_cliente}</option>
-              ))}
-            </CampoSelect>
+            <CampoSeleccionable
+              id="id_cliente"
+              label="Cliente"
+              value={form.id_cliente}
+              onChange={handleChange}
+              placeholder="Escribe el nombre o identificación"
+              options={clientes.map((cliente) => ({
+                value: cliente.id_cliente,
+                label: cliente.nombre_cliente,
+                descripcion: cliente.identificacion || cliente.telefono || "Cliente registrado",
+              }))}
+              required
+            />
           )}
           {!esCorreccion && (
             <CampoFormulario
@@ -143,42 +155,36 @@ export default function ModalVenta({ venta, ventas, clientes, productos, onCerra
               onChange={handleChange}
             />
           )}
-        </div>
+          </div>
+        </section>
 
-        <CampoTextarea
-          id="observaciones"
-          label="Observaciones (opcional)"
-          placeholder="Notas sobre la venta"
-          value={form.observaciones}
-          onChange={handleChange}
-        />
         <EditorDetallesVenta filas={filas} productos={opcionesProducto} onChange={cambiarFilas} />
 
-        <div className="ml-auto w-full space-y-1 rounded-lg bg-slate-50 p-4 text-sm sm:w-72">
-          <div className="flex justify-between text-slate-600"><span>Subtotal</span><span>{formatearPrecio(totales.subtotal)}</span></div>
-          <div className="flex justify-between text-slate-600"><span>IVA ({Math.round(TASA_IVA * 100)} %)</span><span>{formatearPrecio(totales.impuesto)}</span></div>
-          <div className="flex justify-between font-semibold text-slate-900"><span>Total</span><span>{formatearPrecio(totales.total)}</span></div>
-          <p className="pt-1 text-xs text-slate-500">Vista previa; el servidor calcula los importes definitivos.</p>
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
+          <div className="space-y-3">
+            <CampoTextarea id="observaciones" label="Observaciones (opcional)" placeholder="Notas sobre la venta" rows={2} value={form.observaciones} onChange={handleChange} />
+            {esCorreccion && <CampoTextarea id="motivo" label="Motivo de la corrección" placeholder="Explica por qué se corrige la venta (mínimo 5 caracteres)" rows={2} minLength={5} required value={form.motivo} onChange={handleChange} />}
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <p className="mb-3 text-xs font-semibold text-slate-700">Resumen de venta</p>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between text-slate-600"><span>Subtotal</span><span>{formatearPrecio(totales.subtotal)}</span></div>
+              <div className="flex justify-between text-slate-600"><span>IVA ({Math.round(TASA_IVA * 100)} %)</span><span>{formatearPrecio(totales.impuesto)}</span></div>
+              <div className="flex justify-between rounded-lg bg-slate-800 px-3 py-2.5 font-semibold text-white"><span>Total</span><span>{formatearPrecio(totales.total)}</span></div>
+            </div>
+            <p className="mt-2 text-[10px] leading-relaxed text-slate-500">Importes estimados; el servidor calcula los valores definitivos.</p>
+          </div>
         </div>
 
         {esCorreccion && (
           <>
-            <CampoTextarea
-              id="motivo"
-              label="Motivo de la corrección"
-              placeholder="Explica por qué se corrige la venta (mínimo 5 caracteres)"
-              minLength={5}
-              required
-              value={form.motivo}
-              onChange={handleChange}
-            />
             <p className="text-xs text-slate-500">La corrección ajusta el inventario según las diferencias y queda registrada en el historial.</p>
           </>
         )}
         {!esCorreccion && <p className="text-xs text-slate-500">La venta se registra como pendiente. El inventario cambia al confirmarla, siempre que haya existencias suficientes.</p>}
 
         {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
-        <div className="flex justify-end gap-3 pt-2">
+        <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
           <button type="button" onClick={onCerrar} disabled={cargando} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60">Cancelar</button>
           <button type="submit" disabled={cargando} className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60">
             {cargando && <Loader2 size={16} className="animate-spin" />}

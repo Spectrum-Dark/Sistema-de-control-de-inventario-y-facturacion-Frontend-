@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Hash, Calendar, Loader2 } from "lucide-react";
+import { Hash, Calendar, Loader2, Package, ReceiptText } from "lucide-react";
 import { sileo } from "sileo";
 import Modal from "../compartido/Modal";
 import CampoFormulario from "../compartido/CampoFormulario";
-import CampoSelect from "../compartido/CampoSelect";
+import CampoSeleccionable from "../compartido/CampoSeleccionable";
 import CampoTextarea from "../compartido/CampoTextarea";
 import EditorDetallesCompra from "./EditorDetallesCompra";
 import {
@@ -209,24 +209,28 @@ export default function ModalCompra({
       }
       onCerrar={onCerrar}
       bloqueado={cargando}
-      ancho="max-w-3xl"
+      ancho="max-w-4xl"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <CampoSelect
+        <section className="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600"><ReceiptText size={16} /></span>
+            <div><h3 className="text-xs font-semibold text-slate-800">Datos de la compra</h3><p className="text-[11px] text-slate-500">Proveedor, número y fecha del registro.</p></div>
+          </div>
+          <div className={`grid grid-cols-1 items-start gap-3 ${esCorreccion ? "sm:grid-cols-2" : "sm:grid-cols-2 xl:grid-cols-3"}`}>
+          <CampoSeleccionable
             id="id_proveedor"
             label="Proveedor"
             value={form.id_proveedor}
             onChange={handleChange}
+            placeholder="Escribe el nombre del proveedor"
+            options={opcionesProveedor.map((proveedor) => ({
+              value: proveedor.id_proveedor,
+              label: proveedor.nombre_proveedor,
+              descripcion: proveedor.empresa || proveedor.telefono || "Proveedor registrado",
+            }))}
             required
-          >
-            <option value="">Selecciona un proveedor</option>
-            {opcionesProveedor.map((p) => (
-              <option key={p.id_proveedor} value={p.id_proveedor}>
-                {p.nombre_proveedor}
-              </option>
-            ))}
-          </CampoSelect>
+          />
 
           {!esCorreccion && (
             <CampoFormulario
@@ -252,25 +256,44 @@ export default function ModalCompra({
             value={form.fecha_compra}
             onChange={handleChange}
           />
-        </div>
+          </div>
+        </section>
 
-        <CampoTextarea
-          id="observaciones"
-          label="Observaciones (opcional)"
-          placeholder="Notas sobre la compra"
-          value={form.observaciones}
-          onChange={handleChange}
-        />
-
-        <EditorDetallesCompra
-          filas={filas}
-          productos={opcionesProducto}
-          onChange={cambiarFilas}
-        />
+        <section className="rounded-xl border border-slate-200 p-4">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600"><Package size={16} /></span>
+            <div><h3 className="text-xs font-semibold text-slate-800">Detalle de productos</h3><p className="text-[11px] text-slate-500">Selecciona los productos asociados al proveedor.</p></div>
+          </div>
+          <EditorDetallesCompra filas={filas} productos={opcionesProducto} onChange={cambiarFilas} />
+        </section>
         {estadoProductosProveedor.id === form.id_proveedor && estadoProductosProveedor.estado === "cargando" && <p className="text-xs text-slate-500">Cargando productos de este proveedor...</p>}
         {estadoProductosProveedor.id === form.id_proveedor && estadoProductosProveedor.error && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">No se pudieron cargar los productos del proveedor: {estadoProductosProveedor.error}</p>}
 
-        <div className="ml-auto w-full space-y-1 rounded-lg bg-slate-50 p-4 text-sm sm:w-72">
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
+          <div className="space-y-3">
+            <CampoTextarea
+              id="observaciones"
+              label="Observaciones (opcional)"
+              placeholder="Notas sobre la compra"
+              value={form.observaciones}
+              onChange={handleChange}
+            />
+            {esCorreccion && (
+              <CampoTextarea
+                id="motivo"
+                label="Motivo de la corrección"
+                placeholder="Explica por qué se corrige la compra (mínimo 5 caracteres)"
+                maxLength={2000}
+                minLength={5}
+                required
+                value={form.motivo}
+                onChange={handleChange}
+              />
+            )}
+          </div>
+
+          <div className="space-y-1 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
+            <p className="mb-2 text-xs font-semibold text-slate-700">Resumen de compra</p>
           <div className="flex justify-between text-slate-600">
             <span>Subtotal</span>
             <span>{formatearPrecio(totales.subtotal)}</span>
@@ -287,19 +310,10 @@ export default function ModalCompra({
             Vista previa: el servidor calcula el total definitivo.
           </p>
         </div>
+        </div>
 
         {esCorreccion ? (
           <>
-            <CampoTextarea
-              id="motivo"
-              label="Motivo de la corrección"
-              placeholder="Explica por qué se corrige la compra (mínimo 5 caracteres)"
-              maxLength={2000}
-              minLength={5}
-              required
-              value={form.motivo}
-              onChange={handleChange}
-            />
             <p className="text-xs text-slate-500">
               La corrección ajusta el inventario según las diferencias y queda
               registrada en el historial.
@@ -318,7 +332,7 @@ export default function ModalCompra({
           </p>
         )}
 
-        <div className="flex justify-end gap-3 pt-2">
+        <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
           <button
             type="button"
             onClick={onCerrar}

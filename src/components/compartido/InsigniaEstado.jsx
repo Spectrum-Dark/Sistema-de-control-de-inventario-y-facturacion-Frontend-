@@ -6,13 +6,7 @@ export default function InsigniaEstado({ estado }) {
   const confirmado = ESTADOS_CONFIRMADOS.includes(estado);
 
   return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${
-        positivo || confirmado
-          ? "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200"
-          : "bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-200"
-      }`}
-    >
+    <span className={`text-xs font-semibold ${positivo || confirmado ? "text-emerald-700" : "text-slate-500"}`}>
       {estado}
     </span>
   );

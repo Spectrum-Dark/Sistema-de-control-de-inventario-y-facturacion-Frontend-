@@ -5,6 +5,7 @@ import ModalConfirmacion from "./ModalConfirmacion";
 export default function PaginaCrud({
   titulo,
   subtitulo,
+  resumen,
   textoNuevo,
   textoCarga,
   mensajeVacio,
@@ -15,6 +16,7 @@ export default function PaginaCrud({
   hayDatos,
   puedeCrear,
   onNuevo,
+  nuevoEnFiltros = false,
   filtros,
   hayFiltros,
   hayResultados,
@@ -36,10 +38,10 @@ export default function PaginaCrud({
         </div>
 
         <div className="flex items-center gap-2">
-          {puedeCrear && (
+          {puedeCrear && !nuevoEnFiltros && (
             <button
               onClick={() => onNuevo()}
-            className="flex items-center gap-2 rounded-xl bg-slate-800 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-900"
+              className="flex min-h-10 items-center gap-2 rounded-xl bg-slate-800 px-3.5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
             >
               <Plus size={16} />
               <span className="hidden sm:inline">{textoNuevo}</span>
@@ -49,6 +51,8 @@ export default function PaginaCrud({
           )}
         </div>
       </div>
+
+      {resumen}
 
       {cargando && !hayDatos ? (
         <div className="flex items-center justify-center gap-2 py-16 text-sm text-slate-500">

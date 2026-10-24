@@ -19,8 +19,8 @@ export default function ModalDetalleCompra({ compra, onCerrar }) {
       onCerrar={onCerrar}
       ancho="max-w-2xl"
     >
-      <div className="space-y-5">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-slate-50/50 p-3 sm:grid-cols-2">
           <Dato etiqueta="Estado">
             <InsigniaEstadoCompra estado={compra.estado} />
           </Dato>
@@ -77,7 +77,7 @@ export default function ModalDetalleCompra({ compra, onCerrar }) {
           </table>
         </div>
 
-        <div className="ml-auto w-full space-y-1 rounded-lg bg-slate-50 p-4 text-sm sm:w-64">
+        <div className="ml-auto w-full space-y-1 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm sm:w-64">
           <div className="flex justify-between text-slate-600">
             <span>Subtotal</span>
             <span>{formatearPrecio(compra.subtotal)}</span>
@@ -96,7 +96,7 @@ export default function ModalDetalleCompra({ compra, onCerrar }) {
           <button
             type="button"
             onClick={onCerrar}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
           >
             Cerrar
           </button>

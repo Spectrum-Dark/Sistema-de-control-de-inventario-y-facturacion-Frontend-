@@ -1,4 +1,4 @@
-import { Eye } from "lucide-react";
+import { CalendarDays, Clock3, Eye, FileClock } from "lucide-react";
 import AccionesFila from "../compartido/AccionesFila";
 import { formatearFechaHora } from "../../utils/compartido/fecha";
 
@@ -25,15 +25,15 @@ export default function TablaHistorial({ historial, onVerCambios }) {
   return (
     <>
       {/* Tablet y escritorio */}
-      <div className="hidden overflow-x-auto rounded-xl border border-slate-200 bg-white md:block">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+      <div className="hidden overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm xl:block">
+        <table className="w-full min-w-[900px] text-left text-sm">
+          <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-[.12em] text-slate-500">
             <tr>
               <th className="px-4 py-3 font-medium">Fecha</th>
               <th className="px-4 py-3 font-medium">Compra</th>
               <th className="px-4 py-3 font-medium">Operación</th>
               <th className="px-4 py-3 font-medium">Usuario</th>
-              <th className="hidden px-4 py-3 font-medium lg:table-cell">
+              <th className="px-4 py-3 font-semibold">
                 Motivo
               </th>
               <th className="px-4 py-3 text-right font-medium">Acciones</th>
@@ -41,18 +41,18 @@ export default function TablaHistorial({ historial, onVerCambios }) {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {historial.map((h, i) => (
-              <tr key={claveDe(h, i)} className="hover:bg-slate-50">
+              <tr key={claveDe(h, i)} className="table-row-hover transition-colors">
                 <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                  {formatearFechaHora(h.fecha_operacion)}
+                  <span className="inline-flex items-center gap-1.5"><CalendarDays size={14} className="text-slate-400" />{formatearFechaHora(h.fecha_operacion, { hora12: true })}</span>
                 </td>
-                <td className="px-4 py-3 font-medium text-slate-900">
-                  {h.compra?.numero_compra ?? "—"}
+                <td className="px-4 py-3">
+                  <span className="flex items-center gap-2 font-semibold text-slate-900"><FileClock size={16} className="text-slate-500" />{h.compra?.numero_compra ?? "—"}</span>
                 </td>
-                <td className="px-4 py-3 text-slate-600">{operacion(h)}</td>
+                <td className="px-4 py-3"><span className="inline-flex items-center gap-1.5 text-slate-600"><Clock3 size={14} className="text-slate-400" />{operacion(h)}</span></td>
                 <td className="px-4 py-3 text-slate-600">
                   {h.usuario?.nombre_completo ?? "—"}
                 </td>
-                <td className="hidden max-w-xs px-4 py-3 text-slate-600 lg:table-cell">
+                <td className="max-w-xs px-4 py-3 text-slate-600">
                   {h.motivo || "—"}
                 </td>
                 <td className="px-4 py-3">
@@ -68,21 +68,22 @@ export default function TablaHistorial({ historial, onVerCambios }) {
       </div>
 
       {/* Móvil */}
-      <div className="space-y-3 md:hidden">
+      <div className="space-y-3 xl:hidden">
         {historial.map((h, i) => (
           <div
             key={claveDe(h, i)}
-            className="rounded-xl border border-slate-200 bg-white p-4"
+            className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
-              <p className="font-medium text-slate-900">
+              <p className="flex items-center gap-2 font-semibold text-slate-900">
+                <FileClock size={16} className="text-slate-500" />
                 {h.compra?.numero_compra ?? "—"}
               </p>
               <span className="text-xs text-slate-500">{operacion(h)}</span>
             </div>
 
-            <p className="mt-1 text-xs text-slate-500">
-              {formatearFechaHora(h.fecha_operacion)} ·{" "}
+            <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
+              <CalendarDays size={12} />{formatearFechaHora(h.fecha_operacion, { hora12: true })} ·{" "}
               {h.usuario?.nombre_completo ?? "—"}
             </p>
 

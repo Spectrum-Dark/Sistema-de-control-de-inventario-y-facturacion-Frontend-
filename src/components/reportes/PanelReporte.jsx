@@ -1,18 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { FileSpreadsheet, Loader2, Printer, Search } from "lucide-react";
+import { CalendarDays, FileBarChart2, FileSpreadsheet, Loader2, Printer, Search } from "lucide-react";
 import { exportarReporteExcel } from "../../utils/reportes/exportarReporteExcel";
 import { exportarReportePdf } from "../../utils/reportes/exportarReportePdf";
 
-export default function PanelReporte({
-  titulo,
-  descripcion,
-  columnas,
-  consultar,
-  filtrosPorFecha = false,
-  estados = [],
-  busquedaPorCampo = false,
-  exportar = false,
-}) {
+export default function PanelReporte({ titulo, descripcion, columnas, consultar, filtrosPorFecha = false, estados = [], busquedaPorCampo = false, exportar = false, Icono = FileBarChart2 }) {
   const [filtros, setFiltros] = useState({ fecha_inicio: "", fecha_fin: "", estado: "" });
   const [campoBusqueda, setCampoBusqueda] = useState("");
   const [busqueda, setBusqueda] = useState("");
@@ -22,39 +13,25 @@ export default function PanelReporte({
   const [errorExportacion, setErrorExportacion] = useState("");
   const [exportando, setExportando] = useState(false);
 
+  // Mantiene la búsqueda local sobre las mismas filas que alimentan la tabla y exportaciones.
   const filasFiltradas = useMemo(() => {
-    const termino = busqueda
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLocaleLowerCase();
+    const termino = busqueda.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase();
     if (!termino) return filas;
-
     return filas.filter((fila) => {
-      const columnasFiltradas = campoBusqueda
-        ? columnas.filter((columna) => columna.etiqueta === campoBusqueda)
-        : columnas;
-      return columnasFiltradas.some((columna) => {
-        const valor = columna.valor(fila);
-        return String(valor ?? "")
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLocaleLowerCase()
-          .includes(termino);
-      });
+      const lista = campoBusqueda ? columnas.filter((columna) => columna.etiqueta === campoBusqueda) : columnas;
+      return lista.some((columna) => String(columna.valor(fila) ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase().includes(termino));
     });
   }, [busqueda, campoBusqueda, columnas, filas]);
 
+  // Carga inicial y cancelación lógica para evitar actualizar el componente desmontado.
   useEffect(() => {
     let activo = true;
-    consultar({})
-      .then((respuesta) => {
-        if (!activo) return;
-        const datos = respuesta.datos;
-        setFilas(Array.isArray(datos) ? datos : datos == null ? [] : [datos]);
-        setError("");
-      })
-      .catch((e) => activo && setError(e.message))
-      .finally(() => activo && setCargando(false));
+    consultar({}).then((respuesta) => {
+      if (!activo) return;
+      const datos = respuesta.datos;
+      setFilas(Array.isArray(datos) ? datos : datos == null ? [] : [datos]);
+      setError("");
+    }).catch((e) => activo && setError(e.message)).finally(() => activo && setCargando(false));
     return () => { activo = false; };
   }, [consultar]);
 
@@ -62,126 +39,70 @@ export default function PanelReporte({
     evento.preventDefault();
     setCargando(true);
     setError("");
-    const parametros = Object.fromEntries(
-      Object.entries(filtros).filter(([, valor]) => valor),
-    );
+    const parametros = Object.fromEntries(Object.entries(filtros).filter(([, valor]) => valor));
     try {
       const respuesta = await consultar(parametros);
       const datos = respuesta.datos;
       setFilas(Array.isArray(datos) ? datos : datos == null ? [] : [datos]);
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setCargando(false);
-    }
+    } catch (e) { setError(e.message); } finally { setCargando(false); }
   };
 
   const exportarExcel = async () => {
     setExportando(true);
     setErrorExportacion("");
-    try {
-      await exportarReporteExcel({ titulo, columnas, filas: filasFiltradas });
-    } catch {
-      setErrorExportacion("No se pudo generar el archivo Excel. Intenta de nuevo.");
-    } finally {
-      setExportando(false);
-    }
+    try { await exportarReporteExcel({ titulo, columnas, filas: filasFiltradas }); }
+    catch { setErrorExportacion("No se pudo generar el archivo Excel. Intenta de nuevo."); }
+    finally { setExportando(false); }
   };
 
   const exportarPdf = () => {
     setErrorExportacion("");
-    const resultado = exportarReportePdf({ titulo, columnas, filas: filasFiltradas });
-    if (!resultado) {
-      setErrorExportacion("No se pudo preparar el reporte para imprimir. Intenta de nuevo.");
-    }
+    if (!exportarReportePdf({ titulo, columnas, filas: filasFiltradas })) setErrorExportacion("No se pudo preparar el reporte para imprimir. Intenta de nuevo.");
   };
+
+  const claveFila = (fila, indice) => fila.id ?? fila.id_producto ?? fila.id_venta ?? fila.id_compra ?? fila.id_factura ?? fila.id_cliente ?? fila.id_proveedor ?? indice;
 
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-100 px-5 py-4">
-        <h2 className="text-base font-semibold text-slate-900">{titulo}</h2>
-        {descripcion && <p className="mt-1 text-sm text-slate-500">{descripcion}</p>}
-      </div>
+      <header className="flex items-start gap-3 border-b border-slate-200 px-4 py-4 sm:px-5">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700"><Icono size={19} /></span>
+        <div className="min-w-0 flex-1"><h2 className="text-sm font-semibold text-slate-900 sm:text-base">{titulo}</h2>{descripcion && <p className="mt-1 text-xs leading-relaxed text-slate-500 sm:text-sm">{descripcion}</p>}</div>
+        <span className="hidden shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600 sm:inline-flex">{filasFiltradas.length} {filasFiltradas.length === 1 ? "registro" : "registros"}</span>
+      </header>
 
-      {(filtrosPorFecha || estados.length > 0) && (
-        <form onSubmit={buscar} className="flex flex-col gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:flex-row sm:items-end">
-          {filtrosPorFecha && <>
-            <label className="flex-1 text-xs font-medium text-slate-600">Fecha inicial<input type="date" value={filtros.fecha_inicio} onChange={(e) => setFiltros({ ...filtros, fecha_inicio: e.target.value })} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" /></label>
-            <label className="flex-1 text-xs font-medium text-slate-600">Fecha final<input type="date" value={filtros.fecha_fin} onChange={(e) => setFiltros({ ...filtros, fecha_fin: e.target.value })} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800" /></label>
-          </>}
-          {estados.length > 0 && <label className="flex-1 text-xs font-medium text-slate-600">Estado<select value={filtros.estado} onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800"><option value="">Todos</option>{estados.map((estado) => <option key={estado} value={estado}>{estado}</option>)}</select></label>}
-          <button type="submit" disabled={cargando} className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-800 px-3.5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-900 disabled:opacity-60">{cargando ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}Consultar</button>
-        </form>
-      )}
+      {(filtrosPorFecha || estados.length > 0) && <form onSubmit={buscar} className="grid gap-3 border-b border-slate-200 bg-slate-50/50 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-[1fr_1fr_1fr_auto]">
+        {filtrosPorFecha && <>
+          <label className="text-[11px] font-semibold text-slate-600">Fecha inicial<span className="relative mt-1 block"><CalendarDays size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input type="date" value={filtros.fecha_inicio} onChange={(e) => setFiltros({ ...filtros, fecha_inicio: e.target.value })} className="block h-10 w-full rounded-xl border border-slate-300 bg-white pl-9 pr-3 text-sm font-normal text-slate-800" /></span></label>
+          <label className="text-[11px] font-semibold text-slate-600">Fecha final<span className="relative mt-1 block"><CalendarDays size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input type="date" value={filtros.fecha_fin} onChange={(e) => setFiltros({ ...filtros, fecha_fin: e.target.value })} className="block h-10 w-full rounded-xl border border-slate-300 bg-white pl-9 pr-3 text-sm font-normal text-slate-800" /></span></label>
+        </>}
+        {estados.length > 0 && <label className="text-[11px] font-semibold text-slate-600">Estado<select value={filtros.estado} onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })} className="mt-1 block h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm font-normal text-slate-800"><option value="">Todos los estados</option>{estados.map((estado) => <option key={estado} value={estado}>{estado}</option>)}</select></label>}
+        <button type="submit" disabled={cargando} className="inline-flex h-10 items-center justify-center gap-2 self-end rounded-xl bg-slate-800 px-4 text-xs font-semibold text-white transition hover:bg-slate-900 disabled:opacity-60">{cargando ? <Loader2 size={15} className="animate-spin" /> : <Search size={15} />}Consultar</button>
+      </form>}
 
-      {(busquedaPorCampo || exportar) && (
-        <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-end sm:justify-between">
-          {busquedaPorCampo && (
-            <div className="flex flex-1 flex-col gap-3 sm:flex-row">
-              <label className="text-xs font-medium text-slate-600 sm:w-48">
-                Buscar en
-                <select
-                  value={campoBusqueda}
-                  onChange={(e) => setCampoBusqueda(e.target.value)}
-                  className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800"
-                >
-                  <option value="">Todos los campos</option>
-                  {columnas.map((columna) => (
-                    <option key={columna.etiqueta} value={columna.etiqueta}>
-                      {columna.etiqueta}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="flex-1 text-xs font-medium text-slate-600">
-                Valor
-                <input
-                  type="search"
-                  value={busqueda}
-                  onChange={(e) => setBusqueda(e.target.value)}
-                  placeholder="Escribe para filtrar..."
-                  className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-normal text-slate-800"
-                />
-              </label>
-            </div>
-          )}
-          {exportar && (
-            <div className="flex flex-wrap gap-2 sm:justify-end">
-              <button
-                type="button"
-                onClick={exportarExcel}
-                disabled={exportando || filasFiltradas.length === 0}
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {exportando ? <Loader2 size={16} className="animate-spin" /> : <FileSpreadsheet size={16} />}
-                Excel
-              </button>
-              <button
-                type="button"
-                onClick={exportarPdf}
-                disabled={filasFiltradas.length === 0}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-800 px-3.5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <Printer size={16} /> PDF
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+      {(busquedaPorCampo || exportar) && <div className="grid gap-3 border-b border-slate-200 p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        {busquedaPorCampo && <div className="grid gap-3 sm:grid-cols-[minmax(150px,0.38fr)_minmax(200px,1fr)]">
+          <label className="text-[11px] font-semibold text-slate-600">Buscar en<select value={campoBusqueda} onChange={(e) => setCampoBusqueda(e.target.value)} className="mt-1 block h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm font-normal text-slate-800"><option value="">Todos los campos</option>{columnas.map((columna) => <option key={columna.etiqueta} value={columna.etiqueta}>{columna.etiqueta}</option>)}</select></label>
+          <label className="text-[11px] font-semibold text-slate-600">Término de búsqueda<span className="relative mt-1 block"><Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Escribe para filtrar registros..." className="block h-10 w-full rounded-xl border border-slate-300 bg-white pl-9 pr-3 text-sm font-normal text-slate-800" /></span></label>
+        </div>}
+        {exportar && <div className="flex gap-2 lg:justify-end">
+          <button type="button" onClick={exportarExcel} disabled={exportando || !filasFiltradas.length} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none">{exportando ? <Loader2 size={15} className="animate-spin" /> : <FileSpreadsheet size={15} />}Excel</button>
+          <button type="button" onClick={exportarPdf} disabled={!filasFiltradas.length} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-slate-800 px-3 text-xs font-semibold text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"><Printer size={15} />PDF</button>
+        </div>}
+      </div>}
 
-      {errorExportacion && <p role="alert" className="mx-5 mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorExportacion}</p>}
-
-      {error ? <p role="alert" className="m-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</p> : (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-max text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-500"><tr>{columnas.map((columna) => <th key={columna.etiqueta} className="whitespace-nowrap px-4 py-3 font-semibold">{columna.etiqueta}</th>)}</tr></thead>
-            <tbody className="divide-y divide-slate-100">
-              {cargando && filas.length === 0 ? <tr><td colSpan={columnas.length} className="px-4 py-8 text-center text-slate-500"><span className="inline-flex items-center gap-2"><Loader2 size={16} className="animate-spin" />Cargando reporte...</span></td></tr> : filasFiltradas.map((fila, indice) => <tr key={fila.id ?? fila.id_producto ?? fila.id_venta ?? fila.id_compra ?? fila.id_factura ?? indice} className="text-slate-700">{columnas.map((columna) => <td key={columna.etiqueta} className="max-w-sm whitespace-pre-wrap px-4 py-3">{columna.valor(fila)}</td>)}</tr>)}
-              {!cargando && filasFiltradas.length === 0 && <tr><td colSpan={columnas.length} className="px-4 py-8 text-center text-slate-500">{filas.length > 0 && busqueda ? "Ningún registro coincide con la búsqueda." : "No hay registros para mostrar."}</td></tr>}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {errorExportacion && <p role="alert" className="mx-4 mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 sm:mx-5">{errorExportacion}</p>}
+      {error ? <p role="alert" className="m-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 sm:m-5">{error}</p> : <div className="p-4 sm:p-5">
+        {cargando && filas.length === 0 ? <div className="flex min-h-28 items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 text-sm text-slate-500"><Loader2 size={17} className="animate-spin" />Cargando reporte...</div>
+          : filasFiltradas.length === 0 ? <div className="flex min-h-28 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 px-4 text-center"><span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500"><FileBarChart2 size={17} /></span><p className="text-sm font-medium text-slate-700">{filas.length > 0 && busqueda ? "Ningún registro coincide con la búsqueda." : "No hay registros para mostrar."}</p><p className="mt-1 text-xs text-slate-500">Prueba con otro término o rango de fechas.</p></div>
+          : <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">{filasFiltradas.map((fila, indice) => <article key={claveFila(fila, indice)} className="min-w-0 rounded-xl border border-slate-200 bg-white p-3.5 transition-colors hover:bg-slate-50/50 sm:p-4">
+            <div className="mb-3 flex items-center justify-between gap-2 border-b border-slate-100 pb-2.5"><span className="text-[10px] font-semibold uppercase tracking-[.12em] text-slate-400">Registro</span><span className="flex h-6 min-w-6 items-center justify-center rounded-lg bg-slate-100 px-2 text-[10px] font-semibold text-slate-600">{indice + 1}</span></div>
+            <dl className="grid min-w-0 grid-cols-2 gap-x-3 gap-y-3">{columnas.map((columna) => {
+              const valor = columna.valor(fila);
+              return <div key={columna.etiqueta} className="min-w-0"><dt className="mb-1 text-[9px] font-semibold uppercase tracking-[.08em] text-slate-400">{columna.etiqueta}</dt><dd className="break-words text-xs leading-relaxed text-slate-700">{valor == null || valor === "" ? "—" : typeof valor === "string" ? <span className="whitespace-pre-line">{valor}</span> : valor}</dd></div>;
+            })}</dl>
+          </article>)}</div>}
+        <div className="mt-3 flex items-center justify-between px-1 text-[11px] text-slate-500"><span>Resultados del reporte</span><span>{filasFiltradas.length} de {filas.length}</span></div>
+      </div>}
     </section>
   );
 }

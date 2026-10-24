@@ -1,24 +1,24 @@
 import {
-  LayoutDashboard,
-  Boxes,
-  Car,
-  UserRound,
-  Warehouse,
-  ReceiptText,
-  ClipboardList,
-  Users,
-  Database,
-  Settings,
+  Gauge,
+  Tags,
+  CarFront,
+  ContactRound,
+  PackageSearch,
+  ShoppingCart,
+  ChartNoAxesCombined,
+  UsersRound,
+  DatabaseBackup,
+  Settings2,
 } from "lucide-react";
 import { ID_ROL } from "../sesion/roles";
 
 export const menuPrincipal = [
-  { nombre: "Dashboard", ruta: "/dashboard", icono: LayoutDashboard },
+  { nombre: "Dashboard", ruta: "/dashboard", icono: Gauge },
 
   // Fase 2: catálogos independientes
   {
     nombre: "Catálogos Autónomo",
-    icono: Boxes,
+    icono: Tags,
     hijos: [
       { nombre: "Categorías", ruta: "/categorias" },
       { nombre: "Marcas", ruta: "/marcas" },
@@ -29,7 +29,7 @@ export const menuPrincipal = [
   // Fase 3: catálogo de vehículos y productos
   {
     nombre: "Vehículos y productos",
-    icono: Car,
+    icono: CarFront,
     hijos: [
       { nombre: "Modelos", ruta: "/modelos" },
       { nombre: "Productos", ruta: "/productos" },
@@ -40,7 +40,7 @@ export const menuPrincipal = [
   // Fase 4: clientes y proformas
   {
     nombre: "Clientes y proformas",
-    icono: UserRound,
+    icono: ContactRound,
     roles: [ID_ROL.ADMINISTRADOR, ID_ROL.OPERADOR, ID_ROL.CONSULTOR],
     hijos: [
       { nombre: "Clientes", ruta: "/clientes" },
@@ -55,7 +55,7 @@ export const menuPrincipal = [
   // Fase 5: operaciones de compra e inventario
   {
     nombre: "Compras e inventario",
-    icono: Warehouse,
+    icono: PackageSearch,
     hijos: [
       { nombre: "Compras", ruta: "/compras" },
       { nombre: "Correcciones", ruta: "/historial-compras" },
@@ -66,7 +66,7 @@ export const menuPrincipal = [
   // Fase 6: ventas y facturación
   {
     nombre: "Ventas y facturación",
-    icono: ReceiptText,
+    icono: ShoppingCart,
     hijos: [
       { nombre: "Ventas", ruta: "/ventas" },
       { nombre: "Correcciones", ruta: "/historial-ventas" },
@@ -77,7 +77,7 @@ export const menuPrincipal = [
   // Fase 7: consultas consolidadas (el Dashboard analítico es el de arriba)
   {
     nombre: "Reportes",
-    icono: ClipboardList,
+    icono: ChartNoAxesCombined,
     hijos: [
       { nombre: "Inventario", ruta: "/reportes/inventario" },
       { nombre: "Compras", ruta: "/reportes/compras" },
@@ -90,19 +90,19 @@ export const menuPrincipal = [
   // Fase 1: seguridad y configuración del sistema
   {
     nombre: "Sistema",
-    icono: Settings,
+    icono: Settings2,
     roles: [ID_ROL.ADMINISTRADOR],
     hijos: [
       {
         nombre: "Usuarios",
         ruta: "/usuarios",
-        icono: Users,
+        icono: UsersRound,
         roles: [ID_ROL.ADMINISTRADOR],
       },
       {
         nombre: "Respaldos",
         ruta: "/respaldo",
-        icono: Database,
+        icono: DatabaseBackup,
         roles: [ID_ROL.ADMINISTRADOR],
       },
     ],

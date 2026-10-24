@@ -1,0 +1,51 @@
+.dashboard-page { width: 100%; }
+.dashboard-metric { box-shadow: 0 2px 8px rgba(25, 39, 59, .035); }
+.dashboard-panel { box-shadow: 0 2px 8px rgba(25, 39, 59, .035); }
+.dashboard-chart-area {
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(25% - 1px), #edf0f4 calc(25% - 1px), #edf0f4 25%);
+  border-bottom: 1px solid #edf0f4;
+}
+
+html[data-tema="oscuro"] .dashboard-heading { border-color: #303030; }
+html[data-tema="oscuro"] .dashboard-metric,
+html[data-tema="oscuro"] .dashboard-panel { box-shadow: 0 3px 12px rgba(0, 0, 0, .3); }
+html[data-tema="oscuro"] .dashboard-metric-icon,
+html[data-tema="oscuro"] .dashboard-sales-icon,
+html[data-tema="oscuro"] .dashboard-trending-icon { background: #252525; }
+html[data-tema="oscuro"] .dashboard-page .bg-emerald-100,
+html[data-tema="oscuro"] .dashboard-page .bg-cyan-100,
+html[data-tema="oscuro"] .dashboard-page .bg-violet-100,
+html[data-tema="oscuro"] .dashboard-page .bg-rose-100,
+html[data-tema="oscuro"] .dashboard-page .bg-amber-100,
+html[data-tema="oscuro"] .dashboard-page .bg-fuchsia-100,
+html[data-tema="oscuro"] .dashboard-page .bg-violet-50,
+html[data-tema="oscuro"] .dashboard-page .bg-rose-50 { background: #252525; color: #dedede; }
+html[data-tema="oscuro"] .dashboard-chart-area { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(25% - 1px), #282828 calc(25% - 1px), #282828 25%); border-color: #303030; }
+html[data-tema="oscuro"] .dashboard-chart-bar-sales,
+html[data-tema="oscuro"] .dashboard-chart-key-sales { background-color: #e5e5e5; }
+html[data-tema="oscuro"] .dashboard-chart-bar-purchases,
+html[data-tema="oscuro"] .dashboard-chart-key-purchases { background-color: #737373; }
+html[data-tema="oscuro"] .dashboard-progress-track { background: #292929; }
+html[data-tema="oscuro"] .dashboard-progress-fill { background: #bdbdbd; }
+html[data-tema="oscuro"] .dashboard-panel-link { color: #d0d0d0; }
+html[data-tema="oscuro"] .dashboard-panel-link:hover { background: #202020; }
+html[data-tema="oscuro"] .dashboard-page .text-emerald-500,
+html[data-tema="oscuro"] .dashboard-page .text-amber-700,
+html[data-tema="oscuro"] .dashboard-page .text-rose-700 { color: #d0d0d0; }
+
+html[data-tema="oscuro"] .dashboard-page .dashboard-metric-icon.text-emerald-700 { color: #34d399; }
+html[data-tema="oscuro"] .dashboard-page .dashboard-metric-icon.text-cyan-700 { color: #22d3ee; }
+html[data-tema="oscuro"] .dashboard-page .dashboard-metric-icon.text-violet-700 { color: #a78bfa; }
+html[data-tema="oscuro"] .dashboard-page .dashboard-metric-icon.text-rose-700 { color: #fb7185; }
+html[data-tema="oscuro"] .dashboard-page .dashboard-metric-icon.text-amber-700 { color: #fbbf24; }
+html[data-tema="oscuro"] .dashboard-page .dashboard-sales-icon { color: #a78bfa; }
+html[data-tema="oscuro"] .dashboard-page .dashboard-trending-icon { color: #e879f9; }
+html[data-tema="oscuro"] .dashboard-chart-bar-sales,
+html[data-tema="oscuro"] .dashboard-chart-key-sales { background-color: #a78bfa; }
+html[data-tema="oscuro"] .dashboard-chart-bar-purchases,
+html[data-tema="oscuro"] .dashboard-chart-key-purchases { background-color: #22d3ee; }
+html[data-tema="oscuro"] .dashboard-progress-fill { background: linear-gradient(90deg, #e879f9, #8b7cf6); }
+
+@media (max-width: 640px) {
+  .dashboard-heading { align-items: flex-start; }
+}

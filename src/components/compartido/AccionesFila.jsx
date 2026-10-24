@@ -1,9 +1,9 @@
 import { Pencil, Trash2 } from "lucide-react";
 
 const claseIcono =
-  "rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900";
+  "rounded-lg p-2 text-slate-500 transition hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400";
 const claseIconoPeligro =
-  "rounded-xl p-2 text-slate-500 transition hover:bg-red-50 hover:text-red-600";
+  "rounded-lg p-2 text-slate-500 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300";
 
 // extras: acciones adicionales [{ titulo, textoCorto, icono, onClick }]
 export default function AccionesFila({
@@ -17,6 +17,13 @@ export default function AccionesFila({
   deshabilitado = false,
   motivoDeshabilitado,
 }) {
+  const colorEditar = deshabilitado
+    ? "text-slate-400"
+    : "text-slate-400 transition-colors group-hover:text-blue-600";
+  const colorEliminar = deshabilitado
+    ? "text-slate-400"
+    : "text-slate-400 transition-colors group-hover:text-red-600";
+
   if (variante === "tarjeta") {
     return (
       <div className="mt-3 flex flex-wrap gap-4">
@@ -25,9 +32,9 @@ export default function AccionesFila({
             onClick={onEditar}
             disabled={deshabilitado}
             title={motivoDeshabilitado}
-            className="flex items-center gap-2 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="group flex items-center gap-2 text-sm font-medium text-slate-700 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Pencil size={14} />
+            <Pencil size={14} className={colorEditar} />
             Editar
           </button>
         )}
@@ -37,9 +44,9 @@ export default function AccionesFila({
             onClick={onClick}
             disabled={deshabilitado}
             title={motivoDeshabilitado}
-            className="flex items-center gap-2 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="group flex items-center gap-2 text-sm font-medium text-slate-700 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Icono size={14} />
+            <Icono size={14} className={colorEditar} />
             {textoCorto ?? titulo}
           </button>
         ))}
@@ -48,9 +55,9 @@ export default function AccionesFila({
             onClick={onEliminar}
             disabled={deshabilitado}
             title={motivoDeshabilitado}
-            className="flex items-center gap-2 text-sm font-medium text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+            className="group flex items-center gap-2 text-sm font-medium text-slate-700 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Trash2 size={14} />
+            <Trash2 size={14} className={colorEliminar} />
             Eliminar
           </button>
         )}
@@ -66,9 +73,9 @@ export default function AccionesFila({
           disabled={deshabilitado}
           title={deshabilitado ? motivoDeshabilitado : "Editar"}
           aria-label={`Editar ${nombre}`}
-          className={`${claseIcono} disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500`}
+          className={`group ${claseIcono} disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-slate-500`}
         >
-          <Pencil size={16} />
+          <Pencil size={16} className={colorEditar} />
         </button>
       )}
       {extras.map(({ titulo, icono: Icono, onClick }) => (
@@ -78,9 +85,9 @@ export default function AccionesFila({
           disabled={deshabilitado}
           title={deshabilitado ? motivoDeshabilitado : titulo}
           aria-label={`${titulo}: ${nombre}`}
-          className={`${claseIcono} disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500`}
+          className={`group ${claseIcono} disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-slate-500`}
         >
-          <Icono size={16} />
+          <Icono size={16} className={colorEditar} />
         </button>
       ))}
       {puedeEliminar && (
@@ -89,9 +96,9 @@ export default function AccionesFila({
           disabled={deshabilitado}
           title={deshabilitado ? motivoDeshabilitado : "Eliminar"}
           aria-label={`Eliminar ${nombre}`}
-          className={`${claseIconoPeligro} disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500`}
+          className={`group ${claseIconoPeligro} disabled:cursor-not-allowed disabled:opacity-40`}
         >
-          <Trash2 size={16} />
+          <Trash2 size={16} className={colorEliminar} />
         </button>
       )}
     </div>

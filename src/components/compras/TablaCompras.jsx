@@ -1,131 +1,69 @@
-import { Eye, Check, PencilLine } from "lucide-react";
+import { CalendarDays, Check, Eye, PencilLine, ReceiptText, Truck } from "lucide-react";
 import InsigniaEstadoCompra from "./InsigniaEstadoCompra";
 import AccionesFila from "../compartido/AccionesFila";
 import { formatearFechaHora } from "../../utils/compartido/fecha";
 import { formatearPrecio } from "../../utils/productos/formato";
 
-export default function TablaCompras({
-  compras,
-  puedeOperar,
-  onVerDetalle,
-  onConfirmar,
-  onCorregir,
-}) {
-  const extrasDe = (c) => {
-    const extras = [
-      {
-        titulo: "Ver detalle",
-        textoCorto: "Detalle",
-        icono: Eye,
-        onClick: () => onVerDetalle(c),
-      },
-    ];
-
-    if (puedeOperar && c.estado === "Registrada") {
-      extras.push({
-        titulo: "Confirmar compra",
-        textoCorto: "Confirmar",
-        icono: Check,
-        onClick: () => onConfirmar(c),
-      });
-    }
-
-    if (puedeOperar && c.estado === "Confirmada") {
-      extras.push({
-        titulo: "Corregir compra",
-        textoCorto: "Corregir",
-        icono: PencilLine,
-        onClick: () => onCorregir(c),
-      });
-    }
-
+export default function TablaCompras({ compras, puedeOperar, onVerDetalle, onConfirmar, onCorregir }) {
+  const extrasDe = (compra) => {
+    const extras = [{ titulo: "Ver detalle", textoCorto: "Detalle", icono: Eye, onClick: () => onVerDetalle(compra) }];
+    if (puedeOperar && compra.estado === "Registrada") extras.push({ titulo: "Confirmar compra", textoCorto: "Confirmar", icono: Check, onClick: () => onConfirmar(compra) });
+    if (puedeOperar && compra.estado === "Confirmada") extras.push({ titulo: "Corregir compra", textoCorto: "Corregir", icono: PencilLine, onClick: () => onCorregir(compra) });
     return extras;
   };
-
-  const cantidadProductos = (c) => c.detalles?.length ?? 0;
+  const cantidadProductos = (compra) => compra.detalles?.length ?? 0;
 
   return (
     <>
-      {/* Tablet y escritorio */}
-      <div className="hidden overflow-x-auto rounded-xl border border-slate-200 bg-white md:block">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+      <div className="hidden overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm xl:block">
+        <table className="w-full min-w-[900px] text-left text-sm">
+          <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-[.12em] text-slate-500">
             <tr>
-              <th className="px-4 py-3 font-medium">Compra</th>
-              <th className="px-4 py-3 font-medium">Proveedor</th>
-              <th className="px-4 py-3 text-right font-medium">Total</th>
-              <th className="px-4 py-3 font-medium">Estado</th>
-              <th className="px-4 py-3 text-right font-medium">Acciones</th>
+              <th className="px-5 py-3.5 font-semibold">Compra</th>
+              <th className="px-5 py-3.5 font-semibold">Proveedor</th>
+              <th className="px-5 py-3.5 font-semibold">Productos</th>
+              <th className="px-5 py-3.5 text-right font-semibold">Total</th>
+              <th className="px-5 py-3.5 font-semibold">Estado</th>
+              <th className="px-5 py-3.5 text-right font-semibold">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {compras.map((c) => (
-              <tr key={c.id_compra} className="hover:bg-slate-50">
-                <td className="px-4 py-3">
-                  <p className="font-medium text-slate-900">{c.numero_compra}</p>
-                  <p className="text-xs text-slate-500">
-                    {formatearFechaHora(c.fecha_compra)}
-                  </p>
+            {compras.map((compra) => (
+              <tr key={compra.id_compra} className="table-row-hover transition-colors">
+                <td className="px-5 py-3.5">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600"><ReceiptText size={17} /></span>
+                    <span><span className="block text-sm font-semibold text-slate-900">{compra.numero_compra}</span><span className="mt-0.5 flex items-center gap-1 text-[11px] text-slate-500"><CalendarDays size={12} />{formatearFechaHora(compra.fecha_compra)}</span></span>
+                  </div>
                 </td>
-                <td className="px-4 py-3">
-                  <p className="text-slate-700">
-                    {c.proveedor?.nombre_proveedor ?? "—"}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {cantidadProductos(c)} producto(s)
-                  </p>
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <p className="font-medium text-slate-900">
-                    {formatearPrecio(c.total)}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    IVA {formatearPrecio(c.impuesto)}
-                  </p>
-                </td>
-                <td className="px-4 py-3">
-                  <InsigniaEstadoCompra estado={c.estado} />
-                </td>
-                <td className="px-4 py-3">
-                  <AccionesFila nombre={c.numero_compra} extras={extrasDe(c)} />
-                </td>
+                <td className="px-5 py-3.5"><span className="flex items-center gap-2 text-sm text-slate-700"><Truck size={15} className="shrink-0 text-slate-400" />{compra.proveedor?.nombre_proveedor ?? "—"}</span></td>
+                <td className="px-5 py-3.5 text-sm text-slate-600">{cantidadProductos(compra)} producto(s)</td>
+                <td className="px-5 py-3.5 text-right"><span className="block font-semibold text-slate-900">{formatearPrecio(compra.total)}</span><span className="text-[11px] text-slate-500">IVA {formatearPrecio(compra.impuesto)}</span></td>
+                <td className="px-5 py-3.5"><InsigniaEstadoCompra estado={compra.estado} /></td>
+                <td className="px-5 py-3.5"><AccionesFila nombre={compra.numero_compra} extras={extrasDe(compra)} /></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Móvil */}
-      <div className="space-y-3 md:hidden">
-        {compras.map((c) => (
-          <div
-            key={c.id_compra}
-            className="rounded-xl border border-slate-200 bg-white p-4"
-          >
+      <div className="space-y-3 xl:hidden">
+        {compras.map((compra) => (
+          <article key={compra.id_compra} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="font-medium text-slate-900">{c.numero_compra}</p>
-                <p className="text-xs text-slate-500">
-                  {formatearFechaHora(c.fecha_compra)}
-                </p>
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600"><ReceiptText size={17} /></span>
+                <span className="min-w-0"><span className="block truncate text-sm font-semibold text-slate-900">{compra.numero_compra}</span><span className="mt-0.5 flex items-center gap-1 text-[11px] text-slate-500"><CalendarDays size={12} />{formatearFechaHora(compra.fecha_compra)}</span></span>
               </div>
-              <InsigniaEstadoCompra estado={c.estado} />
+              <InsigniaEstadoCompra estado={compra.estado} />
             </div>
-
-            <p className="mt-3 text-sm text-slate-700">
-              {c.proveedor?.nombre_proveedor ?? "—"}
-            </p>
-            <p className="mt-1 text-sm">
-              <span className="font-medium text-slate-900">
-                {formatearPrecio(c.total)}
-              </span>{" "}
-              <span className="text-xs text-slate-500">
-                · {cantidadProductos(c)} producto(s)
-              </span>
-            </p>
-
-            <AccionesFila variante="tarjeta" extras={extrasDe(c)} />
-          </div>
+            <div className="mt-3 grid grid-cols-2 gap-3 border-t border-slate-100 pt-3">
+              <div className="min-w-0"><p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">Proveedor</p><p className="mt-1 truncate text-sm text-slate-700">{compra.proveedor?.nombre_proveedor ?? "—"}</p></div>
+              <div><p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">Productos</p><p className="mt-1 text-sm text-slate-700">{cantidadProductos(compra)} producto(s)</p></div>
+              <div className="col-span-2 flex items-end justify-between"><span className="text-[10px] font-medium uppercase tracking-wide text-slate-400">Total</span><span className="text-base font-semibold text-slate-900">{formatearPrecio(compra.total)}</span></div>
+            </div>
+            <div className="mt-3 border-t border-slate-100 pt-1"><AccionesFila variante="tarjeta" extras={extrasDe(compra)} /></div>
+          </article>
         ))}
       </div>
     </>

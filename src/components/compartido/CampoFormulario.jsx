@@ -28,7 +28,7 @@ export default function CampoFormulario({
           className={`w-full rounded-xl border bg-white py-2.5 ${sinIcono ? "pl-3" : "pl-10"} pr-10 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 transition focus:outline-none focus:ring-2 ${
             error
               ? "border-red-400 focus:border-red-500 focus:ring-red-100"
-              : "border-slate-200 focus:border-slate-500 focus:ring-slate-200"
+              : "border-slate-300 hover:border-slate-400 focus:border-slate-500 focus:ring-slate-300"
           }`}
           {...props}
         />

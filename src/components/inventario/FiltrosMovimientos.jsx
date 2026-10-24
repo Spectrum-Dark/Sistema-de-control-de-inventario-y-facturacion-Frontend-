@@ -1,33 +1,16 @@
-import BarraFiltros from "../compartido/BarraFiltros";
+import { Filter, RotateCcw } from "lucide-react";
+import CampoBusqueda from "../compartido/CampoBusqueda";
 import SelectFiltro from "../compartido/SelectFiltro";
 
-export default function FiltrosMovimientos({
-  filtros,
-  tipos,
-  onCambiar,
-  onLimpiar,
-  hayFiltros,
-}) {
+export default function FiltrosMovimientos({ filtros, tipos, onCambiar, onLimpiar, hayFiltros }) {
   return (
-    <BarraFiltros
-      busqueda={filtros.busqueda}
-      onBusqueda={(valor) => onCambiar("busqueda", valor)}
-      placeholder="Buscar por producto, motivo, usuario o compra"
-      hayFiltros={hayFiltros}
-      onLimpiar={onLimpiar}
-    >
-      <SelectFiltro
-        etiqueta="Filtrar por tipo de movimiento"
-        valor={filtros.tipo}
-        onChange={(valor) => onCambiar("tipo", valor)}
-      >
-        <option value="">Todos los tipos</option>
-        {tipos.map((tipo) => (
-          <option key={tipo} value={tipo}>
-            {tipo}
-          </option>
-        ))}
-      </SelectFiltro>
-    </BarraFiltros>
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5" aria-label="Búsqueda y filtros de movimientos">
+      <div className="mb-4 flex items-center gap-2.5"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600"><Filter size={16} /></span><div className="min-w-0"><h2 className="text-xs font-semibold text-slate-800">Buscar y filtrar movimientos</h2><p className="mt-0.5 text-[11px] text-slate-500">Encuentra un movimiento por producto, motivo, usuario o compra.</p></div></div>
+      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_230px_auto] sm:items-center">
+        <CampoBusqueda valor={filtros.busqueda} onChange={(valor) => onCambiar("busqueda", valor)} placeholder="Producto, motivo, usuario o compra" />
+        <SelectFiltro etiqueta="Filtrar por tipo" valor={filtros.tipo} onChange={(valor) => onCambiar("tipo", valor)} className="!w-full"><option value="">Todos los tipos</option>{tipos.map((tipo) => <option key={tipo} value={tipo}>{tipo}</option>)}</SelectFiltro>
+        {hayFiltros && <button type="button" onClick={onLimpiar} className="flex min-h-10 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"><RotateCcw size={14} /> Limpiar</button>}
+      </div>
+    </section>
   );
 }

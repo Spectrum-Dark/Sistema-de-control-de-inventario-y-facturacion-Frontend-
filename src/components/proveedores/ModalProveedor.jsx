@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Truck, Hash, Phone, Mail, MapPin, Loader2 } from "lucide-react";
+import { Truck, Hash, Phone, Mail, MapPin, Loader2, Save, Plus } from "lucide-react";
 import { sileo } from "sileo";
 import Modal from "../compartido/Modal";
 import CampoFormulario from "../compartido/CampoFormulario";
@@ -11,7 +11,7 @@ import {
 } from "../../services/proveedores/proveedoresService";
 
 export default function ModalProveedor({ proveedor, onCerrar, onGuardado }) {
-  const esEdicion = Boolean(proveedor);
+  const esEdicion = Boolean(proveedor?.id_proveedor);
 
   const [form, setForm] = useState({
     nombre_proveedor: proveedor?.nombre_proveedor ?? "",
@@ -19,7 +19,7 @@ export default function ModalProveedor({ proveedor, onCerrar, onGuardado }) {
     telefono: proveedor?.telefono ?? "",
     correo: proveedor?.correo ?? "",
     direccion: proveedor?.direccion ?? "",
-    estado: proveedor?.estado ?? "Activo",
+    estado: esEdicion ? proveedor.estado ?? "Activo" : undefined,
   });
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
@@ -31,6 +31,11 @@ export default function ModalProveedor({ proveedor, onCerrar, onGuardado }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.nombre_proveedor.trim()) {
+      setError("El nombre del proveedor es obligatorio.");
+      return;
+    }
 
     // Los campos opcionales vacíos se envían como null
     const valores = {
@@ -84,26 +89,34 @@ export default function ModalProveedor({ proveedor, onCerrar, onGuardado }) {
       titulo={esEdicion ? "Editar proveedor" : "Nuevo proveedor"}
       onCerrar={onCerrar}
       bloqueado={cargando}
+      ancho="max-w-2xl"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <CampoFormulario
-          id="nombre_proveedor"
-          label="Nombre del proveedor"
-          icono={Truck}
-          type="text"
-          placeholder="Ej: Repuestos del Norte"
-          maxLength={150}
-          value={form.nombre_proveedor}
-          onChange={handleChange}
-          required
-        />
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><Truck size={19} strokeWidth={1.8} /></span>
+          <div><p className="text-sm font-semibold text-slate-900">{esEdicion ? "Datos del proveedor" : "Nuevo proveedor"}</p><p className="mt-1 text-xs leading-relaxed text-slate-500">{esEdicion ? "Mantén actualizados los datos de contacto y disponibilidad." : "Registra la empresa y sus datos para facilitar el seguimiento de compras."}</p>{esEdicion && <p className="mt-2 text-[10px] font-medium text-slate-400">Registro #{proveedor.id_proveedor}</p>}</div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <CampoFormulario
+            id="nombre_proveedor"
+            label="Nombre del proveedor"
+            icono={Truck}
+            type="text"
+            placeholder="Ej.: Repuestos del Norte"
+            maxLength={150}
+            value={form.nombre_proveedor}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
         <CampoFormulario
           id="identificacion"
           label="Identificación (opcional)"
           icono={Hash}
           type="text"
-          placeholder="RUC, cédula u otro"
+          placeholder="Ej.: RUC o cédula"
           maxLength={50}
           value={form.identificacion}
           onChange={handleChange}
@@ -114,32 +127,40 @@ export default function ModalProveedor({ proveedor, onCerrar, onGuardado }) {
           label="Teléfono (opcional)"
           icono={Phone}
           type="tel"
+          placeholder="Ej.: 8888-1234"
           maxLength={30}
           value={form.telefono}
           onChange={handleChange}
         />
 
-        <CampoFormulario
-          id="correo"
-          label="Correo electrónico (opcional)"
-          icono={Mail}
-          type="email"
-          maxLength={150}
-          value={form.correo}
-          onChange={handleChange}
-        />
+        <div className="sm:col-span-2">
+          <CampoFormulario
+            id="correo"
+            label="Correo electrónico (opcional)"
+            icono={Mail}
+            type="email"
+            placeholder="contacto@empresa.com"
+            maxLength={150}
+            value={form.correo}
+            onChange={handleChange}
+          />
+        </div>
 
-        <CampoFormulario
-          id="direccion"
-          label="Dirección (opcional)"
-          icono={MapPin}
-          type="text"
-          maxLength={255}
-          value={form.direccion}
-          onChange={handleChange}
-        />
+        <div className="sm:col-span-2">
+          <CampoFormulario
+            id="direccion"
+            label="Dirección (opcional)"
+            icono={MapPin}
+            type="text"
+            placeholder="Ciudad, zona o dirección física"
+            maxLength={255}
+            value={form.direccion}
+            onChange={handleChange}
+          />
+        </div>
 
         {esEdicion && (
+          <div className="sm:col-span-2">
           <CampoSelect
             id="estado"
             label="Estado"
@@ -149,20 +170,24 @@ export default function ModalProveedor({ proveedor, onCerrar, onGuardado }) {
             <option value="Activo">Activo</option>
             <option value="Inactivo">Inactivo</option>
           </CampoSelect>
+          </div>
         )}
+        </div>
+
+        {!esEdicion && <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3.5"><p className="mb-2 text-[10px] font-semibold uppercase tracking-[.12em] text-slate-500">Vista previa</p><div className="flex items-center gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600"><Truck size={16} /></span><div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-800">{form.nombre_proveedor.trim() || "Nombre del proveedor"}</p><p className="mt-0.5 truncate text-xs text-slate-500">{form.identificacion.trim() || form.telefono.trim() || form.correo.trim() || "Sin datos de contacto todavía"}</p></div></div></div>}
 
         {error && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-700">
             {error}
           </p>
         )}
 
-        <div className="flex justify-end gap-3 pt-2">
+        <div className="flex flex-col-reverse gap-2 border-t border-slate-200 pt-4 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={onCerrar}
             disabled={cargando}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+            className="min-h-10 rounded-xl border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
           >
             Cancelar
           </button>
@@ -170,9 +195,10 @@ export default function ModalProveedor({ proveedor, onCerrar, onGuardado }) {
           <button
             type="submit"
             disabled={cargando}
-            className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex min-h-10 items-center justify-center gap-2 rounded-xl bg-slate-800 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {cargando && <Loader2 size={16} className="animate-spin" />}
+            {!cargando && (esEdicion ? <Save size={15} /> : <Plus size={15} />)}
             {cargando
               ? "Guardando..."
               : esEdicion

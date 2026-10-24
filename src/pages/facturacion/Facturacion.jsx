@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { FilePlus2 } from "lucide-react";
+import { BadgeCheck, FileText, ReceiptText } from "lucide-react";
 import { sileo } from "sileo";
 import PaginaCrud from "../../components/compartido/PaginaCrud";
 import FiltrosFacturas from "../../components/facturacion/FiltrosFacturas";
@@ -13,6 +13,15 @@ import { usePermisos } from "../../hooks/sesion/usePermisos";
 import { usePaginacion } from "../../hooks/compartido/usePaginacion";
 import { anularFactura, emitirFactura } from "../../services/facturacion/facturasService";
 import { FILTROS_INICIALES, filtrarFacturas } from "../../utils/facturacion/formato";
+
+function ResumenFacturas({ facturas }) {
+  const metricas = [
+    { etiqueta: "Facturas registradas", valor: facturas.length, Icono: ReceiptText },
+    { etiqueta: "Emitidas", valor: facturas.filter((f) => f.estado === "Emitida").length, Icono: BadgeCheck },
+    { etiqueta: "Anuladas", valor: facturas.filter((f) => f.estado === "Anulada").length, Icono: FileText },
+  ];
+  return <section className="grid gap-3 sm:grid-cols-3" aria-label="Resumen de facturación">{metricas.map(({ etiqueta, valor, Icono }) => <article key={etiqueta} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-sm"><span className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600"><Icono size={18} /></span><span><span className="block text-[11px] font-medium text-slate-500">{etiqueta}</span><span className="mt-0.5 block text-xl font-semibold tracking-tight text-slate-900">{valor}</span></span></article>)}</section>;
+}
 
 export default function Facturacion() {
   const { facturas, cargando: cargandoFacturas, error: errorFacturas, recargar: recargarFacturas } = useFacturas();
@@ -51,22 +60,13 @@ export default function Facturacion() {
   };
 
   const error = errorFacturas || errorVentas;
-  const filtrosVista = (
-    <div className="space-y-3">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-slate-500">Solo se pueden facturar ventas confirmadas que aún no tengan una factura.</p>
-        <div className="flex flex-wrap items-center gap-2">
-          {puedeCrear && <button type="button" onClick={() => setModalEmitir(true)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-800 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-900"><FilePlus2 size={16} />Emitir factura</button>}
-        </div>
-      </div>
-      <FiltrosFacturas filtros={filtros} onCambiar={cambiarFiltro} onLimpiar={limpiarFiltros} hayFiltros={hayFiltros} />
-    </div>
-  );
+  const filtrosVista = <FiltrosFacturas filtros={filtros} onCambiar={cambiarFiltro} onLimpiar={limpiarFiltros} hayFiltros={hayFiltros} puedeCrear={puedeCrear} onEmitir={() => setModalEmitir(true)} />;
 
   return (
     <PaginaCrud
-      titulo="Facturación"
+      titulo={<span className="inline-flex items-center gap-2.5"><span className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><ReceiptText size={18} /></span>Facturación</span>}
       subtitulo="Consulta, emisión e impresión de facturas asociadas a ventas confirmadas."
+      resumen={!cargandoFacturas && !error ? <ResumenFacturas facturas={facturas} /> : null}
       textoCarga="Cargando facturas..."
       mensajeVacio="Aún no hay facturas emitidas."
       mensajeSinResultados="Ninguna factura coincide con la búsqueda o el filtro."

@@ -41,7 +41,7 @@ export default function FormularioLogin() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="auth-form">
       <CampoFormulario
         id="identificador"
         label="Nombre de usuario"
@@ -80,15 +80,15 @@ export default function FormularioLogin() {
       <button
         type="submit"
         disabled={cargando}
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 py-2.5 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+        className="auth-submit w-full disabled:cursor-not-allowed disabled:opacity-60"
       >
         {cargando && <Loader2 size={18} className="animate-spin" />}
         {cargando ? "Ingresando..." : "Iniciar sesión"}
       </button>
 
-      <p className="text-center text-sm text-slate-600">
+      <p className="auth-form-footer">
         ¿No tienes una cuenta?{" "}
-        <Link to="/registro" className="font-medium text-slate-900 underline">
+        <Link to="/registro">
           Regístrate
         </Link>
       </p>

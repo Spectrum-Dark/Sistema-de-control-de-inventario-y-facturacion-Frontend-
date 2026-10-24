@@ -1,4 +1,5 @@
 import PanelReporte from "../../components/reportes/PanelReporte";
+import { Boxes, ArrowLeftRight, TriangleAlert } from "lucide-react";
 import {
   obtenerInventarioActual,
   obtenerInventarioStockBajo,
@@ -19,14 +20,15 @@ const columnasInventario = [
 export default function ReporteInventario() {
   return (
     <div className="space-y-5">
-      <header className="border-b border-slate-200 pb-4">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Reportes de inventario</h1>
-        <p className="mt-1 text-sm text-slate-500">Consulta existencias, alertas de stock y movimientos registrados.</p>
+      <header className="flex items-center gap-3 border-b border-slate-200 pb-4">
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700"><Boxes size={20} /></span><div><h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">Reportes de inventario</h1>
+        <p className="mt-1 text-xs text-slate-500 sm:text-sm">Consulta existencias, alertas de stock y movimientos registrados.</p></div>
       </header>
-      <PanelReporte titulo="Inventario actual" columnas={columnasInventario} consultar={obtenerInventarioActual} busquedaPorCampo exportar />
-      <PanelReporte titulo="Productos con stock bajo" descripcion="Productos cuya existencia está en el nivel mínimo o por debajo." columnas={columnasInventario} consultar={obtenerInventarioStockBajo} busquedaPorCampo exportar />
+      <PanelReporte titulo="Inventario actual" Icono={Boxes} columnas={columnasInventario} consultar={obtenerInventarioActual} busquedaPorCampo exportar />
+      <PanelReporte titulo="Productos con stock bajo" Icono={TriangleAlert} descripcion="Productos cuya existencia está en el nivel mínimo o por debajo." columnas={columnasInventario} consultar={obtenerInventarioStockBajo} busquedaPorCampo exportar />
       <PanelReporte
         titulo="Movimientos de inventario"
+        Icono={ArrowLeftRight}
         columnas={[
           { etiqueta: "Fecha", valor: (m) => formatearFechaHora(m.fecha_movimiento, { hora12: true }) },
           { etiqueta: "Tipo", valor: (m) => m.tipo_movimiento },

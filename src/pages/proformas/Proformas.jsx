@@ -96,9 +96,9 @@ export default function Proformas() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      <header className="border-b border-slate-200 pb-4">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+    <div className="mx-auto max-w-6xl space-y-4">
+      <header className="border-b border-slate-200 pb-3">
+        <h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
           Proformas
         </h1>
         <p className="mt-1 text-sm text-slate-500">
@@ -124,9 +124,9 @@ export default function Proformas() {
       ) : (
         <form
           onSubmit={prepararProforma}
-          className="space-y-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6"
+          className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
         >
-          <div className="max-w-xl">
+          <div className="max-w-2xl">
             <CampoSelect
               id="cliente_proforma"
               label="Cliente"
@@ -158,15 +158,15 @@ export default function Proformas() {
             </label>
             <textarea
               id="observaciones_proforma"
-              rows={3}
+              rows={2}
               value={observaciones}
               onChange={cambiarObservaciones}
               placeholder="Notas para incluir en la proforma"
-              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              className="w-full resize-y rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
             />
           </div>
 
-          <div className="ml-auto w-full space-y-1 rounded-xl bg-slate-50 p-4 text-sm sm:w-72">
+          <div className="ml-auto w-full space-y-1 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm sm:w-72">
             <p className="flex justify-between text-slate-600">
               <span>Subtotal</span>
               <span>{formatearPrecio(totales.subtotal)}</span>
@@ -187,7 +187,7 @@ export default function Proformas() {
             </p>
           )}
 
-          <div className="flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4">
+          <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-3">
             {proforma && (
               <button
                 type="button"

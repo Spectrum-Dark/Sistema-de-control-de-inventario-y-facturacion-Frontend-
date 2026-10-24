@@ -80,18 +80,30 @@ export default function ModalEditarUsuario({
   };
 
   return (
-    <Modal titulo="Editar usuario" onCerrar={onCerrar} bloqueado={cargando}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <CampoFormulario
-          id="nombre_completo"
-          label="Nombre completo"
-          icono={User}
-          type="text"
-          maxLength={200}
-          value={form.nombre_completo}
-          onChange={handleChange}
-          required
-        />
+    <Modal titulo="Editar usuario" onCerrar={onCerrar} bloqueado={cargando} ancho="max-w-2xl">
+      <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
+        <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 sm:col-span-2">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-sm font-semibold text-slate-700 shadow-sm">
+            {usuario.nombre_completo.trim().charAt(0).toUpperCase()}
+          </span>
+          <span className="min-w-0">
+            <span className="block text-xs font-semibold text-slate-800">Cuenta seleccionada</span>
+            <span className="mt-0.5 block truncate text-xs text-slate-500">@{usuario.nombre_usuario} · {ROLES[usuario.id_rol]}</span>
+          </span>
+        </div>
+
+        <div className="sm:col-span-2">
+          <CampoFormulario
+            id="nombre_completo"
+            label="Nombre completo"
+            icono={User}
+            type="text"
+            maxLength={200}
+            value={form.nombre_completo}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
         <CampoFormulario
           id="nombre_usuario"
@@ -117,14 +129,12 @@ export default function ModalEditarUsuario({
 
         <CampoSelect
           id="id_rol"
-          label="Rol"
+          label="Rol de acceso"
           value={form.id_rol}
           onChange={handleChange}
         >
           {rolesAsignables(usuario, usuarioActual).map((id) => (
-            <option key={id} value={id}>
-              {ROLES[id]}
-            </option>
+            <option key={id} value={id}>{ROLES[id]}</option>
           ))}
         </CampoSelect>
 
@@ -132,31 +142,25 @@ export default function ModalEditarUsuario({
           <div>
             <CampoSelect
               id="estado"
-              label="Estado"
+              label="Estado de la cuenta"
               value={form.estado}
               onChange={handleChange}
             >
               <option value="Activo">Activo</option>
               <option value="Inactivo">Inactivo</option>
             </CampoSelect>
-            <p className="mt-1 text-xs text-slate-500">
-              Un usuario inactivo no puede iniciar sesión.
-            </p>
+            <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">Una cuenta inactiva no puede iniciar sesión.</p>
           </div>
         )}
 
-        {error && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-            {error}
-          </p>
-        )}
+        {error && <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-700 sm:col-span-2">{error}</p>}
 
-        <div className="flex justify-end gap-3 pt-2">
+        <div className="flex justify-end gap-2 border-t border-slate-100 pt-4 sm:col-span-2">
           <button
             type="button"
             onClick={onCerrar}
             disabled={cargando}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+            className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
           >
             Cancelar
           </button>
@@ -164,7 +168,7 @@ export default function ModalEditarUsuario({
           <button
             type="submit"
             disabled={cargando}
-            className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {cargando && <Loader2 size={16} className="animate-spin" />}
             {cargando ? "Guardando..." : "Guardar cambios"}

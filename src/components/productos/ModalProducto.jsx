@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Package, Barcode, Loader2 } from "lucide-react";
+import { Package, Barcode, Loader2, Save, Plus, Boxes, CircleDollarSign } from "lucide-react";
 import { sileo } from "sileo";
 import Modal from "../compartido/Modal";
 import CampoFormulario from "../compartido/CampoFormulario";
@@ -10,6 +10,7 @@ import {
   obtenerCambios,
 } from "../../utils/compartido/formulario";
 import { generarCodigoAutomatico } from "../../utils/compartido/codigoAutomatico";
+import { formatearPrecio } from "../../utils/productos/formato";
 import {
   crearProducto,
   actualizarProducto,
@@ -23,7 +24,7 @@ export default function ModalProducto({
   onCerrar,
   onGuardado,
 }) {
-  const esEdicion = Boolean(producto);
+  const esEdicion = Boolean(producto?.id_producto);
   const proveedorActual = producto?.proveedores?.[0]?.id_proveedor;
 
   const [form, setForm] = useState({
@@ -36,7 +37,7 @@ export default function ModalProducto({
     precio_venta: producto?.precio_venta ?? "",
     existencia_minima: producto?.existencia_minima ?? 0,
     existencia_maxima: producto?.existencia_maxima ?? "",
-    estado: producto?.estado ?? "Activo",
+    estado: esEdicion ? producto.estado ?? "Activo" : undefined,
   });
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
@@ -60,6 +61,11 @@ export default function ModalProducto({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.nombre_producto.trim()) {
+      setError("El nombre del producto es obligatorio.");
+      return;
+    }
 
     const valores = {
       id_categoria: Number(form.id_categoria),
@@ -136,144 +142,54 @@ export default function ModalProducto({
       titulo={esEdicion ? "Editar producto" : "Nuevo producto"}
       onCerrar={onCerrar}
       bloqueado={cargando}
+      ancho="max-w-3xl"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <CampoSelect
-          id="id_categoria"
-          label="Categoría"
-          value={form.id_categoria}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Selecciona una categoría</option>
-          {opcionesCategoria.map((c) => (
-            <option key={c.id_categoria} value={c.id_categoria}>
-              {c.nombre_categoria}
-            </option>
-          ))}
-        </CampoSelect>
-
-        <CampoSelect
-          id="id_proveedor"
-          label="Proveedor"
-          value={form.id_proveedor}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Selecciona un proveedor</option>
-          {opcionesProveedor.map((p) => (
-            <option key={p.id_proveedor} value={p.id_proveedor}>
-              {p.nombre_proveedor}
-            </option>
-          ))}
-        </CampoSelect>
-
-        <CampoFormulario
-          id="codigo_producto"
-          label="Código"
-          icono={Barcode}
-          type="text"
-          placeholder="PROD-001"
-          maxLength={50}
-          value={codigoProducto}
-          onChange={handleChange}
-          readOnly={!esEdicion}
-          required
-        />
-
-        <CampoFormulario
-          id="nombre_producto"
-          label="Nombre del producto"
-          icono={Package}
-          type="text"
-          placeholder="Ej: Pastillas de freno delanteras"
-          maxLength={150}
-          value={form.nombre_producto}
-          onChange={handleChange}
-          required
-        />
-
-        <CampoTextarea
-          id="descripcion"
-          label="Descripción (opcional)"
-          placeholder="Detalles del producto"
-          value={form.descripcion}
-          onChange={handleChange}
-        />
-
-        <div className="grid grid-cols-2 gap-4">
-          <CampoFormulario
-            id="precio_compra"
-            label="Precio de compra (C$)"
-            type="number"
-            min={0}
-            step="0.01"
-            value={form.precio_compra}
-            onChange={handleChange}
-            required
-          />
-          <CampoFormulario
-            id="precio_venta"
-            label="Precio de venta (C$)"
-            type="number"
-            min={0}
-            step="0.01"
-            value={form.precio_venta}
-            onChange={handleChange}
-            required
-          />
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><Package size={19} strokeWidth={1.8} /></span>
+          <div><p className="text-sm font-semibold text-slate-900">{esEdicion ? "Datos del producto" : "Nuevo producto de inventario"}</p><p className="mt-1 text-xs leading-relaxed text-slate-500">{esEdicion ? "Actualiza la información comercial y los límites de existencia." : "Completa los datos del repuesto para agregarlo al catálogo."}</p>{esEdicion && <p className="mt-2 text-[10px] font-medium text-slate-400">Registro #{producto.id_producto}</p>}</div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <CampoFormulario
-            id="existencia_minima"
-            label="Existencia mínima"
-            type="number"
-            min={0}
-            step="1"
-            value={form.existencia_minima}
-            onChange={handleChange}
-          />
-          <CampoFormulario
-            id="existencia_maxima"
-            label="Existencia máxima"
-            type="number"
-            min={0}
-            step="1"
-            placeholder="Opcional"
-            value={form.existencia_maxima}
-            onChange={handleChange}
-          />
-        </div>
-
-        {esEdicion && (
-          <CampoSelect
-            id="estado"
-            label="Estado"
-            value={form.estado}
-            onChange={handleChange}
-          >
-            <option value="Activo">Activo</option>
-            <option value="Inactivo">Inactivo</option>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <CampoSelect id="id_categoria" label="Categoría" value={form.id_categoria} onChange={handleChange} required>
+            <option value="">Selecciona una categoría</option>
+            {opcionesCategoria.map((categoria) => <option key={categoria.id_categoria} value={categoria.id_categoria}>{categoria.nombre_categoria}</option>)}
           </CampoSelect>
-        )}
+          <CampoSelect id="id_proveedor" label="Proveedor" value={form.id_proveedor} onChange={handleChange} required>
+            <option value="">Selecciona un proveedor</option>
+            {opcionesProveedor.map((proveedor) => <option key={proveedor.id_proveedor} value={proveedor.id_proveedor}>{proveedor.nombre_proveedor}</option>)}
+          </CampoSelect>
 
-        <p className="text-xs text-slate-500">
-          La existencia no se edita aquí: la controla el inventario.
-        </p>
+          <CampoFormulario id="codigo_producto" label="Código del producto" icono={Barcode} type="text" placeholder="PROD-001" maxLength={50} value={codigoProducto} onChange={handleChange} readOnly={!esEdicion} required />
+          <CampoFormulario id="nombre_producto" label="Nombre del producto" icono={Package} type="text" placeholder="Ej.: Pastillas de freno delanteras" maxLength={150} value={form.nombre_producto} onChange={handleChange} required />
+
+          <div className="sm:col-span-2"><CampoTextarea id="descripcion" label="Descripción (opcional)" placeholder="Detalles, compatibilidad o características del producto" value={form.descripcion} onChange={handleChange} /></div>
+
+          <CampoFormulario id="precio_compra" label="Precio de compra (C$)" icono={CircleDollarSign} type="number" min={0} step="0.01" placeholder="0.00" value={form.precio_compra} onChange={handleChange} required />
+          <CampoFormulario id="precio_venta" label="Precio de venta (C$)" icono={CircleDollarSign} type="number" min={0} step="0.01" placeholder="0.00" value={form.precio_venta} onChange={handleChange} required />
+
+          <CampoFormulario id="existencia_minima" label="Existencia mínima" icono={Boxes} type="number" min={0} step="1" placeholder="0" value={form.existencia_minima} onChange={handleChange} />
+          <CampoFormulario id="existencia_maxima" label="Existencia máxima (opcional)" icono={Boxes} type="number" min={0} step="1" placeholder="Sin límite definido" value={form.existencia_maxima} onChange={handleChange} />
+
+          {esEdicion && <div className="sm:col-span-2"><CampoSelect id="estado" label="Estado" value={form.estado} onChange={handleChange}><option value="Activo">Activo</option><option value="Inactivo">Inactivo</option></CampoSelect></div>}
+        </div>
+
+        {!esEdicion && <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3.5"><p className="mb-2 text-[10px] font-semibold uppercase tracking-[.12em] text-slate-500">Vista previa</p><div className="flex min-w-0 items-center gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600"><Package size={16} /></span><div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-800">{form.nombre_producto.trim() || "Nombre del producto"}</p><p className="mt-0.5 truncate text-xs text-slate-500">{codigoProducto} · {categorias.find((categoria) => String(categoria.id_categoria) === form.id_categoria)?.nombre_categoria || "Selecciona una categoría"}</p></div></div></div>}
+
+        <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-xs text-slate-600"><Boxes size={15} className="shrink-0 text-slate-500" /><p>La existencia actual no se edita aquí; la controla el inventario.</p></div>
 
         {error && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-700">
             {error}
           </p>
         )}
 
-        <div className="flex justify-end gap-3 pt-2">
+        <div className="flex flex-col-reverse gap-2 border-t border-slate-200 pt-4 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={onCerrar}
             disabled={cargando}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+            className="min-h-10 rounded-xl border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
           >
             Cancelar
           </button>
@@ -281,9 +197,10 @@ export default function ModalProducto({
           <button
             type="submit"
             disabled={cargando}
-            className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex min-h-10 items-center justify-center gap-2 rounded-xl bg-slate-800 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {cargando && <Loader2 size={16} className="animate-spin" />}
+            {!cargando && (esEdicion ? <Save size={15} /> : <Plus size={15} />)}
             {cargando
               ? "Guardando..."
               : esEdicion
