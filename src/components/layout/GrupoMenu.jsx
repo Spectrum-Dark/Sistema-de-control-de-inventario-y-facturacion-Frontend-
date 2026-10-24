@@ -40,7 +40,7 @@ export default function GrupoMenu({ nombre, icono: Icono, hijos, onNavegar }) {
         }`}
       >
         <div className="overflow-hidden">
-          <div className="ml-[26px] mt-1.5 space-y-0.5 border-l border-slate-200 pl-3">
+          <div className="ml-26px mt-1.5 space-y-0.5 border-l border-slate-200 pl-3">
             {hijos.map(({ nombre: nombreHijo, ruta }) => (
               <NavLink
                 key={ruta}
