@@ -20,7 +20,7 @@ export default function TablaCategorias({ categorias, puedeEditar, puedeEliminar
   return (
     <>
       <div className="hidden overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm xl:block">
-        <table className="w-full min-w-[760px] text-left text-sm">
+        <table className="w-full min-w-760px text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-[.12em] text-slate-500">
             <tr>
               <th className="px-5 py-3.5 font-semibold">Categoría</th>

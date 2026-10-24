@@ -1,4 +1,4 @@
-const DURACION_CACHE_MS = 30_000;
+const DURACION_CACHE_MS = 60_000;
 const cacheListados = new Map();
 const solicitudesEnCurso = new Map();
 let versionCache = 0;

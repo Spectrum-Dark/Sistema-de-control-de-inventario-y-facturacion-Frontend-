@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, FileBarChart2, FileSpreadsheet, Loader2, Printer, Search } from "lucide-react";
 import { exportarReporteExcel } from "../../utils/reportes/exportarReporteExcel";
 import { exportarReportePdf } from "../../utils/reportes/exportarReportePdf";
+import { cargarListadoConCache } from "../../services/compartido/cacheListados";
 
 export default function PanelReporte({ titulo, descripcion, columnas, consultar, filtrosPorFecha = false, estados = [], busquedaPorCampo = false, exportar = false, Icono = FileBarChart2 }) {
   const [filtros, setFiltros] = useState({ fecha_inicio: "", fecha_fin: "", estado: "" });
@@ -26,7 +27,7 @@ export default function PanelReporte({ titulo, descripcion, columnas, consultar,
   // Carga inicial y cancelación lógica para evitar actualizar el componente desmontado.
   useEffect(() => {
     let activo = true;
-    consultar({}).then((respuesta) => {
+    cargarListadoConCache(consultar).then((respuesta) => {
       if (!activo) return;
       const datos = respuesta.datos;
       setFilas(Array.isArray(datos) ? datos : datos == null ? [] : [datos]);
@@ -98,7 +99,7 @@ export default function PanelReporte({ titulo, descripcion, columnas, consultar,
             <div className="mb-3 flex items-center justify-between gap-2 border-b border-slate-100 pb-2.5"><span className="text-[10px] font-semibold uppercase tracking-[.12em] text-slate-400">Registro</span><span className="flex h-6 min-w-6 items-center justify-center rounded-lg bg-slate-100 px-2 text-[10px] font-semibold text-slate-600">{indice + 1}</span></div>
             <dl className="grid min-w-0 grid-cols-2 gap-x-3 gap-y-3">{columnas.map((columna) => {
               const valor = columna.valor(fila);
-              return <div key={columna.etiqueta} className="min-w-0"><dt className="mb-1 text-[9px] font-semibold uppercase tracking-[.08em] text-slate-400">{columna.etiqueta}</dt><dd className="break-words text-xs leading-relaxed text-slate-700">{valor == null || valor === "" ? "—" : typeof valor === "string" ? <span className="whitespace-pre-line">{valor}</span> : valor}</dd></div>;
+              return <div key={columna.etiqueta} className="min-w-0"><dt className="mb-1 text-[9px] font-semibold uppercase tracking-[.08em] text-slate-400">{columna.etiqueta}</dt><dd className="wrap-break-words text-xs leading-relaxed text-slate-700">{valor == null || valor === "" ? "—" : typeof valor === "string" ? <span className="whitespace-pre-line">{valor}</span> : valor}</dd></div>;
             })}</dl>
           </article>)}</div>}
         <div className="mt-3 flex items-center justify-between px-1 text-[11px] text-slate-500"><span>Resultados del reporte</span><span>{filasFiltradas.length} de {filas.length}</span></div>

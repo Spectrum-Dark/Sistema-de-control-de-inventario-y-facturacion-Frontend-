@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
+import { precargarRuta } from "../../services/compartido/precargarRuta";
 
 export default function GrupoMenu({ nombre, icono: Icono, hijos, onNavegar }) {
   const { pathname } = useLocation();
@@ -45,11 +46,13 @@ export default function GrupoMenu({ nombre, icono: Icono, hijos, onNavegar }) {
                 key={ruta}
                 to={ruta}
                 onClick={onNavegar}
+                onMouseEnter={() => precargarRuta(ruta)}
+                onFocus={() => precargarRuta(ruta)}
                 tabIndex={abierto ? 0 : -1}
                 className={({ isActive }) =>
                   `relative block min-h-9 rounded-lg px-3 py-2 text-xs transition duration-150 ${
                     isActive
-                      ? "bg-slate-900 font-semibold text-white shadow-sm before:absolute before:-left-[17px] before:top-1/2 before:h-2 before:w-2 before:-translate-y-1/2 before:rounded-full before:bg-slate-900 before:ring-2 before:ring-white"
+                      ? "bg-slate-900 font-semibold text-white shadow-sm before:absolute before:-left-17px before:top-1/2 before:h-2 before:w-2 before:-translate-y-1/2 before:rounded-full before:bg-slate-900 before:ring-2 before:ring-white"
                       : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
                   }`
                 }

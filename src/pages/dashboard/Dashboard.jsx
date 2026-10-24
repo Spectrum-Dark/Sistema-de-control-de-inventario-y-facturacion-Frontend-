@@ -11,13 +11,11 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { cargarListadoConCache, obtenerCacheListado } from "../../services/compartido/cacheListados";
 import {
-  obtenerInventarioActual,
-  obtenerInventarioStockBajo,
-  obtenerReporteCompras,
-  obtenerReporteFinanciero,
-  obtenerReporteVentas,
-} from "../../services/reportes/reportesService";
+  cargasDashboard,
+  cargarFinancieroDashboard,
+} from "../../services/reportes/dashboardService";
 import { formatearPrecio } from "../../utils/productos/formato";
 import "./dashboard.css";
 
@@ -29,14 +27,6 @@ function fechaLocal(fecha) {
   const mes = String(fecha.getMonth() + 1).padStart(2, "0");
   const dia = String(fecha.getDate()).padStart(2, "0");
   return `${anio}-${mes}-${dia}`;
-}
-
-function obtenerRangoMes() {
-  const ahora = new Date();
-  return {
-    fecha_inicio: fechaLocal(new Date(ahora.getFullYear(), ahora.getMonth(), 1)),
-    fecha_fin: fechaLocal(ahora),
-  };
 }
 
 function fechaCorta(fecha) {
@@ -205,7 +195,7 @@ function ProductosDestacados({ productos }) {
                   <span className="truncate font-medium text-slate-700">{producto.producto?.nombre_producto ?? "Producto"}</span>
                   <span className="shrink-0 text-xs text-slate-500">{unidades} uds.</span>
                 </div>
-                <div className="dashboard-progress-track h-2 overflow-hidden rounded-full bg-slate-100"><div className="dashboard-progress-fill h-full rounded-full bg-gradient-to-r from-fuchsia-500 to-violet-500" style={{ width: `${Math.max(5, (unidades / maximo) * 100)}%` }} /></div>
+                <div className="dashboard-progress-track h-2 overflow-hidden rounded-full bg-slate-100"><div className="dashboard-progress-fill h-full rounded-full bg-linear-to-r from-fuchsia-500 to-violet-500" style={{ width: `${Math.max(5, (unidades / maximo) * 100)}%` }} /></div>
               </li>
             );
           })}
@@ -242,25 +232,37 @@ function VentasRecientes({ ventas }) {
   );
 }
 
+// Presenta la última copia disponible mientras las peticiones nuevas se resuelven.
+function obtenerDatosEnCache() {
+  const valores = cargasDashboard.map((cargar) => obtenerCacheListado(cargar)?.datos);
+  return {
+    inventario: Array.isArray(valores[0]) ? valores[0] : [],
+    stockBajo: Array.isArray(valores[1]) ? valores[1] : [],
+    ventas: Array.isArray(valores[2]) ? valores[2] : [],
+    compras: Array.isArray(valores[3]) ? valores[3] : [],
+    financiero: valores[4] ?? null,
+  };
+}
+
+function hayDatosEnCache() {
+  return cargasDashboard.every((cargar) => obtenerCacheListado(cargar) !== null);
+}
+
 export default function Dashboard() {
   const [actualizacion, setActualizacion] = useState(0);
-  const [datos, setDatos] = useState({ inventario: [], stockBajo: [], ventas: [], compras: [], financiero: null });
-  const [cargando, setCargando] = useState(true);
+  const [datos, setDatos] = useState(obtenerDatosEnCache);
+  const [cargando, setCargando] = useState(() => !hayDatosEnCache());
   const [error, setError] = useState("");
 
   useEffect(() => {
     let activo = true;
-    const rango = obtenerRangoMes();
-    Promise.allSettled([
-      obtenerInventarioActual(),
-      obtenerInventarioStockBajo(),
-      obtenerReporteVentas({ ...rango, estado: "Confirmada" }),
-      obtenerReporteCompras({ ...rango, estado: "Confirmada" }),
-      obtenerReporteFinanciero(rango),
-    ]).then((resultados) => {
+    Promise.allSettled(cargasDashboard.map((cargar) => cargarListadoConCache(cargar, { forzar: actualizacion > 0 }))).then((resultados) => {
       if (!activo) return;
-      const leerLista = (indice) => resultados[indice].status === "fulfilled" && Array.isArray(resultados[indice].value.datos) ? resultados[indice].value.datos : [];
-      const financiero = resultados[4].status === "fulfilled" ? resultados[4].value.datos : null;
+      const leerLista = (indice) => {
+        const datosRespuesta = resultados[indice].status === "fulfilled" ? resultados[indice].value.datos : obtenerCacheListado(cargasDashboard[indice])?.datos;
+        return Array.isArray(datosRespuesta) ? datosRespuesta : [];
+      };
+      const financiero = resultados[4].status === "fulfilled" ? resultados[4].value.datos : obtenerCacheListado(cargarFinancieroDashboard)?.datos ?? null;
       const fallidos = resultados.filter((resultado) => resultado.status === "rejected");
       const ventas = leerLista(2);
       setDatos({ inventario: leerLista(0), stockBajo: leerLista(1), ventas, compras: leerLista(3), financiero });
