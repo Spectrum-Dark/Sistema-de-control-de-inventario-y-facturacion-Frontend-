@@ -33,7 +33,7 @@
 .dashboard-chart-area > div:nth-child(7) .dashboard-chart-bar { animation-delay: 440ms; }
 .dashboard-product-item { transition: border-color .2s ease, background-color .2s ease, transform .2s ease; }
 .dashboard-product-item:hover { border-color: #d8d0fa; background: #faf9ff; }
-.dashboard-product-rank { display: grid; width: 29px; height: 29px; flex: 0 0 auto; place-items: center; border-radius: 9px; background: #f1f1f0; color: #737373; font-size: .65rem; font-weight: 700; }
+.dashboard-product-rank { display: grid; width: 26px; height: 26px; flex: 0 0 auto; place-items: center; border-radius: 8px; background: #f1f1f0; color: #737373; font-size: .6rem; font-weight: 700; }
 .dashboard-product-rank.is-first { background: linear-gradient(145deg, #8b5cf6, #c026d3); color: #fff; box-shadow: 0 3px 8px rgb(139 92 246 / .22); }
 .dashboard-product-track { background: #ededf0; }
 .dashboard-product-fill { transform: scaleX(0); transform-origin: left; background: linear-gradient(90deg, #8b5cf6, #d946ef); }
@@ -43,8 +43,8 @@
 .dashboard-panel-link { transition: background-color .18s ease, color .18s ease; }
 .dashboard-stock-donut {
   position: relative;
-  width: 138px;
-  height: 138px;
+  width: clamp(112px, 38vw, 138px);
+  height: clamp(112px, 38vw, 138px);
   flex: 0 0 auto;
 }
 .dashboard-stock-donut svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
@@ -61,6 +61,10 @@
 .dashboard-stock-key-ok { background: #d4d4d4; }
 .dashboard-stock-key-low { background: #e11d48; }
 .dashboard-ready .dashboard-stock-donut { animation: dashboard-enter .55s cubic-bezier(.2, .75, .25, 1) 180ms both; }
+
+@media (min-width: 640px) {
+  .dashboard-product-rank { width: 29px; height: 29px; border-radius: 9px; font-size: .65rem; }
+}
 
 @keyframes dashboard-enter {
   from { opacity: 0; transform: translateY(12px); }

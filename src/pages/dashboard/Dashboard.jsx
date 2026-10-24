@@ -58,28 +58,28 @@ function TarjetaIndicador({ titulo, valor, detalle, icono: Icono, color, variaci
 function GraficoActividad({ dias }) {
   const maximo = Math.max(1, ...dias.flatMap((dia) => [dia.ventas, dia.compras]));
   return (
-    <section className="dashboard-panel rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <section className="dashboard-panel min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="font-semibold text-slate-900">Actividad de la semana</h2>
           <p className="mt-1 text-sm text-slate-500">Ventas y compras confirmadas por día</p>
         </div>
-        <div className="flex gap-4 text-xs font-medium text-slate-600">
+        <div className="flex flex-wrap gap-x-3 gap-y-2 text-[11px] font-medium text-slate-600 sm:gap-4 sm:text-xs">
           <span className="inline-flex items-center gap-2"><i className="dashboard-chart-key dashboard-chart-key-sales h-2.5 w-2.5 rounded-full bg-violet-500" />Ventas</span>
           <span className="inline-flex items-center gap-2"><i className="dashboard-chart-key dashboard-chart-key-purchases h-2.5 w-2.5 rounded-full bg-cyan-400" />Compras</span>
         </div>
       </div>
-      <div className="dashboard-chart-area mt-7 grid h-52 grid-cols-7 items-end gap-2 rounded-xl px-2 sm:gap-4">
+      <div className="dashboard-chart-area mt-6 grid h-44 min-w-0 grid-cols-7 items-end gap-1 rounded-xl px-1 sm:mt-7 sm:h-52 sm:gap-4 sm:px-2">
         {dias.map((dia) => {
           const alturaVentas = Math.max(dia.ventas ? 8 : 3, (dia.ventas / maximo) * 100);
           const alturaCompras = Math.max(dia.compras ? 8 : 3, (dia.compras / maximo) * 100);
           return (
-            <div key={dia.fecha} className="flex h-full flex-col items-center justify-end gap-2">
-              <div className="flex h-full w-full items-end justify-center gap-1.5">
-                <div title={`Ventas ${formatearPrecio(dia.ventas)}`} className="dashboard-chart-bar dashboard-chart-bar-sales w-3 rounded-t-md bg-violet-500 transition-all sm:w-5" style={{ height: `${alturaVentas}%` }} />
-                <div title={`Compras ${formatearPrecio(dia.compras)}`} className="dashboard-chart-bar dashboard-chart-bar-purchases w-3 rounded-t-md bg-cyan-400 transition-all sm:w-5" style={{ height: `${alturaCompras}%` }} />
+            <div key={dia.fecha} className="flex h-full min-w-0 flex-col items-center justify-end gap-1.5 sm:gap-2">
+              <div className="flex h-full w-full min-w-0 items-end justify-center gap-1 sm:gap-1.5">
+                <div title={`Ventas ${formatearPrecio(dia.ventas)}`} className="dashboard-chart-bar dashboard-chart-bar-sales w-2 rounded-t-md bg-violet-500 transition-all sm:w-5" style={{ height: `${alturaVentas}%` }} />
+                <div title={`Compras ${formatearPrecio(dia.compras)}`} className="dashboard-chart-bar dashboard-chart-bar-purchases w-2 rounded-t-md bg-cyan-400 transition-all sm:w-5" style={{ height: `${alturaCompras}%` }} />
               </div>
-              <span className="text-[11px] text-slate-500">{dia.etiqueta}</span>
+              <span className="text-[10px] text-slate-500 sm:text-[11px]">{dia.etiqueta}</span>
             </div>
           );
         })}
@@ -92,7 +92,7 @@ function GraficoActividad({ dias }) {
 function InventarioBajo({ productos }) {
   return (
     <section className="dashboard-panel rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+      <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-4 sm:px-5">
         <div>
           <h2 className="font-semibold text-slate-900">Atención al inventario</h2>
           <p className="mt-1 text-xs text-slate-500">Productos en mínimo o por debajo</p>
@@ -101,13 +101,13 @@ function InventarioBajo({ productos }) {
       </div>
       {productos.length ? (
         <ul className="divide-y divide-slate-100">
-          {productos.slice(0, 5).map((producto) => (
-            <li key={producto.id_producto} className="flex items-center justify-between gap-3 px-5 py-3.5">
+          {productos.slice(0, 10).map((producto) => (
+            <li key={producto.id_producto} className="flex flex-col items-start gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-5 sm:py-3.5">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-slate-800">{producto.nombre_producto}</p>
                 <p className="mt-0.5 text-xs text-slate-500">{producto.codigo_producto ?? "Sin código"}</p>
               </div>
-              <span className="shrink-0 rounded-lg bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-700">
+              <span className="shrink-0 rounded-lg bg-rose-50 px-2.5 py-1.5 text-[11px] font-semibold text-rose-700 sm:text-xs">
                 {producto.existencia} / {producto.existencia_minima} uds.
               </span>
             </li>
@@ -133,10 +133,10 @@ function GraficoEstadoInventario({ totalProductos, productosBajos }) {
   const desplazamiento = circunferencia * (1 - porcentajeBajo / 100);
 
   return (
-    <section className="dashboard-panel rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <section className="dashboard-panel min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
       <div className="flex items-start gap-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600"><ChartPie size={17} /></span>
-        <div><h2 className="font-semibold text-slate-900">Estado del inventario</h2><p className="mt-1 text-xs text-slate-500">Productos según nivel mínimo</p></div>
+        <div className="min-w-0"><h2 className="font-semibold text-slate-900">Estado del inventario</h2><p className="mt-1 text-xs text-slate-500">Productos según nivel mínimo</p></div>
       </div>
       <div className="mt-5 flex flex-col items-center gap-4">
         <div className="dashboard-stock-donut" style={{ "--stock-offset": `${desplazamiento}px` }} role="img" aria-label={`${bajos} productos requieren reposición de ${totalProductos} en total`}>
@@ -157,7 +157,7 @@ function ProductosDestacados({ productos }) {
   const destacados = productos.slice(0, 5);
   const maximo = Math.max(1, ...destacados.map((producto) => Number(producto.total_vendido ?? 0)));
   return (
-    <section className="dashboard-panel rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="dashboard-panel min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
       <div className="flex items-center justify-between gap-3">
         <div>
           <h2 className="font-semibold text-slate-900">Productos más vendidos</h2>
@@ -166,15 +166,15 @@ function ProductosDestacados({ productos }) {
         <span className="dashboard-trending-icon flex h-10 w-10 items-center justify-center rounded-xl bg-fuchsia-100 text-fuchsia-700"><TrendingUp size={19} /></span>
       </div>
       {destacados.length ? (
-        <ol className="dashboard-product-ranking mt-5 space-y-3">
+        <ol className="dashboard-product-ranking mt-4 space-y-3 sm:mt-5">
           {destacados.map((producto, indice) => {
             const unidades = Number(producto.total_vendido ?? 0);
             return (
-              <li key={producto.id_producto ?? producto.producto?.id_producto ?? indice} className="dashboard-product-item flex min-w-0 items-center gap-3 rounded-xl border border-slate-100 px-3 py-2.5">
+              <li key={producto.id_producto ?? producto.producto?.id_producto ?? indice} className="dashboard-product-item flex min-w-0 items-center gap-2 rounded-xl border border-slate-100 px-2 py-2.5 sm:gap-3 sm:px-3">
                 <span className={`dashboard-product-rank ${indice === 0 ? "is-first" : ""}`}>{String(indice + 1).padStart(2, "0")}</span>
                 <div className="min-w-0 flex-1">
                   <div className="mb-2 flex items-center justify-between gap-2">
-                    <span className="truncate text-xs font-semibold text-slate-700">{producto.producto?.nombre_producto ?? "Producto"}</span>
+                    <span className="min-w-0 truncate text-[11px] font-semibold text-slate-700 sm:text-xs">{producto.producto?.nombre_producto ?? "Producto"}</span>
                     <span className="shrink-0 rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">{unidades} uds.</span>
                   </div>
                   <div className="dashboard-product-track h-2 overflow-hidden rounded-full"><div className="dashboard-product-fill h-full rounded-full" style={{ width: `${Math.max(5, (unidades / maximo) * 100)}%`, animationDelay: `${120 + indice * 90}ms` }} /></div>
@@ -189,10 +189,10 @@ function ProductosDestacados({ productos }) {
 }
 
 function VentasRecientes({ ventas }) {
-  const recientes = ventas.slice(0, 5);
+  const recientes = ventas.slice(0, 10);
   return (
     <section className="dashboard-panel rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+      <div className="flex items-center justify-between border-b border-slate-100 px-4 py-4 sm:px-5">
         <div>
           <h2 className="font-semibold text-slate-900">Ventas recientes</h2>
           <p className="mt-1 text-xs text-slate-500">Últimos movimientos del mes</p>
@@ -201,12 +201,12 @@ function VentasRecientes({ ventas }) {
       </div>
       {recientes.length ? <ul className="divide-y divide-slate-100">
         {recientes.map((venta) => (
-          <li key={venta.id_venta} className="flex items-center justify-between gap-3 px-5 py-3.5">
+          <li key={venta.id_venta} className="flex items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-5 sm:py-3.5">
             <div className="flex min-w-0 items-center gap-3">
               <span className="dashboard-sales-icon flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600"><ShoppingBag size={17} /></span>
               <div className="min-w-0"><p className="truncate text-sm font-medium text-slate-800">{venta.cliente?.nombre_cliente ?? venta.numero_venta ?? "Venta"}</p><p className="mt-0.5 text-xs text-slate-500">{fechaCorta(fechaDeRegistro(venta))} · {venta.estado ?? "Sin estado"}</p></div>
             </div>
-            <span className="shrink-0 text-sm font-semibold text-slate-800">{formatearPrecio(venta.total)}</span>
+            <span className="shrink-0 text-xs font-semibold text-slate-800 sm:text-sm">{formatearPrecio(venta.total)}</span>
           </li>
         ))}
       </ul> : <p className="px-5 py-8 text-center text-sm text-slate-500">No hay ventas registradas este mes.</p>}
