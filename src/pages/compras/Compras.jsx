@@ -70,6 +70,7 @@ export default function Compras() {
 
   return (
     <PaginaCrud
+      acento="neutro"
       titulo={<span className="inline-flex items-center gap-2.5"><span className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><ShoppingCart size={18} /></span>Compras</span>}
       subtitulo="Compras e inventario · Registro de compras a proveedores."
       resumen={!cargando && !error ? <ResumenCompras compras={compras} /> : null}

@@ -54,6 +54,7 @@ export default function Categorias() {
 
   return (
     <PaginaCrud
+      acento="neutro"
       titulo={<span className="inline-flex items-center gap-2.5"><span className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><Layers3 size={18} /></span>Categorías</span>}
       subtitulo="Organiza los repuestos en grupos fáciles de encontrar y administrar."
       resumen={!cargando && !error ? <ResumenCategorias categorias={categorias} /> : null}

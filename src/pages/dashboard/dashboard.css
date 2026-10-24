@@ -1,12 +1,92 @@
 .dashboard-page { width: 100%; }
 .dashboard-metric { box-shadow: 0 2px 8px rgba(25, 39, 59, .035); }
 .dashboard-panel { box-shadow: 0 2px 8px rgba(25, 39, 59, .035); }
+.dashboard-page > * { animation: dashboard-enter .55s cubic-bezier(.2, .75, .25, 1) both; }
+.dashboard-page > *:nth-child(2) { animation-delay: 70ms; }
+.dashboard-page > *:nth-child(3) { animation-delay: 140ms; }
+.dashboard-page > *:nth-child(4) { animation-delay: 210ms; }
+.dashboard-ready .dashboard-metric { animation: dashboard-enter .48s cubic-bezier(.2, .75, .25, 1) both; }
+.dashboard-ready .dashboard-metric:nth-child(1) { animation-delay: 40ms; }
+.dashboard-ready .dashboard-metric:nth-child(2) { animation-delay: 110ms; }
+.dashboard-ready .dashboard-metric:nth-child(3) { animation-delay: 180ms; }
+.dashboard-ready .dashboard-metric:nth-child(4) { animation-delay: 250ms; }
+.dashboard-ready .dashboard-panel li { animation: dashboard-item-enter .42s cubic-bezier(.2, .75, .25, 1) both; }
+.dashboard-ready .dashboard-panel li:nth-child(1) { animation-delay: 80ms; }
+.dashboard-ready .dashboard-panel li:nth-child(2) { animation-delay: 140ms; }
+.dashboard-ready .dashboard-panel li:nth-child(3) { animation-delay: 200ms; }
+.dashboard-ready .dashboard-panel li:nth-child(4) { animation-delay: 260ms; }
+.dashboard-ready .dashboard-panel li:nth-child(5) { animation-delay: 320ms; }
+.dashboard-metric { transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
+.dashboard-metric:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(25, 39, 59, .1); border-color: #ddd6fe; }
+.dashboard-metric-icon { transition: transform .25s ease; }
+.dashboard-metric:hover .dashboard-metric-icon { transform: rotate(-7deg) scale(1.08); }
+.dashboard-panel { transition: transform .22s ease, box-shadow .22s ease; }
+.dashboard-panel:hover { box-shadow: 0 10px 26px rgba(25, 39, 59, .075); }
+.dashboard-chart-bar { transform: scaleY(0); transform-origin: bottom; }
+.dashboard-ready .dashboard-chart-bar { animation: dashboard-chart-rise .8s cubic-bezier(.2, .75, .25, 1) both; }
+.dashboard-chart-area > div:nth-child(1) .dashboard-chart-bar { animation-delay: 80ms; }
+.dashboard-chart-area > div:nth-child(2) .dashboard-chart-bar { animation-delay: 140ms; }
+.dashboard-chart-area > div:nth-child(3) .dashboard-chart-bar { animation-delay: 200ms; }
+.dashboard-chart-area > div:nth-child(4) .dashboard-chart-bar { animation-delay: 260ms; }
+.dashboard-chart-area > div:nth-child(5) .dashboard-chart-bar { animation-delay: 320ms; }
+.dashboard-chart-area > div:nth-child(6) .dashboard-chart-bar { animation-delay: 380ms; }
+.dashboard-chart-area > div:nth-child(7) .dashboard-chart-bar { animation-delay: 440ms; }
+.dashboard-product-item { transition: border-color .2s ease, background-color .2s ease, transform .2s ease; }
+.dashboard-product-item:hover { border-color: #d8d0fa; background: #faf9ff; }
+.dashboard-product-rank { display: grid; width: 29px; height: 29px; flex: 0 0 auto; place-items: center; border-radius: 9px; background: #f1f1f0; color: #737373; font-size: .65rem; font-weight: 700; }
+.dashboard-product-rank.is-first { background: linear-gradient(145deg, #8b5cf6, #c026d3); color: #fff; box-shadow: 0 3px 8px rgb(139 92 246 / .22); }
+.dashboard-product-track { background: #ededf0; }
+.dashboard-product-fill { transform: scaleX(0); transform-origin: left; background: linear-gradient(90deg, #8b5cf6, #d946ef); }
+.dashboard-ready .dashboard-product-fill { animation: dashboard-progress-grow .85s cubic-bezier(.2, .75, .25, 1) both; }
+.dashboard-page li { transition: background-color .18s ease, transform .18s ease; }
+.dashboard-page li:hover { transform: translateX(3px); }
+.dashboard-panel-link { transition: background-color .18s ease, color .18s ease; }
+.dashboard-stock-donut {
+  position: relative;
+  width: 138px;
+  height: 138px;
+  flex: 0 0 auto;
+}
+.dashboard-stock-donut svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.dashboard-stock-ring-track,
+.dashboard-stock-ring { fill: none; stroke-width: 13; }
+.dashboard-stock-ring-track { stroke: #e5e5e5; }
+.dashboard-stock-ring { stroke: #e11d48; stroke-linecap: round; }
+.dashboard-ready .dashboard-stock-ring { animation: dashboard-stock-ring-fill .95s cubic-bezier(.2, .75, .25, 1) 160ms both; }
+.dashboard-stock-donut-center { position: absolute; inset: 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 50%; background: #fafaf9;
+}
+.dashboard-stock-donut-center strong { color: #262626; font-size: 1.2rem; line-height: 1.4; }
+.dashboard-stock-donut-center span { color: #737373; font-size: .65rem; }
+.dashboard-stock-key { width: 9px; height: 9px; flex: 0 0 auto; border-radius: 50%; }
+.dashboard-stock-key-ok { background: #d4d4d4; }
+.dashboard-stock-key-low { background: #e11d48; }
+.dashboard-ready .dashboard-stock-donut { animation: dashboard-enter .55s cubic-bezier(.2, .75, .25, 1) 180ms both; }
+
+@keyframes dashboard-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes dashboard-item-enter {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes dashboard-chart-rise {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes dashboard-progress-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes dashboard-stock-ring-fill {
+  from { stroke-dashoffset: 314px; }
+  to { stroke-dashoffset: var(--stock-offset); }
+}
 .dashboard-chart-area {
   background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(25% - 1px), #edf0f4 calc(25% - 1px), #edf0f4 25%);
   border-bottom: 1px solid #edf0f4;
 }
 
-html[data-tema="oscuro"] .dashboard-heading { border-color: #303030; }
 html[data-tema="oscuro"] .dashboard-metric,
 html[data-tema="oscuro"] .dashboard-panel { box-shadow: 0 3px 12px rgba(0, 0, 0, .3); }
 html[data-tema="oscuro"] .dashboard-metric-icon,
@@ -25,8 +105,11 @@ html[data-tema="oscuro"] .dashboard-chart-bar-sales,
 html[data-tema="oscuro"] .dashboard-chart-key-sales { background-color: #e5e5e5; }
 html[data-tema="oscuro"] .dashboard-chart-bar-purchases,
 html[data-tema="oscuro"] .dashboard-chart-key-purchases { background-color: #737373; }
-html[data-tema="oscuro"] .dashboard-progress-track { background: #292929; }
-html[data-tema="oscuro"] .dashboard-progress-fill { background: #bdbdbd; }
+html[data-tema="oscuro"] .dashboard-product-item { border-color: #303030; }
+html[data-tema="oscuro"] .dashboard-product-item:hover { border-color: #454545; background: #171717; }
+html[data-tema="oscuro"] .dashboard-product-rank { background: #292929; color: #bdbdbd; }
+html[data-tema="oscuro"] .dashboard-product-track { background: #292929; }
+html[data-tema="oscuro"] .dashboard-product-fill { background: linear-gradient(90deg, #a78bfa, #e879f9); }
 html[data-tema="oscuro"] .dashboard-panel-link { color: #d0d0d0; }
 html[data-tema="oscuro"] .dashboard-panel-link:hover { background: #202020; }
 html[data-tema="oscuro"] .dashboard-page .text-emerald-500,
@@ -44,8 +127,27 @@ html[data-tema="oscuro"] .dashboard-chart-bar-sales,
 html[data-tema="oscuro"] .dashboard-chart-key-sales { background-color: #a78bfa; }
 html[data-tema="oscuro"] .dashboard-chart-bar-purchases,
 html[data-tema="oscuro"] .dashboard-chart-key-purchases { background-color: #22d3ee; }
-html[data-tema="oscuro"] .dashboard-progress-fill { background: linear-gradient(90deg, #e879f9, #8b7cf6); }
+html[data-tema="oscuro"] .dashboard-stock-ring-track { stroke: #4b4b4b; }
+html[data-tema="oscuro"] .dashboard-stock-ring { stroke: #fb7185; }
+html[data-tema="oscuro"] .dashboard-stock-donut-center { background: #111; }
+html[data-tema="oscuro"] .dashboard-stock-donut-center strong { color: #f0f0f0; }
+html[data-tema="oscuro"] .dashboard-stock-key-low { background: #fb7185; }
 
-@media (max-width: 640px) {
-  .dashboard-heading { align-items: flex-start; }
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-page > *,
+  .dashboard-ready .dashboard-metric,
+  .dashboard-ready .dashboard-panel li,
+  .dashboard-ready .dashboard-stock-donut,
+  .dashboard-chart-bar,
+  .dashboard-product-fill,
+  .dashboard-stock-ring { animation: none; transform: none; stroke-dashoffset: var(--stock-offset); }
+  .dashboard-metric,
+  .dashboard-panel,
+  .dashboard-page li,
+  .dashboard-panel-link,
+  .dashboard-metric-icon { transition: none; }
+  .dashboard-product-item { transition: none; }
+  .dashboard-metric:hover,
+  .dashboard-page li:hover,
+  .dashboard-metric:hover .dashboard-metric-icon { transform: none; }
 }

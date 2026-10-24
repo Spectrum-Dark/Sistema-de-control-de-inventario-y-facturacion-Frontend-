@@ -3,7 +3,7 @@ import {
   ArrowDownRight,
   ArrowUpRight,
   Boxes,
-  CalendarDays,
+  ChartPie,
   CircleAlert,
   Clock3,
   PackageCheck,
@@ -12,22 +12,11 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cargarListadoConCache, obtenerCacheListado } from "../../services/compartido/cacheListados";
-import {
-  cargasDashboard,
-  cargarFinancieroDashboard,
-} from "../../services/reportes/dashboardService";
+import { cargarDatosDashboard } from "../../services/reportes/dashboardService";
 import { formatearPrecio } from "../../utils/productos/formato";
 import "./dashboard.css";
 
 const DIAS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-
-// Formatea fechas con hora local para que el rango coincida con la fecha que ve el usuario.
-function fechaLocal(fecha) {
-  const anio = fecha.getFullYear();
-  const mes = String(fecha.getMonth() + 1).padStart(2, "0");
-  const dia = String(fecha.getDate()).padStart(2, "0");
-  return `${anio}-${mes}-${dia}`;
-}
 
 function fechaCorta(fecha) {
   const valor = new Date(`${String(fecha).slice(0, 10)}T12:00:00`);
@@ -40,46 +29,9 @@ function fechaDeRegistro(registro) {
   return registro.fecha_venta ?? registro.fecha_compra ?? registro.created_at ?? "";
 }
 
-function agruparPorDia(ventas, compras) {
-  const hoy = new Date();
-  const dias = Array.from({ length: 7 }, (_, indice) => {
-    const fecha = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - 6 + indice);
-    return { fecha: fechaLocal(fecha), etiqueta: DIAS[fecha.getDay()], ventas: 0, compras: 0 };
-  });
-  const porFecha = new Map(dias.map((dia) => [dia.fecha, dia]));
-
-  ventas.forEach((venta) => {
-    const dia = porFecha.get(String(fechaDeRegistro(venta)).slice(0, 10));
-    if (dia && venta.estado === "Confirmada") dia.ventas += Number(venta.total ?? 0);
-  });
-  compras.forEach((compra) => {
-    const dia = porFecha.get(String(fechaDeRegistro(compra)).slice(0, 10));
-    if (dia && compra.estado === "Confirmada") dia.compras += Number(compra.total ?? 0);
-  });
-  return dias;
-}
-
-// Resume los detalles de ventas confirmadas para mantener el ranking coherente con el período.
-function obtenerProductosDestacados(ventas) {
-  const resumen = new Map();
-  ventas.forEach((venta) => {
-    (venta.detalles ?? []).forEach((detalle) => {
-      const id = detalle.id_producto ?? detalle.producto?.id_producto;
-      if (id == null) return;
-      const producto = resumen.get(id) ?? {
-        id_producto: id,
-        producto: detalle.producto,
-        total_vendido: 0,
-        ingreso_total: 0,
-      };
-      producto.total_vendido += Number(detalle.cantidad ?? 0);
-      producto.ingreso_total += Number(detalle.subtotal ?? 0);
-      resumen.set(id, producto);
-    });
-  });
-  return [...resumen.values()]
-    .sort((primero, segundo) => segundo.total_vendido - primero.total_vendido)
-    .slice(0, 5);
+function etiquetaDia(fecha) {
+  const valor = new Date(`${fecha}T12:00:00`);
+  return DIAS[valor.getDay()];
 }
 
 function TarjetaIndicador({ titulo, valor, detalle, icono: Icono, color, variacion }) {
@@ -173,6 +125,34 @@ function InventarioBajo({ productos }) {
   );
 }
 
+function GraficoEstadoInventario({ totalProductos, productosBajos }) {
+  const bajos = Math.min(productosBajos, totalProductos);
+  const adecuados = Math.max(0, totalProductos - bajos);
+  const porcentajeBajo = totalProductos ? (bajos / totalProductos) * 100 : 0;
+  const circunferencia = 314;
+  const desplazamiento = circunferencia * (1 - porcentajeBajo / 100);
+
+  return (
+    <section className="dashboard-panel rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <div className="flex items-start gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600"><ChartPie size={17} /></span>
+        <div><h2 className="font-semibold text-slate-900">Estado del inventario</h2><p className="mt-1 text-xs text-slate-500">Productos según nivel mínimo</p></div>
+      </div>
+      <div className="mt-5 flex flex-col items-center gap-4">
+        <div className="dashboard-stock-donut" style={{ "--stock-offset": `${desplazamiento}px` }} role="img" aria-label={`${bajos} productos requieren reposición de ${totalProductos} en total`}>
+          <svg viewBox="0 0 120 120" aria-hidden="true"><circle className="dashboard-stock-ring-track" cx="60" cy="60" r="50" /><circle className="dashboard-stock-ring" cx="60" cy="60" r="50" strokeDasharray={circunferencia} strokeDashoffset={circunferencia} /></svg>
+          <div className="dashboard-stock-donut-center"><strong>{totalProductos ? `${Math.round((adecuados / totalProductos) * 100)}%` : "0%"}</strong><span>en nivel</span></div>
+        </div>
+        <div className="w-full space-y-3">
+          <div className="flex items-center justify-between gap-3"><span className="inline-flex items-center gap-2 text-xs text-slate-600"><i className="dashboard-stock-key dashboard-stock-key-ok" />Stock adecuado</span><strong className="text-sm text-slate-800">{adecuados}</strong></div>
+          <div className="flex items-center justify-between gap-3"><span className="inline-flex items-center gap-2 text-xs text-slate-600"><i className="dashboard-stock-key dashboard-stock-key-low" />Requiere reposición</span><strong className="text-sm text-slate-800">{bajos}</strong></div>
+          <p className="border-t border-slate-100 pt-2 text-[10px] text-slate-400">Total de productos: {totalProductos}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function ProductosDestacados({ productos }) {
   const destacados = productos.slice(0, 5);
   const maximo = Math.max(1, ...destacados.map((producto) => Number(producto.total_vendido ?? 0)));
@@ -186,16 +166,19 @@ function ProductosDestacados({ productos }) {
         <span className="dashboard-trending-icon flex h-10 w-10 items-center justify-center rounded-xl bg-fuchsia-100 text-fuchsia-700"><TrendingUp size={19} /></span>
       </div>
       {destacados.length ? (
-        <ol className="mt-5 space-y-4">
+        <ol className="dashboard-product-ranking mt-5 space-y-3">
           {destacados.map((producto, indice) => {
             const unidades = Number(producto.total_vendido ?? 0);
             return (
-              <li key={producto.id_producto ?? producto.producto?.id_producto ?? indice}>
-                <div className="mb-1.5 flex items-center justify-between gap-3 text-sm">
-                  <span className="truncate font-medium text-slate-700">{producto.producto?.nombre_producto ?? "Producto"}</span>
-                  <span className="shrink-0 text-xs text-slate-500">{unidades} uds.</span>
+              <li key={producto.id_producto ?? producto.producto?.id_producto ?? indice} className="dashboard-product-item flex min-w-0 items-center gap-3 rounded-xl border border-slate-100 px-3 py-2.5">
+                <span className={`dashboard-product-rank ${indice === 0 ? "is-first" : ""}`}>{String(indice + 1).padStart(2, "0")}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <span className="truncate text-xs font-semibold text-slate-700">{producto.producto?.nombre_producto ?? "Producto"}</span>
+                    <span className="shrink-0 rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">{unidades} uds.</span>
+                  </div>
+                  <div className="dashboard-product-track h-2 overflow-hidden rounded-full"><div className="dashboard-product-fill h-full rounded-full" style={{ width: `${Math.max(5, (unidades / maximo) * 100)}%`, animationDelay: `${120 + indice * 90}ms` }} /></div>
                 </div>
-                <div className="dashboard-progress-track h-2 overflow-hidden rounded-full bg-slate-100"><div className="dashboard-progress-fill h-full rounded-full bg-linear-to-r from-fuchsia-500 to-violet-500" style={{ width: `${Math.max(5, (unidades / maximo) * 100)}%` }} /></div>
               </li>
             );
           })}
@@ -232,42 +215,37 @@ function VentasRecientes({ ventas }) {
   );
 }
 
-// Presenta la última copia disponible mientras las peticiones nuevas se resuelven.
-function obtenerDatosEnCache() {
-  const valores = cargasDashboard.map((cargar) => obtenerCacheListado(cargar)?.datos);
-  return {
-    inventario: Array.isArray(valores[0]) ? valores[0] : [],
-    stockBajo: Array.isArray(valores[1]) ? valores[1] : [],
-    ventas: Array.isArray(valores[2]) ? valores[2] : [],
-    compras: Array.isArray(valores[3]) ? valores[3] : [],
-    financiero: valores[4] ?? null,
-  };
-}
+const DATOS_DASHBOARD_VACIOS = {
+  total_productos: 0,
+  stock_bajo: [],
+  financiero: null,
+  actividad: [],
+  productos_destacados: [],
+  ventas_recientes: [],
+};
 
-function hayDatosEnCache() {
-  return cargasDashboard.every((cargar) => obtenerCacheListado(cargar) !== null);
+// Presenta la última copia disponible mientras la nueva solicitud se resuelve.
+function obtenerDatosEnCache() {
+  return obtenerCacheListado(cargarDatosDashboard)?.datos ?? DATOS_DASHBOARD_VACIOS;
 }
 
 export default function Dashboard() {
   const [actualizacion, setActualizacion] = useState(0);
   const [datos, setDatos] = useState(obtenerDatosEnCache);
-  const [cargando, setCargando] = useState(() => !hayDatosEnCache());
+  const [cargando, setCargando] = useState(() => obtenerCacheListado(cargarDatosDashboard) === null);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let activo = true;
-    Promise.allSettled(cargasDashboard.map((cargar) => cargarListadoConCache(cargar, { forzar: actualizacion > 0 }))).then((resultados) => {
+    cargarListadoConCache(cargarDatosDashboard, { forzar: actualizacion > 0 }).then((resultado) => {
       if (!activo) return;
-      const leerLista = (indice) => {
-        const datosRespuesta = resultados[indice].status === "fulfilled" ? resultados[indice].value.datos : obtenerCacheListado(cargasDashboard[indice])?.datos;
-        return Array.isArray(datosRespuesta) ? datosRespuesta : [];
-      };
-      const financiero = resultados[4].status === "fulfilled" ? resultados[4].value.datos : obtenerCacheListado(cargarFinancieroDashboard)?.datos ?? null;
-      const fallidos = resultados.filter((resultado) => resultado.status === "rejected");
-      const ventas = leerLista(2);
-      setDatos({ inventario: leerLista(0), stockBajo: leerLista(1), ventas, compras: leerLista(3), financiero });
-      if (fallidos.length === resultados.length) setError("No se pudo conectar con los servicios del dashboard. Comprueba que la API esté disponible.");
-      else if (fallidos.length) setError("Algunos indicadores no se pudieron actualizar. Los demás datos siguen disponibles.");
+      setDatos(resultado.datos ?? DATOS_DASHBOARD_VACIOS);
+      setError("");
+      setCargando(false);
+    }).catch(() => {
+      if (!activo) return;
+      setDatos(obtenerDatosEnCache());
+      setError("No se pudo conectar con los servicios del dashboard. Comprueba que la API esté disponible.");
       setCargando(false);
     });
     return () => { activo = false; };
@@ -288,41 +266,29 @@ export default function Dashboard() {
     };
   }, []);
 
-  const dias = useMemo(() => agruparPorDia(datos.ventas, datos.compras), [datos.ventas, datos.compras]);
-  const masVendidos = useMemo(() => obtenerProductosDestacados(datos.ventas), [datos.ventas]);
+  const dias = useMemo(() => (datos.actividad ?? []).map((dia) => ({ ...dia, etiqueta: etiquetaDia(dia.fecha) })), [datos.actividad]);
+  const masVendidos = datos.productos_destacados ?? [];
+  const ventasRecientes = datos.ventas_recientes ?? [];
   const balance = Number(datos.financiero?.balance_neto ?? 0);
-  const fechaMes = new Intl.DateTimeFormat("es-NI", { month: "long", year: "numeric" }).format(new Date());
-
   return (
-    <div className="dashboard-page space-y-6 pb-8">
+    <div className={`dashboard-page space-y-6 pb-8 ${cargando ? "" : "dashboard-ready"}`}>
       {error && <div role="status" className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800"><CircleAlert size={18} className="mt-0.5 shrink-0" />{error}</div>}
-
-      <div className="dashboard-heading flex flex-col justify-between gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-end">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[.16em] text-slate-500">Centro de control</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">Dashboard</h1>
-          <p className="mt-1 text-sm text-slate-500">Resumen de inventario y operaciones del negocio.</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium capitalize text-slate-700 shadow-sm"><CalendarDays size={15} className="text-slate-500" />{fechaMes}</span>
-          {cargando && <span className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-500">Actualizando datos…</span>}
-        </div>
-      </div>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <TarjetaIndicador titulo="Ingresos por ventas" valor={formatearPrecio(datos.financiero?.total_ingresos_ventas)} detalle="Ventas confirmadas este mes" icono={ArrowUpRight} color="bg-emerald-100 text-emerald-700" variacion="positiva" />
         <TarjetaIndicador titulo="Compras realizadas" valor={formatearPrecio(datos.financiero?.total_egresos_compras)} detalle="Compras confirmadas este mes" icono={ShoppingBag} color="bg-cyan-100 text-cyan-700" />
         <TarjetaIndicador titulo="Balance del período" valor={formatearPrecio(balance)} detalle={balance >= 0 ? "Ingresos menos compras" : "Compras superan los ingresos"} icono={balance >= 0 ? TrendingUp : ArrowDownRight} color={balance >= 0 ? "bg-violet-100 text-violet-700" : "bg-rose-100 text-rose-700"} variacion={balance >= 0 ? "positiva" : "negativa"} />
-        <TarjetaIndicador titulo="Productos en catálogo" valor={datos.inventario.length.toLocaleString("es-NI")} detalle={`${datos.stockBajo.length} requieren reposición`} icono={Boxes} color="bg-amber-100 text-amber-700" />
+        <TarjetaIndicador titulo="Productos en catálogo" valor={Number(datos.total_productos ?? 0).toLocaleString("es-NI")} detalle={`${datos.stock_bajo.length} requieren reposición`} icono={Boxes} color="bg-amber-100 text-amber-700" />
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
+      <section className="grid gap-5 xl:grid-cols-3">
         <GraficoActividad dias={dias} />
-        <InventarioBajo productos={datos.stockBajo} />
+        <ProductosDestacados productos={masVendidos} />
+        <GraficoEstadoInventario totalProductos={Number(datos.total_productos ?? 0)} productosBajos={datos.stock_bajo.length} />
       </section>
       <section className="grid gap-5 xl:grid-cols-2">
-        <ProductosDestacados productos={masVendidos} />
-        <VentasRecientes ventas={datos.ventas} />
+        <InventarioBajo productos={datos.stock_bajo} />
+        <VentasRecientes ventas={ventasRecientes} />
       </section>
     </div>
   );

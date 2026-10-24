@@ -4,6 +4,7 @@ import ModalConfirmacion from "./ModalConfirmacion";
 
 export default function PaginaCrud({
   titulo,
+  acento = "neutro",
   subtitulo,
   resumen,
   textoNuevo,
@@ -30,7 +31,7 @@ export default function PaginaCrud({
   children,
 }) {
   return (
-    <div className="space-y-5">
+    <div className="pagina-crud space-y-5" data-acento={acento}>
       <div className="flex flex-col gap-4 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{titulo}</h1>

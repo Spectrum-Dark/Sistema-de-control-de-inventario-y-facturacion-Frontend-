@@ -1,4 +1,6 @@
 import PanelReporte from "../../components/reportes/PanelReporte";
+import GrupoPanelesReporte from "../../components/reportes/GrupoPanelesReporte";
+import EncabezadoReporte from "../../components/reportes/EncabezadoReporte";
 import { Boxes, ArrowLeftRight, TriangleAlert } from "lucide-react";
 import {
   obtenerInventarioActual,
@@ -17,33 +19,36 @@ const columnasInventario = [
   { etiqueta: "Estado", valor: (p) => p.estado },
 ];
 
+const columnasMovimientos = [
+  { etiqueta: "Fecha", valor: (m) => formatearFechaHora(m.fecha_movimiento, { hora12: true }) },
+  { etiqueta: "Tipo", valor: (m) => m.tipo_movimiento },
+  { etiqueta: "Producto", valor: (m) => `${m.producto?.codigo_producto ?? "—"} · ${m.producto?.nombre_producto ?? "—"}` },
+  { etiqueta: "Cantidad", valor: (m) => m.cantidad },
+  { etiqueta: "Existencia anterior", valor: (m) => m.existencia_anterior },
+  { etiqueta: "Existencia nueva", valor: (m) => m.existencia_nueva },
+  { etiqueta: "Origen", valor: (m) => m.compra?.numero_compra ?? m.venta?.numero_venta ?? m.motivo ?? "—" },
+  { etiqueta: "Responsable", valor: (m) => m.usuario?.nombre_completo ?? "—" },
+];
+
 export default function ReporteInventario() {
   return (
     <div className="space-y-5">
-      <header className="flex items-center gap-3 border-b border-slate-200 pb-4">
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700"><Boxes size={20} /></span><div><h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">Reportes de inventario</h1>
-        <p className="mt-1 text-xs text-slate-500 sm:text-sm">Consulta existencias, alertas de stock y movimientos registrados.</p></div>
-      </header>
+      <EncabezadoReporte Icono={Boxes} titulo="Reportes de inventario" descripcion="Consulta existencias, alertas de stock y movimientos registrados." />
+      <GrupoPanelesReporte>
       <PanelReporte titulo="Inventario actual" Icono={Boxes} columnas={columnasInventario} consultar={obtenerInventarioActual} busquedaPorCampo exportar />
       <PanelReporte titulo="Productos con stock bajo" Icono={TriangleAlert} descripcion="Productos cuya existencia está en el nivel mínimo o por debajo." columnas={columnasInventario} consultar={obtenerInventarioStockBajo} busquedaPorCampo exportar />
       <PanelReporte
         titulo="Movimientos de inventario"
         Icono={ArrowLeftRight}
-        columnas={[
-          { etiqueta: "Fecha", valor: (m) => formatearFechaHora(m.fecha_movimiento, { hora12: true }) },
-          { etiqueta: "Tipo", valor: (m) => m.tipo_movimiento },
-          { etiqueta: "Producto", valor: (m) => `${m.producto?.codigo_producto ?? "—"} · ${m.producto?.nombre_producto ?? "—"}` },
-          { etiqueta: "Cantidad", valor: (m) => m.cantidad },
-          { etiqueta: "Existencia anterior", valor: (m) => m.existencia_anterior },
-          { etiqueta: "Existencia nueva", valor: (m) => m.existencia_nueva },
-          { etiqueta: "Origen", valor: (m) => m.compra?.numero_compra ?? m.venta?.numero_venta ?? m.motivo ?? "—" },
-          { etiqueta: "Responsable", valor: (m) => m.usuario?.nombre_completo ?? "—" },
-        ]}
+        columnas={columnasMovimientos}
+        columnasBusqueda={columnasMovimientos.filter((columna) => columna.etiqueta !== "Fecha")}
         consultar={obtenerMovimientosInventario}
+        cargarSiempreActualizado
         filtrosPorFecha
         busquedaPorCampo
         exportar
       />
+      </GrupoPanelesReporte>
     </div>
   );
 }

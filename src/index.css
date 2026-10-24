@@ -1,5 +1,36 @@
 @import "tailwindcss";
 
+/* Apariencia global de Sileo, coordinada con los temas de la aplicación. */
+html:not([data-tema="oscuro"]) {
+  --sileo-fill: #292929;
+  --sileo-description: rgb(255 255 255 / .78);
+  --sileo-state-success: #39734a;
+  --sileo-state-loading: #525252;
+  --sileo-state-error: #a83c3c;
+  --sileo-state-warning: #806018;
+  --sileo-state-info: #4b5563;
+  --sileo-state-action: #525252;
+  --sileo-width: min(390px, calc(100vw - 1.5rem));
+}
+html[data-tema="oscuro"] {
+  --sileo-fill: #292929;
+  --sileo-description: rgb(255 255 255 / .78);
+  --sileo-state-success: #9dd8a8;
+  --sileo-state-loading: #e5e5e5;
+  --sileo-state-error: #ff9696;
+  --sileo-state-warning: #f2d27b;
+  --sileo-state-info: #cfcfcf;
+  --sileo-state-action: #e0e0e0;
+  --sileo-width: min(390px, calc(100vw - 1.5rem));
+}
+[data-sileo-toast] { filter: drop-shadow(0 12px 30px rgb(0 0 0 / .32)) drop-shadow(0 0 1px rgb(255 255 255 / .16)); }
+[data-sileo-title] { font-size: .84rem; font-weight: 700; letter-spacing: -.01em; }
+[data-sileo-description] { max-width: 370px; font-size: .78rem; line-height: 1.5; }
+[data-sileo-title] { color: #fff !important; }
+[data-sileo-description] { color: rgb(255 255 255 / .82) !important; }
+[data-sileo-badge] { border: 1px solid rgb(255 255 255 / .16); box-shadow: inset 0 1px 0 rgb(255 255 255 / .1), 0 3px 10px rgb(0 0 0 / .3); }
+html[data-tema="oscuro"] [data-sileo-toast] { filter: drop-shadow(0 12px 30px rgb(0 0 0 / .5)) drop-shadow(0 0 1px rgb(255 255 255 / .2)); }
+
 /* Tema claro neutro: reduce el blanco puro en fondos, tarjetas y controles. */
 html:not([data-tema="oscuro"]) {
   color-scheme: light;
@@ -27,6 +58,56 @@ html:not([data-tema="oscuro"]) select:focus,
 html:not([data-tema="oscuro"]) textarea:focus { border-color: #9b9b98; }
 
 .table-row-hover:hover { background-color: #f7f7f7; }
+.submenu-list { margin-left: 26px; }
+/* Acentos moderados por módulo; el Dashboard conserva su paleta propia. */
+html:not([data-tema="oscuro"]) .pagina-crud[data-acento="categorias"] { --acento-icono: #7048e8; }
+html:not([data-tema="oscuro"]) .pagina-crud[data-acento="marcas"] { --acento-icono: #b27a2f; }
+html:not([data-tema="oscuro"]) .pagina-crud[data-acento="proveedores"] { --acento-icono: #3d8492; }
+html:not([data-tema="oscuro"]) .pagina-crud[data-acento="modelos"] { --acento-icono: #52699a; }
+html:not([data-tema="oscuro"]) .pagina-crud[data-acento="productos"] { --acento-icono: #4382a3; }
+html:not([data-tema="oscuro"]) .pagina-crud[data-acento="clientes"] { --acento-icono: #4d805b; }
+html:not([data-tema="oscuro"]) .pagina-crud[data-acento="compatibilidades"] { --acento-icono: #8b5b91; }
+html:not([data-tema="oscuro"]) .pagina-crud[data-acento="compras"] { --acento-icono: #398477; }
+html:not([data-tema="oscuro"]) .pagina-crud[data-acento="ventas"] { --acento-icono: #ad5b68; }
+html:not([data-tema="oscuro"]) .pagina-crud[data-acento="inventario"] { --acento-icono: #7c8a43; }
+html:not([data-tema="oscuro"]) .pagina-crud[data-acento="facturacion"] { --acento-icono: #4f788c; }
+html:not([data-tema="oscuro"]) .pagina-crud[data-acento="usuarios"] { --acento-icono: #687386; }
+html:not([data-tema="oscuro"]) .pagina-crud :is([class~="bg-slate-50"], [class~="bg-slate-100"], [class~="bg-white"]):has(> svg) {
+  border-color: var(--acento-icono, #777);
+  background-color: var(--acento-icono, #777);
+  color: #fff;
+}
+html:not([data-tema="oscuro"]) .pagina-crud[data-acento="neutro"] :is([class~="bg-slate-50"], [class~="bg-slate-100"], [class~="bg-white"]):has(> svg) {
+  border-color: #dededc;
+  background-color: #ededeb;
+  color: #626262;
+}
+html:not([data-tema="oscuro"]) .module-heading-icon {
+  border-color: #777;
+  background-color: #777;
+  color: #fff;
+}
+html:not([data-tema="oscuro"]) .module-heading-icon--neutro {
+  border-color: #dededc;
+  background-color: #ededeb;
+  color: #626262;
+}
+.submenu-active-link::before {
+  position: absolute;
+  top: 50%;
+  left: -17px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #fafaf9;
+  border-radius: 50%;
+  background: #292929;
+  content: "";
+  transform: translateY(-50%);
+}
+html[data-tema="oscuro"] .submenu-active-link::before {
+  border-color: #fff;
+  background: #292929;
+}
 
 /* Tema oscuro monocromático para la aplicación completa. */
 html[data-tema="oscuro"] {
@@ -90,3 +171,37 @@ html[data-tema="oscuro"] .border-amber-200 { border-color: #564520; }
 html[data-tema="oscuro"] .text-amber-700 { color: #e7cb82; }
 html[data-tema="oscuro"] .sidebar-logout { color: #a3a3a3; }
 html[data-tema="oscuro"] .sidebar-logout:hover { color: #fca5a5; background-color: #321d1d; }
+
+/* La barra adopta el tono de marca en claro y conserva el carbón en oscuro. */
+html:not([data-tema="oscuro"]) .app-sidebar {
+  background-color: #0F172B;
+  border-color: rgb(255 255 255 / .1);
+}
+html[data-tema="oscuro"] .app-sidebar {
+  background-color: #101010;
+  border-color: #303030;
+}
+.app-sidebar .submenu-active-link::before {
+  border-color: #0F172B;
+  background-color: #e5e7eb;
+}
+html[data-tema="oscuro"] .app-sidebar .submenu-active-link::before {
+  border-color: #101010;
+  background-color: #e5e7eb;
+}
+.app-sidebar .sidebar-logout { color: rgb(255 255 255 / .55); }
+.app-sidebar .sidebar-logout:hover { color: #fecaca; background-color: rgb(127 29 29 / .45); }
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / .28) transparent;
+}
+.sidebar-scroll::-webkit-scrollbar { width: 6px; }
+.sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgb(255 255 255 / .24);
+}
+.sidebar-scroll::-webkit-scrollbar-thumb:hover { background: rgb(255 255 255 / .42); }
+html[data-tema="oscuro"] .sidebar-scroll { scrollbar-color: #454545 transparent; }
+html[data-tema="oscuro"] .sidebar-scroll::-webkit-scrollbar-thumb { background: #454545; }
+html[data-tema="oscuro"] .sidebar-scroll::-webkit-scrollbar-thumb:hover { background: #626262; }

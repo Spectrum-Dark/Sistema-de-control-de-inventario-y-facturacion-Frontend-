@@ -1,4 +1,5 @@
 import PanelReporte from "../../components/reportes/PanelReporte";
+import EncabezadoReporte from "../../components/reportes/EncabezadoReporte";
 import { ShoppingCart } from "lucide-react";
 import { obtenerReporteCompras } from "../../services/reportes/reportesService";
 import { formatearFechaHora } from "../../utils/compartido/fecha";
@@ -7,10 +8,7 @@ import { formatearPrecio } from "../../utils/productos/formato";
 export default function ReporteCompras() {
   return (
     <div className="space-y-5">
-      <header className="flex items-center gap-3 border-b border-slate-200 pb-4">
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700"><ShoppingCart size={20} /></span><div><h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">Reporte de compras</h1>
-        <p className="mt-1 text-xs text-slate-500 sm:text-sm">Consulta compras por rango de fechas y estado, incluidos sus productos y totales.</p></div>
-      </header>
+      <EncabezadoReporte Icono={ShoppingCart} titulo="Reporte de compras" descripcion="Consulta compras por rango de fechas y estado, incluidos sus productos y totales." />
       <PanelReporte
         titulo="Compras registradas"
         Icono={ShoppingCart}

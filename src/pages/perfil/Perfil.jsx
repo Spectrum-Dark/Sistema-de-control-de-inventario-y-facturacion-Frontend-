@@ -123,143 +123,143 @@ export default function Perfil() {
   );
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <header className="border-b border-slate-200 pb-4">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Mi perfil</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Actualiza tus datos personales y la contraseña de tu cuenta.
-        </p>
+    <div className="mx-auto max-w-6xl space-y-5">
+      <header className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-200 pb-4">
+        <div className="flex items-center gap-3">
+          <span className="module-heading-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600"><UserRound size={20} /></span>
+          <div>
+            <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Cuenta</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Mi perfil</h1>
+            <p className="mt-1 text-sm text-slate-500">Administra tu información personal y seguridad.</p>
+          </div>
+        </div>
+        <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600">
+          <ShieldCheck size={15} className="text-slate-500" />
+          {usuario.es_administrador_principal ? "Administrador principal" : "Cuenta administradora"}
+        </div>
       </header>
 
-      <section className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xl font-semibold text-white">
+      <section className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-lg font-semibold text-slate-800">
           {usuario.nombre_completo.charAt(0).toUpperCase()}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-lg font-semibold text-slate-900">{usuario.nombre_completo}</p>
-          <p className="text-sm text-slate-500">{ROLES[usuario.id_rol]}</p>
+          <p className="truncate font-semibold text-slate-900">{usuario.nombre_completo}</p>
+          <p className="mt-0.5 truncate text-sm text-slate-500">{usuario.correo}</p>
         </div>
-        <div className="hidden items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 sm:inline-flex">
-          <ShieldCheck size={15} />
-          {usuario.es_administrador_principal ? "Administrador principal" : "Cuenta administradora"}
-        </div>
+        <span className="hidden rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 sm:inline-flex">
+          {ROLES[usuario.id_rol]}
+        </span>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <div className="mb-5">
-          <h2 className="text-base font-semibold text-slate-900">Datos personales</h2>
-          <p className="mt-1 text-sm text-slate-500">Estos datos identifican tu cuenta en el sistema.</p>
-        </div>
-        <form onSubmit={guardarPerfil} className="space-y-4">
-          <CampoFormulario
-            id="nombre_completo"
-            label="Nombre completo"
-            icono={UserRound}
-            type="text"
-            maxLength={200}
-            autoComplete="name"
-            value={perfil.nombre_completo}
-            onChange={(evento) => setPerfil({ ...perfil, nombre_completo: evento.target.value })}
-            required
-          />
-          <CampoFormulario
-            id="nombre_usuario"
-            label="Nombre de usuario"
-            icono={AtSign}
-            type="text"
-            maxLength={80}
-            autoComplete="username"
-            value={perfil.nombre_usuario}
-            onChange={(evento) => setPerfil({ ...perfil, nombre_usuario: evento.target.value })}
-            required
-          />
-          <CampoFormulario
-            id="correo"
-            label="Correo electrónico"
-            icono={Mail}
-            type="email"
-            maxLength={150}
-            autoComplete="email"
-            value={perfil.correo}
-            onChange={(evento) => setPerfil({ ...perfil, correo: evento.target.value })}
-            required
-          />
-          {errorPerfil && (
-            <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              {errorPerfil}
-            </p>
-          )}
-          <div className="flex justify-end border-t border-slate-100 pt-4">
-            <button
-              type="submit"
-              disabled={guardandoPerfil}
-              className="inline-flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <Save size={16} />
-              {guardandoPerfil ? "Guardando..." : "Guardar datos"}
-            </button>
+      <div className="grid items-start gap-5 xl:grid-cols-2">
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-5 flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600">
+              <UserRound size={17} />
+            </span>
+            <div>
+              <h2 className="text-sm font-semibold text-slate-900">Datos personales</h2>
+              <p className="mt-0.5 text-xs text-slate-500">Información de tu cuenta.</p>
+            </div>
           </div>
-        </form>
-      </section>
+          <form onSubmit={guardarPerfil} className="space-y-3.5">
+            <CampoFormulario
+              id="nombre_completo"
+              label="Nombre completo"
+              icono={UserRound}
+              type="text"
+              maxLength={200}
+              autoComplete="name"
+              value={perfil.nombre_completo}
+              onChange={(evento) => setPerfil({ ...perfil, nombre_completo: evento.target.value })}
+              required
+            />
+            <CampoFormulario
+              id="nombre_usuario"
+              label="Nombre de usuario"
+              icono={AtSign}
+              type="text"
+              maxLength={80}
+              autoComplete="username"
+              value={perfil.nombre_usuario}
+              onChange={(evento) => setPerfil({ ...perfil, nombre_usuario: evento.target.value })}
+              required
+            />
+            <CampoFormulario
+              id="correo"
+              label="Correo electrónico"
+              icono={Mail}
+              type="email"
+              maxLength={150}
+              autoComplete="email"
+              value={perfil.correo}
+              onChange={(evento) => setPerfil({ ...perfil, correo: evento.target.value })}
+              required
+            />
+            {errorPerfil && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{errorPerfil}</p>}
+            <div className="flex justify-end border-t border-slate-100 pt-4">
+              <button type="submit" disabled={guardandoPerfil} className="inline-flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60">
+                <Save size={16} />{guardandoPerfil ? "Guardando..." : "Guardar cambios"}
+              </button>
+            </div>
+          </form>
+        </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <div className="mb-5">
-          <h2 className="text-base font-semibold text-slate-900">Cambiar contraseña</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Por seguridad, confirma tu contraseña actual. Al guardarla tendrás que iniciar sesión nuevamente.
-          </p>
-        </div>
-        <form onSubmit={cambiarContrasena} className="space-y-4">
-          <CampoFormulario
-            id="contrasena_actual"
-            label="Contraseña actual"
-            icono={LockKeyhole}
-            type={verContrasenas ? "text" : "password"}
-            autoComplete="current-password"
-            value={contrasenas.contrasena_actual}
-            onChange={(evento) => setContrasenas({ ...contrasenas, contrasena_actual: evento.target.value })}
-            required
-            accionDerecha={botonVerContrasena}
-          />
-          <CampoFormulario
-            id="contrasena"
-            label="Nueva contraseña"
-            icono={LockKeyhole}
-            type={verContrasenas ? "text" : "password"}
-            autoComplete="new-password"
-            minLength={8}
-            value={contrasenas.contrasena}
-            onChange={(evento) => setContrasenas({ ...contrasenas, contrasena: evento.target.value })}
-            required
-            accionDerecha={botonVerContrasena}
-          />
-          <CampoFormulario
-            id="contrasena_confirmation"
-            label="Confirmar nueva contraseña"
-            icono={LockKeyhole}
-            type={verContrasenas ? "text" : "password"}
-            autoComplete="new-password"
-            value={contrasenas.contrasena_confirmation}
-            onChange={(evento) => setContrasenas({ ...contrasenas, contrasena_confirmation: evento.target.value })}
-            required
-          />
-          {errorContrasena && (
-            <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              {errorContrasena}
-            </p>
-          )}
-          <div className="flex justify-end border-t border-slate-100 pt-4">
-            <button
-              type="submit"
-              disabled={guardandoContrasena}
-              className="inline-flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <LockKeyhole size={16} />
-              {guardandoContrasena ? "Actualizando..." : "Cambiar contraseña"}
-            </button>
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-5 flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600">
+              <LockKeyhole size={17} />
+            </span>
+            <div>
+              <h2 className="text-sm font-semibold text-slate-900">Seguridad</h2>
+              <p className="mt-0.5 text-xs text-slate-500">Actualiza la contraseña de acceso.</p>
+            </div>
           </div>
-        </form>
-      </section>
+          <form onSubmit={cambiarContrasena} className="space-y-3.5">
+            <CampoFormulario
+              id="contrasena_actual"
+              label="Contraseña actual"
+              icono={LockKeyhole}
+              type={verContrasenas ? "text" : "password"}
+              autoComplete="current-password"
+              value={contrasenas.contrasena_actual}
+              onChange={(evento) => setContrasenas({ ...contrasenas, contrasena_actual: evento.target.value })}
+              required
+              accionDerecha={botonVerContrasena}
+            />
+            <CampoFormulario
+              id="contrasena"
+              label="Nueva contraseña"
+              icono={LockKeyhole}
+              type={verContrasenas ? "text" : "password"}
+              autoComplete="new-password"
+              minLength={8}
+              value={contrasenas.contrasena}
+              onChange={(evento) => setContrasenas({ ...contrasenas, contrasena: evento.target.value })}
+              required
+              accionDerecha={botonVerContrasena}
+            />
+            <CampoFormulario
+              id="contrasena_confirmation"
+              label="Confirmar nueva contraseña"
+              icono={LockKeyhole}
+              type={verContrasenas ? "text" : "password"}
+              autoComplete="new-password"
+              value={contrasenas.contrasena_confirmation}
+              onChange={(evento) => setContrasenas({ ...contrasenas, contrasena_confirmation: evento.target.value })}
+              required
+            />
+            <p className="text-xs leading-relaxed text-slate-500">Al cambiarla, cerrarás tu sesión y tendrás que ingresar nuevamente.</p>
+            {errorContrasena && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{errorContrasena}</p>}
+            <div className="flex justify-end border-t border-slate-100 pt-4">
+              <button type="submit" disabled={guardandoContrasena} className="inline-flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60">
+                <LockKeyhole size={16} />{guardandoContrasena ? "Actualizando..." : "Actualizar contraseña"}
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
     </div>
   );
 }

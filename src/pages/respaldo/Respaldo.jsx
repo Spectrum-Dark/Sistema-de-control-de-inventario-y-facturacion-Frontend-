@@ -55,9 +55,12 @@ export default function Respaldo() {
 
   return (
     <div className="space-y-5">
-      <header className="flex items-center gap-3 border-b border-slate-200 pb-4">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700"><Database size={20} /></span>
-        <div><h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">Respaldos de base de datos</h1><p className="mt-1 text-xs text-slate-500 sm:text-sm">Descarga una copia SQL o restaura una copia existente.</p></div>
+      <header className="border-b border-slate-200 pb-3">
+        <div className="flex items-center gap-2.5">
+          <span className="module-heading-icon module-heading-icon--neutro flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700"><Database size={17} /></span>
+          <h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">Respaldos de base de datos</h1>
+        </div>
+        <p className="mt-1 text-xs text-slate-500 sm:text-sm">Descarga una copia SQL o restaura una copia existente.</p>
       </header>
 
       <div className="grid gap-4 xl:grid-cols-2">

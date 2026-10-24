@@ -25,11 +25,11 @@ import {
   obtenerProductosMasVendidos,
   obtenerReporteFinanciero,
 } from "../reportes/reportesService";
-import { cargasDashboard } from "../reportes/dashboardService";
+import { cargarDatosDashboard } from "../reportes/dashboardService";
 
 // Calienta en memoria las listas principales antes de que el usuario abra la vista.
 const cargasPorRuta = {
-  "/dashboard": cargasDashboard,
+  "/dashboard": [cargarDatosDashboard],
   "/categorias": [listarCategorias],
   "/marcas": [listarMarcas],
   "/proveedores": [listarProveedores],

@@ -11,12 +11,16 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <AuthProvider>
         <Toaster
-          position="bottom-right"
+          position="top-right"
+          offset={{ top: 20, right: 20 }}
           options={{
-            fill: "#1D293D",
+            fill: "var(--sileo-fill)",
+            roundness: 14,
+            duration: 4200,
             styles: {
-              title: "text-white!",
-              description: "text-white/80!",
+              title: "app-toast-title",
+              description: "app-toast-description",
+              badge: "app-toast-badge",
             },
           }}
         />

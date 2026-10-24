@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ShieldCheck, UserRound, UserRoundCheck, UserRoundX } from "lucide-react";
+import { ShieldCheck, UserRound, UserRoundCheck, UserRoundX, UsersRound } from "lucide-react";
 import { useUsuarios } from "../../hooks/usuarios/useUsuarios";
 import { useAuth } from "../../hooks/sesion/useAuth";
 import { useGestionCrud } from "../../hooks/compartido/useGestionCrud";
@@ -61,7 +61,8 @@ export default function Usuarios() {
 
   return (
     <PaginaCrud
-      titulo="Usuarios"
+      acento="neutro"
+      titulo={<span className="inline-flex items-center gap-2.5"><span className="module-heading-icon module-heading-icon--neutro flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><UsersRound size={17} /></span>Usuarios</span>}
       subtitulo="Administra accesos, roles y estado de las cuentas del sistema."
       resumen={!cargando && !error ? <ResumenUsuarios usuarios={otrosUsuarios} /> : null}
       textoCarga="Cargando usuarios..."

@@ -1,30 +1,16 @@
-import { useLayoutEffect, useState } from "react";
-import { Moon, Package, ShieldCheck, Sun } from "lucide-react";
+import { useLayoutEffect } from "react";
+import { Package, ShieldCheck } from "lucide-react";
 
 const CLAVE_TEMA = "tema_interfaz";
 
 export default function PanelSesion({ children, etiqueta, titulo, descripcion }) {
-  const [temaOscuro, setTemaOscuro] = useState(() => localStorage.getItem(CLAVE_TEMA) === "oscuro");
-
-  // Comparte la preferencia de tema con el resto del sistema.
+  // Conserva en el login la preferencia elegida desde la aplicación principal.
   useLayoutEffect(() => {
-    document.documentElement.dataset.tema = temaOscuro ? "oscuro" : "claro";
-    localStorage.setItem(CLAVE_TEMA, temaOscuro ? "oscuro" : "claro");
-  }, [temaOscuro]);
+    document.documentElement.dataset.tema = localStorage.getItem(CLAVE_TEMA) === "oscuro" ? "oscuro" : "claro";
+  }, []);
 
   return (
     <main className="auth-layout">
-      <button
-        className="auth-theme-toggle"
-        type="button"
-        onClick={() => setTemaOscuro((actual) => !actual)}
-        aria-label={temaOscuro ? "Activar modo claro" : "Activar modo oscuro"}
-        title={temaOscuro ? "Modo claro" : "Modo oscuro"}
-      >
-        {temaOscuro ? <Sun size={17} /> : <Moon size={17} />}
-        <span>{temaOscuro ? "Modo claro" : "Modo oscuro"}</span>
-      </button>
-
       <section className="auth-card" aria-labelledby="auth-title">
         <header className="auth-brand">
           <span className="auth-brand-icon"><Package size={22} strokeWidth={2} /></span>

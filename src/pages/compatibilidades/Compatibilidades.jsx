@@ -73,6 +73,7 @@ export default function Compatibilidades() {
 
   return (
     <PaginaCrud
+      acento="neutro"
       titulo={<span className="inline-flex items-center gap-2.5"><span className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><Link2 size={18} /></span>Compatibilidades</span>}
       subtitulo="Relaciona repuestos con los modelos de vehículo para consultar su compatibilidad."
       resumen={!cargando && !error ? <ResumenCompatibilidades filas={filas} /> : null}

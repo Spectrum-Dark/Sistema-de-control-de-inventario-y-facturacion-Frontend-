@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Printer, RotateCw } from "lucide-react";
+import { FileText, Printer, RotateCw } from "lucide-react";
 import CampoSelect from "../../components/compartido/CampoSelect";
 import EditorDetallesVenta from "../../components/ventas/EditorDetallesVenta";
 import VistaProforma from "../../components/proformas/VistaProforma";
@@ -98,12 +98,11 @@ export default function Proformas() {
   return (
     <div className="mx-auto max-w-6xl space-y-4">
       <header className="border-b border-slate-200 pb-3">
-        <h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
+        <h1 className="inline-flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-slate-900">
+          <span className="module-heading-icon module-heading-icon--neutro flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600"><FileText size={18} /></span>
           Proformas
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Prepara e imprime una cotización para el cliente.
-        </p>
+        <p className="mt-1 text-sm text-slate-500">Prepara e imprime una cotización para el cliente.</p>
       </header>
 
       {errorDatos ? (

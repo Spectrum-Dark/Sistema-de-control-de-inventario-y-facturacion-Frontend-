@@ -68,6 +68,7 @@ export default function Ventas() {
 
   return (
     <PaginaCrud
+      acento="neutro"
       titulo={<span className="inline-flex items-center gap-2.5"><span className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><ReceiptText size={18} /></span>Ventas</span>}
       subtitulo="Ventas y facturación · Registro y seguimiento de ventas."
       resumen={!cargando && !error ? <ResumenVentas ventas={ventas} /> : null}

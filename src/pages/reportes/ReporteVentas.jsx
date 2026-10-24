@@ -1,4 +1,6 @@
 import PanelReporte from "../../components/reportes/PanelReporte";
+import GrupoPanelesReporte from "../../components/reportes/GrupoPanelesReporte";
+import EncabezadoReporte from "../../components/reportes/EncabezadoReporte";
 import { ReceiptText, TrendingUp } from "lucide-react";
 import {
   obtenerProductosMasVendidos,
@@ -10,10 +12,8 @@ import { formatearPrecio } from "../../utils/productos/formato";
 export default function ReporteVentas() {
   return (
     <div className="space-y-5">
-      <header className="flex items-center gap-3 border-b border-slate-200 pb-4">
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700"><ReceiptText size={20} /></span><div><h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">Reportes de ventas</h1>
-        <p className="mt-1 text-xs text-slate-500 sm:text-sm">Consulta ventas y productos más vendidos en el período seleccionado.</p></div>
-      </header>
+      <EncabezadoReporte Icono={ReceiptText} titulo="Reportes de ventas" descripcion="Consulta ventas y productos más vendidos en el período seleccionado." />
+      <GrupoPanelesReporte>
       <PanelReporte
         titulo="Ventas registradas"
         Icono={ReceiptText}
@@ -47,6 +47,7 @@ export default function ReporteVentas() {
         busquedaPorCampo
         exportar
       />
+      </GrupoPanelesReporte>
     </div>
   );
 }
