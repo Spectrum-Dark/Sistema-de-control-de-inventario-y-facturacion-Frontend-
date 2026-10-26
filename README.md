@@ -32,7 +32,7 @@ Interfaz web para el sistema de repuestos. Está construida con React y Vite, y 
    Cambia la dirección para que apunte al servidor de API que usarás. Por ejemplo, si la API corre en otra computadora de la red local:
 
    ```dotenv
-   VITE_API_URL=http://192.168.1.50:8000/api
+   VITE_API_URL=http://192.168.1.1:8000/api
    ```
 
    Sustituye `192.168.1.1` por la IP real del equipo que ejecuta la API. Debe ser posible acceder a esa IP y puerto desde el navegador de la computadora cliente. Configura también el backend para permitir el origen del frontend (CORS).
