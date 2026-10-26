@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { useState } from 'react';
 
+/**
+ * Hook personalizado 'usePaginacion' para manejar la paginación de colecciones de datos,
+ * controlando la página actual, el cálculo del total de páginas y la porción visible de elementos.
+ */
 export function usePaginacion(items, porPagina = 10) {
   const [paginaSolicitada, setPaginaSolicitada] = useState(1);
 
   const total = items.length;
   const totalPaginas = Math.max(1, Math.ceil(total / porPagina));
 
-  // Si la lista se encoge (por ejemplo, al filtrar), la página se ajusta sola
+  // Si la lista se encoge (por ejemplo, al filtrar), la página se ajusta sola de manera segura.
   const pagina = Math.min(paginaSolicitada, totalPaginas);
 
   const inicio = (pagina - 1) * porPagina;

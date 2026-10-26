@@ -1,3 +1,5 @@
+/* Hoja de estilos dedicada a la estructuración visual, diseño adaptativo y compatibilidad con el modo oscuro de las pantallas de autenticación (login y registro) */
+
 .auth-layout {
   --auth-primary: #5147c7;
   min-height: 100vh;
@@ -11,6 +13,7 @@
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+/* Tarjeta contenedora principal de los formularios de acceso */
 .auth-card {
   position: relative;
   width: min(100%, 430px);
@@ -23,17 +26,20 @@
 }
 .auth-card::before { position: absolute; top: -1px; left: 32px; width: 52px; height: 3px; border-radius: 0 0 4px 4px; background: var(--auth-primary); content: ""; }
 
+/* Identidad de marca y logotipo superior de la tarjeta */
 .auth-brand { display: grid; grid-template-columns: 40px 1fr; grid-template-rows: auto auto; align-items: center; column-gap: 11px; padding-bottom: 17px; border-bottom: 1px solid #edf0f4; }
 .auth-brand-icon { display: grid; width: 40px; height: 40px; grid-row: span 2; place-items: center; border: 1px solid #e1e2f4; border-radius: 11px; background: #f2f1ff; color: var(--auth-primary); }
 .auth-brand-name { color: #1d2940; font-size: 15px; font-weight: 750; letter-spacing: -.025em; }
 .auth-brand-name span { color: var(--auth-primary); }
 .auth-brand-caption { margin-top: 4px; color: #8a94a5; font-size: 9px; font-weight: 700; letter-spacing: .14em; }
 
+/* Sección de cabecera de los formularios (títulos, subtítulos y subtags) */
 .auth-form-heading { margin: 19px 0 17px; }
 .auth-form-eyebrow { color: var(--auth-primary); font-size: 10px; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; }
 .auth-form-heading h1 { margin: 9px 0 7px; color: #172033; font-size: clamp(28px, 4vw, 34px); font-weight: 700; letter-spacing: -.04em; line-height: 1.16; }
 .auth-form-heading p { margin: 0; color: #748095; font-size: 13px; line-height: 1.6; }
 
+/* Estructura general de campos, inputs, etiquetas y botones de acción */
 .auth-form { display: grid; gap: 10px; }
 .auth-form > div { min-width: 0; }
 .auth-form label { margin-bottom: 5px; color: #38465c; font-size: 11px; font-weight: 650; }
@@ -43,9 +49,13 @@
 .auth-form input[aria-invalid="true"] { border-color: #f87171; }
 .auth-form button[type="button"] { display: grid; place-items: center; color: #929daf; transition: color .18s ease; }
 .auth-form button[type="button"]:hover { color: #4c46a7; }
+
+/* Botón principal de envío o submit de autenticación */
 .auth-submit { display: flex; min-height: 43px; align-items: center; justify-content: center; gap: 9px; margin-top: 2px; border: 0; border-radius: 8px; background: #5147c7; color: white; font-size: 12px; font-weight: 650; box-shadow: 0 5px 12px rgba(81,71,199,.2); transition: background .18s ease, transform .18s ease, box-shadow .18s ease; }
 .auth-submit:hover { transform: translateY(-1px); background: #453cae; box-shadow: 0 8px 17px rgba(81,71,199,.25); }
 .auth-submit:disabled { transform: none; }
+
+/* Enlaces y notas de pie dentro de los formularios */
 .auth-form-footer { margin: 4px 0 0; color: #748095; font-size: 12px; text-align: center; }
 .auth-form-footer a { color: #4b43b4; font-weight: 700; text-decoration: none; text-underline-offset: 3px; }
 .auth-form-footer a:hover { text-decoration: underline; }
@@ -53,7 +63,7 @@
 .auth-security-note svg { color: #598a73; width: 14px; }
 .auth-copyright { margin: 12px 0 0; color: #929bab; font-size: 9px; text-align: center; }
 
-/* El tema oscuro conserva contraste y comparte la preferencia guardada del sistema. */
+/* Configuración de estilos y variables para el modo oscuro preservando contraste y jerarquía visual */
 html[data-tema="oscuro"] .auth-layout { background: #000; color: #eee; }
 html[data-tema="oscuro"] .auth-card { border-color: #333; background: #101010; box-shadow: 0 20px 55px rgba(0,0,0,.65); }
 html[data-tema="oscuro"] .auth-brand { border-color: #303030; }
@@ -79,6 +89,7 @@ html[data-tema="oscuro"] .auth-security-note { border-color: #303030; color: #99
 html[data-tema="oscuro"] .auth-security-note svg { color: #bbb; }
 html[data-tema="oscuro"] .auth-card::before { background: #bdbdbd; }
 
+/* Consultas de medios (Media Queries) para garantizar correcta adaptabilidad en pantallas compactas y dispositivos móviles */
 @media (max-width: 540px) {
   .auth-layout { justify-content: center; padding: 56px 16px 14px; }
   .auth-card { margin: auto 0; padding: 22px 20px 18px; }

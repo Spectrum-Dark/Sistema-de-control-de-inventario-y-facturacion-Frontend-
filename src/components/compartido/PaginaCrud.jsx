@@ -35,12 +35,12 @@ export default function PaginaCrud({
     // Contenedor principal con clase y atributo de acento personalizado para la página CRUD.
     <div className="pagina-crud space-y-5" data-acento={acento}>
       {/* Cabecera de la página que agrupa el título principal, subtítulo y el botón de creación principal (si procede) */}
-      <div className="flex flex-col gap-4 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+      <div className="flex flex-col gap-4 border-b border-slate-200 pb-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0 pr-12 lg:pr-0">
+          <h1 className="text-xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-2xl [&>span]:max-w-full [&>span]:flex-wrap">
             {titulo}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">{subtitulo}</p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-500 sm:text-sm">{subtitulo}</p>
         </div>
 
         {/* Botón de creación condicional (se oculta si el botón se maneja dentro de la barra de filtros o si no hay permisos) */}

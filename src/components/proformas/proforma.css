@@ -1,3 +1,4 @@
+/* Hoja de estilos dedicada al formato de impresión y exportación A4 para el módulo de proformas */
 .proforma-impresion {
   display: none;
   box-sizing: border-box;
@@ -9,6 +10,7 @@
   overflow-wrap: anywhere;
 }
 
+/* Encabezado principal del documento impreso (logotipo/título y metadatos de emisión) */
 .proforma-impresion__encabezado {
   display: flex;
   align-items: flex-start;
@@ -22,10 +24,14 @@
 .proforma-impresion__encabezado p { margin: 1mm 0 0; color: #555; }
 .proforma-impresion__fecha { display: grid; gap: 1mm; text-align: right; }
 .proforma-impresion__fecha span { color: #555; font-size: 9pt; }
+
+/* Sección de datos generales del cliente */
 .proforma-impresion__cliente { margin: 8mm 0; }
 .proforma-impresion h2 { margin: 0 0 2mm; font-size: 10pt; text-transform: uppercase; letter-spacing: .4px; }
 .proforma-impresion__cliente p,
 .proforma-impresion__observaciones p { margin: 1mm 0; }
+
+/* Estructura de la tabla de detalles de ítems y productos cotizados */
 .proforma-impresion table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .proforma-impresion th,
 .proforma-impresion td { padding: 3mm 2mm; border-bottom: 1px solid #cbd5e1; text-align: left; vertical-align: top; }
@@ -35,14 +41,20 @@
 .proforma-impresion th:nth-child(n+2),
 .proforma-impresion td:nth-child(n+2) { text-align: right; }
 .proforma-impresion td small { display: block; margin-top: 1mm; color: #64748b; }
+
+/* Sección de totales, subtotal e impuestos de la proforma */
 .proforma-impresion__totales { width: min(100%, 78mm); margin: 7mm 0 0 auto; }
 .proforma-impresion__totales p { display: flex; justify-content: space-between; gap: 6mm; margin: 2mm 0; }
 .proforma-impresion__total { border-top: 1px solid #111; padding-top: 3mm; font-size: 12pt; }
+
+/* Bloques inferiores de observaciones y pie de página del documento */
 .proforma-impresion__observaciones { margin-top: 9mm; }
 .proforma-impresion footer { margin-top: 16mm; border-top: 1px solid #cbd5e1; padding-top: 3mm; color: #555; text-align: center; font-size: 8pt; }
 
+/* Configuración de página física para impresión en formato A4 vertical */
 @page { size: A4 portrait; margin: 16mm; }
 
+/* Reglas de visibilidad y reajuste exclusivas para la acción de impresión del navegador */
 @media print {
   html, body, #root { min-height: 0 !important; height: auto !important; background: #fff !important; }
   body * { visibility: hidden !important; }

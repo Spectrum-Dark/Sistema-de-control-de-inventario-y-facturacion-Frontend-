@@ -1,39 +1,92 @@
-import { useMemo } from "react";
-import { Package, Check, CircleMinus, TriangleAlert } from "lucide-react";
-import { useProductos } from "../../hooks/productos/useProductos";
-import { useCategorias } from "../../hooks/categorias/useCategorias";
-import { useProveedores } from "../../hooks/proveedores/useProveedores";
-import { usePermisos } from "../../hooks/sesion/usePermisos";
-import { useGestionCrud } from "../../hooks/compartido/useGestionCrud";
-import { eliminarProducto } from "../../services/productos/productosService";
+import { useMemo } from 'react';
+import { Package, Check, CircleMinus, TriangleAlert } from 'lucide-react';
+import { useProductos } from '../../hooks/productos/useProductos';
+import { useCategorias } from '../../hooks/categorias/useCategorias';
+import { useProveedores } from '../../hooks/proveedores/useProveedores';
+import { usePermisos } from '../../hooks/sesion/usePermisos';
+import { useGestionCrud } from '../../hooks/compartido/useGestionCrud';
+import { eliminarProducto } from '../../services/productos/productosService';
 import {
   FILTROS_INICIALES,
   filtrarProductos,
-} from "../../utils/productos/filtros";
-import PaginaCrud from "../../components/compartido/PaginaCrud";
-import FiltrosProductos from "../../components/productos/FiltrosProductos";
-import TablaProductos from "../../components/productos/TablaProductos";
-import ModalProducto from "../../components/productos/ModalProducto";
-import { tieneStockBajo } from "../../utils/productos/formato";
+} from '../../utils/productos/filtros';
+import PaginaCrud from '../../components/compartido/PaginaCrud';
+import FiltrosProductos from '../../components/productos/FiltrosProductos';
+import TablaProductos from '../../components/productos/TablaProductos';
+import ModalProducto from '../../components/productos/ModalProducto';
+import { tieneStockBajo } from '../../utils/productos/formato';
 
+/**
+ * COMPONENTE: ResumenProductos
+ * Explicación: Componente de tipo KPI que calcula y muestra las métricas clave del módulo de productos
+ * (total de productos, activos, con stock bajo y inactivos) mediante filtrados sobre el listado general.
+ */
 function ResumenProductos({ productos }) {
   const metricas = [
-    { etiqueta: "Productos registrados", valor: productos.length, Icono: Package },
-    { etiqueta: "Activos", valor: productos.filter((producto) => producto.estado === "Activo").length, Icono: Check },
-    { etiqueta: "Stock bajo", valor: productos.filter(tieneStockBajo).length, Icono: TriangleAlert },
-    { etiqueta: "Inactivos", valor: productos.filter((producto) => producto.estado === "Inactivo").length, Icono: CircleMinus },
+    {
+      etiqueta: 'Productos registrados',
+      valor: productos.length,
+      Icono: Package,
+    },
+    {
+      etiqueta: 'Activos',
+      valor: productos.filter((producto) => producto.estado === 'Activo')
+        .length,
+      Icono: Check,
+    },
+    {
+      etiqueta: 'Stock bajo',
+      valor: productos.filter(tieneStockBajo).length,
+      Icono: TriangleAlert,
+    },
+    {
+      etiqueta: 'Inactivos',
+      valor: productos.filter((producto) => producto.estado === 'Inactivo')
+        .length,
+      Icono: CircleMinus,
+    },
   ];
-  return <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Resumen de productos">{metricas.map(({ etiqueta, valor, Icono }) => <article key={etiqueta} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-sm"><span className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600"><Icono size={18} /></span><span><span className="block text-[11px] font-medium text-slate-500">{etiqueta}</span><span className="mt-0.5 block text-xl font-semibold tracking-tight text-slate-900">{valor}</span></span></article>)}</section>;
+  return (
+    <section
+      className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+      aria-label="Resumen de productos"
+    >
+      {metricas.map(({ etiqueta, valor, Icono }) => (
+        <article
+          key={etiqueta}
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-sm"
+        >
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600">
+            <Icono size={18} />
+          </span>
+          <span>
+            <span className="block text-[11px] font-medium text-slate-500">
+              {etiqueta}
+            </span>
+            <span className="mt-0.5 block text-xl font-semibold tracking-tight text-slate-900">
+              {valor}
+            </span>
+          </span>
+        </article>
+      ))}
+    </section>
+  );
 }
 
+/**
+ * COMPONENTE PRINCIPAL: Productos
+ * Explicación: Orquestador del módulo de productos encargado de obtener los catálogos y listados mediante hooks,
+ * mapear los nombres de categorías, administrar permisos de usuario y gestionar el ciclo CRUD completo.
+ */
 export default function Productos() {
+  // Extracción del listado de productos, categorías, proveedores y verificación de permisos del usuario actual.
   const { productos, cargando, error, recargar, actualizarEnLista } =
     useProductos();
   const { categorias } = useCategorias();
   const { proveedores } = useProveedores();
   const permisos = usePermisos();
 
-  // { id_categoria: "Frenos", ... } para mostrar el nombre de cada categoría
+  // Mapeo optimizado mediante useMemo para asociar cada ID de categoría con su respectivo nombre descriptivo.
   const nombresCategorias = useMemo(
     () =>
       Object.fromEntries(
@@ -42,6 +95,7 @@ export default function Productos() {
     [categorias]
   );
 
+  // Hook genérico de gestión CRUD adaptado para filtrar por categorías, manejar paginación, modales y eliminación de productos.
   const g = useGestionCrud({
     items: productos,
     filtrosIniciales: FILTROS_INICIALES,
@@ -49,17 +103,31 @@ export default function Productos() {
       filtrarProductos(lista, filtros, nombresCategorias),
     recargar,
     actualizarEnLista,
-    claveId: "id_producto",
+    claveId: 'id_producto',
     eliminar: eliminarProducto,
-    tituloEliminado: "Producto eliminado",
+    tituloEliminado: 'Producto eliminado',
   });
 
   return (
+    /* 
+      Componente de diseño reutilizable (PaginaCrud)
+      Explicación: Estructura estándar que organiza la vista de administración de productos 
+      (título, métricas de resumen, sección de filtros avanzados, tabla de datos y diálogos de eliminación/modales).
+    */
     <PaginaCrud
       acento="neutro"
-      titulo={<span className="inline-flex items-center gap-2.5"><span className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><Package size={18} /></span>Productos</span>}
+      titulo={
+        <span className="inline-flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm">
+            <Package size={18} />
+          </span>
+          Productos
+        </span>
+      }
       subtitulo="Administra el catálogo de repuestos, precios y niveles de inventario."
-      resumen={!cargando && !error ? <ResumenProductos productos={productos} /> : null}
+      resumen={
+        !cargando && !error ? <ResumenProductos productos={productos} /> : null
+      }
       textoNuevo="Nuevo producto"
       textoCarga="Cargando productos..."
       mensajeVacio="Aún no hay productos registrados."
@@ -99,7 +167,7 @@ export default function Productos() {
       tituloEliminar="Eliminar producto"
       mensajeEliminar={(p) => (
         <>
-          ¿Seguro que quieres eliminar el producto{" "}
+          ¿Seguro que quieres eliminar el producto{' '}
           <strong>{p.nombre_producto}</strong>? Esta acción no se puede
           deshacer.
         </>
@@ -107,9 +175,10 @@ export default function Productos() {
       onConfirmarEliminar={g.confirmarEliminar}
       onCancelarEliminar={g.cancelarEliminar}
     >
+      {/* Renderizado condicional del modal para crear o editar un producto en el inventario */}
       {g.modal && (
         <ModalProducto
-          key={g.modal.registro?.id_producto ?? "nuevo"}
+          key={g.modal.registro?.id_producto ?? 'nuevo'}
           producto={g.modal.registro}
           categorias={categorias}
           proveedores={proveedores}

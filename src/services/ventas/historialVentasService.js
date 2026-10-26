@@ -1,4 +1,4 @@
-import { peticion } from "../compartido/clienteApi";
+import { peticion } from '../compartido/clienteApi';
 
-export const listarHistorialVentas = () =>
-  peticion("/ventas/historial/listar");
+// Obtiene los movimientos del historial de ventas.
+export const listarHistorialVentas = () => peticion('/ventas/historial/listar');

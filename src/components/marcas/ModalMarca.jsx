@@ -1,37 +1,43 @@
-import { useState } from "react";
-import { CarFront, Loader2, Save, Plus } from "lucide-react";
-import { sileo } from "sileo";
-import Modal from "../compartido/Modal";
-import CampoFormulario from "../compartido/CampoFormulario";
-import CampoSelect from "../compartido/CampoSelect";
-import CampoTextarea from "../compartido/CampoTextarea";
-import { obtenerCambios } from "../../utils/compartido/formulario";
+import { useState } from 'react';
+import { CarFront, Loader2, Save, Plus } from 'lucide-react';
+import { sileo } from 'sileo';
+import Modal from '../compartido/Modal';
+import CampoFormulario from '../compartido/CampoFormulario';
+import CampoSelect from '../compartido/CampoSelect';
+import CampoTextarea from '../compartido/CampoTextarea';
+import { obtenerCambios } from '../../utils/compartido/formulario';
 import {
   crearMarca,
   actualizarMarca,
-} from "../../services/marcas/marcasService";
+} from '../../services/marcas/marcasService';
 
+// Componente modal 'ModalMarca' para la creación y edición de marcas de vehículos, gestionando validaciones, estados de carga, diferencias en datos para actualización y vista previa interactiva.
 export default function ModalMarca({ marca, onCerrar, onGuardado }) {
+  // Determina si el modal está en modo edición si se recibe un objeto 'marca' con 'id_marca'.
   const esEdicion = Boolean(marca?.id_marca);
 
+  // Estado del formulario con datos iniciales de la marca o valores por defecto.
   const [form, setForm] = useState({
-    nombre_marca: marca?.nombre_marca ?? "",
-    descripcion: marca?.descripcion ?? "",
-    estado: esEdicion ? marca.estado ?? "Activa" : undefined,
+    nombre_marca: marca?.nombre_marca ?? '',
+    descripcion: marca?.descripcion ?? '',
+    estado: esEdicion ? (marca.estado ?? 'Activa') : undefined,
   });
   const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
+  // Manejador general de cambios en los campos del formulario.
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setError("");
+    setError('');
   };
 
+  // Manejador del envío del formulario para crear o actualizar la marca.
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validación: el nombre de la marca es un campo obligatorio.
     if (!form.nombre_marca.trim()) {
-      setError("El nombre de la marca es obligatorio.");
+      setError('El nombre de la marca es obligatorio.');
       return;
     }
 
@@ -42,8 +48,8 @@ export default function ModalMarca({ marca, onCerrar, onGuardado }) {
 
     let datos = valores;
 
+    // Al editar, utiliza 'obtenerCambios' para enviar únicamente los campos modificados a la API.
     if (esEdicion) {
-      // Al editar, solo se envía lo que cambió
       datos = obtenerCambios(valores, {
         nombre_marca: marca.nombre_marca,
         descripcion: marca.descripcion ?? null,
@@ -51,7 +57,7 @@ export default function ModalMarca({ marca, onCerrar, onGuardado }) {
       if (form.estado !== marca.estado) datos.estado = form.estado;
 
       if (Object.keys(datos).length === 0) {
-        setError("No hay cambios para guardar.");
+        setError('No hay cambios para guardar.');
         return;
       }
     }
@@ -64,7 +70,7 @@ export default function ModalMarca({ marca, onCerrar, onGuardado }) {
         : await crearMarca(datos);
 
       sileo.success({
-        title: esEdicion ? "Marca actualizada" : "Marca registrada",
+        title: esEdicion ? 'Marca actualizada' : 'Marca registrada',
         description: respuesta.message,
       });
       onGuardado(respuesta.datos, !esEdicion);
@@ -77,59 +83,101 @@ export default function ModalMarca({ marca, onCerrar, onGuardado }) {
 
   return (
     <Modal
-      titulo={esEdicion ? "Editar marca" : "Nueva marca"}
+      titulo={esEdicion ? 'Editar marca' : 'Nueva marca'}
       onCerrar={onCerrar}
       bloqueado={cargando}
       ancho="max-w-xl"
     >
       <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Cabecera informativa del modal */}
         <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><CarFront size={19} strokeWidth={1.8} /></span>
-          <div><p className="text-sm font-semibold text-slate-900">{esEdicion ? "Detalles de la marca" : "Nueva marca de vehículo"}</p><p className="mt-1 text-xs leading-relaxed text-slate-500">{esEdicion ? "Actualiza la información y el estado de esta marca." : "Registra una marca para organizar los modelos compatibles."}</p>{esEdicion && <p className="mt-2 text-[10px] font-medium text-slate-400">Registro #{marca.id_marca}</p>}</div>
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm">
+            <CarFront size={19} strokeWidth={1.8} />
+          </span>
+          <div>
+            <p className="text-sm font-semibold text-slate-900">
+              {esEdicion ? 'Detalles de la marca' : 'Nueva marca de vehículo'}
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-500">
+              {esEdicion
+                ? 'Actualiza la información y el estado de esta marca.'
+                : 'Registra una marca para organizar los modelos compatibles.'}
+            </p>
+            {esEdicion && (
+              <p className="mt-2 text-[10px] font-medium text-slate-400">
+                Registro #{marca.id_marca}
+              </p>
+            )}
+          </div>
         </div>
+
+        {/* Campos de entrada del formulario */}
         <div className="space-y-4">
-        <CampoFormulario
-          id="nombre_marca"
-          label="Nombre de la marca"
-          icono={CarFront}
-          type="text"
-          placeholder="Ej: Toyota"
-          maxLength={100}
-          value={form.nombre_marca}
-          onChange={handleChange}
-          required
-        />
-
-        <CampoTextarea
-          id="descripcion"
-          label="Descripción (opcional)"
-          maxLength={255}
-          placeholder="Describe brevemente la marca"
-          value={form.descripcion}
-          onChange={handleChange}
-        />
-
-        {esEdicion && (
-          <CampoSelect
-            id="estado"
-            label="Estado"
-            value={form.estado}
+          <CampoFormulario
+            id="nombre_marca"
+            label="Nombre de la marca"
+            icono={CarFront}
+            type="text"
+            placeholder="Ej: Toyota"
+            maxLength={100}
+            value={form.nombre_marca}
             onChange={handleChange}
-          >
-            <option value="Activa">Activa</option>
-            <option value="Inactiva">Inactiva</option>
-          </CampoSelect>
-        )}
+            required
+          />
+
+          <CampoTextarea
+            id="descripcion"
+            label="Descripción (opcional)"
+            maxLength={255}
+            placeholder="Describe brevemente la marca"
+            value={form.descripcion}
+            onChange={handleChange}
+          />
+
+          {/* Selector de estado (solamente visible al editar) */}
+          {esEdicion && (
+            <CampoSelect
+              id="estado"
+              label="Estado"
+              value={form.estado}
+              onChange={handleChange}
+            >
+              <option value="Activa">Activa</option>
+              <option value="Inactiva">Inactivas</option>
+            </CampoSelect>
+          )}
         </div>
 
-        {!esEdicion && <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3.5"><p className="mb-2 text-[10px] font-semibold uppercase tracking-[.12em] text-slate-500">Vista previa</p><div className="flex items-center gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600"><CarFront size={16} /></span><div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-800">{form.nombre_marca.trim() || "Nombre de marca"}</p><p className="mt-0.5 truncate text-xs text-slate-500">{form.descripcion.trim() || "Descripción opcional"}</p></div></div></div>}
+        {/* Tarjeta de vista previa dinámica (disponible solo durante la creación de una marca) */}
+        {!esEdicion && (
+          <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3.5">
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[.12em] text-slate-500">
+              Vista previa
+            </p>
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600">
+                <CarFront size={16} />
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-slate-800">
+                  {form.nombre_marca.trim() || 'Nombre de marca'}
+                </p>
+                <p className="mt-0.5 truncate text-xs text-slate-500">
+                  {form.descripcion.trim() || 'Descripción opcional'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
+        {/* Mensaje de error general del formulario */}
         {error && (
           <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-700">
             {error}
           </p>
         )}
 
+        {/* Botones de acción del formulario */}
         <div className="flex flex-col-reverse gap-2 border-t border-slate-200 pt-4 sm:flex-row sm:justify-end">
           <button
             type="button"
@@ -148,10 +196,10 @@ export default function ModalMarca({ marca, onCerrar, onGuardado }) {
             {cargando && <Loader2 size={16} className="animate-spin" />}
             {!cargando && (esEdicion ? <Save size={15} /> : <Plus size={15} />)}
             {cargando
-              ? "Guardando..."
+              ? 'Guardando...'
               : esEdicion
-              ? "Guardar cambios"
-              : "Registrar"}
+                ? 'Guardar cambios'
+                : 'Registrar'}
           </button>
         </div>
       </form>

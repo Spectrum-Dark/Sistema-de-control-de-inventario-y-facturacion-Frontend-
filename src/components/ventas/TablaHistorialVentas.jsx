@@ -1,20 +1,24 @@
-import { CalendarDays, Clock3, Eye, FileClock } from "lucide-react";
-import AccionesFila from "../compartido/AccionesFila";
-import { formatearFechaHora } from "../../utils/compartido/fecha";
+import { CalendarDays, Clock3, Eye, FileClock } from 'lucide-react';
+import AccionesFila from '../compartido/AccionesFila';
+import { formatearFechaHora } from '../../utils/compartido/fecha';
 
+// Objeto de mapeo para estandarizar las etiquetas legibles de los tipos de operaciones registradas en el historial.
 const NOMBRES_OPERACION = {
-  Correccion: "Corrección",
-  Anulacion: "Anulación",
+  Correccion: 'Corrección',
+  Anulacion: 'Anulación',
 };
 
+// Función auxiliar para obtener el nombre descriptivo de la operación de auditoría.
 const operacion = (registro) =>
-  NOMBRES_OPERACION[registro.tipo_operacion] ?? registro.tipo_operacion ?? "—";
+  NOMBRES_OPERACION[registro.tipo_operacion] ?? registro.tipo_operacion ?? '—';
 
+// Componente 'TablaHistorialVentas' encargado de listar el registro de auditoría de modificaciones y anulaciones de ventas, implementando un diseño dual responsivo (tabla clásica y tarjetas móviles) con opción para auditar cambios.
 export default function TablaHistorialVentas({ historial, onVerCambios }) {
+  // Define las acciones adicionales de fila (en este caso, visualizar los detalles de los cambios mediante el modal de auditoría).
   const extrasDe = (registro) => [
     {
-      titulo: "Ver cambios",
-      textoCorto: "Ver cambios",
+      titulo: 'Ver cambios',
+      textoCorto: 'Ver cambios',
       icono: Eye,
       onClick: () => onVerCambios(registro),
     },
@@ -22,8 +26,9 @@ export default function TablaHistorialVentas({ historial, onVerCambios }) {
 
   return (
     <>
+      {/* Vista de tabla tradicional para pantallas extra grandes (XL en adelante) */}
       <div className="hidden overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm xl:block">
-        <table className="w-full min-w-[900px] text-left text-sm">
+        <table className="w-full min-w-255 text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-[.12em] text-slate-500">
             <tr>
               <th className="px-4 py-3 font-medium">Fecha</th>
@@ -36,23 +41,39 @@ export default function TablaHistorialVentas({ historial, onVerCambios }) {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {historial.map((registro) => (
-              <tr key={registro.id_historial_venta} className="table-row-hover transition-colors">
+              <tr
+                key={registro.id_historial_venta}
+                className="table-row-hover transition-colors"
+              >
                 <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                  <span className="inline-flex items-center gap-1.5"><CalendarDays size={14} className="text-slate-400" />{formatearFechaHora(registro.fecha_operacion, { hora12: true })}</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <CalendarDays size={14} className="text-slate-400" />
+                    {formatearFechaHora(registro.fecha_operacion, {
+                      hora12: true,
+                    })}
+                  </span>
                 </td>
                 <td className="px-4 py-3">
-                  <span className="flex items-center gap-2 font-semibold text-slate-900"><FileClock size={16} className="text-slate-500" />{registro.venta?.numero_venta ?? "—"}</span>
+                  <span className="flex items-center gap-2 font-semibold text-slate-900">
+                    <FileClock size={16} className="text-slate-500" />
+                    {registro.venta?.numero_venta ?? '—'}
+                  </span>
                 </td>
-                <td className="px-4 py-3"><span className="inline-flex items-center gap-1.5 text-slate-600"><Clock3 size={14} className="text-slate-400" />{operacion(registro)}</span></td>
+                <td className="px-4 py-3">
+                  <span className="inline-flex items-center gap-1.5 text-slate-600">
+                    <Clock3 size={14} className="text-slate-400" />
+                    {operacion(registro)}
+                  </span>
+                </td>
                 <td className="px-4 py-3 text-slate-600">
-                  {registro.usuario?.nombre_completo ?? "—"}
+                  {registro.usuario?.nombre_completo ?? '—'}
                 </td>
                 <td className="max-w-xs px-4 py-3 text-slate-600">
-                  {registro.motivo || "—"}
+                  {registro.motivo || '—'}
                 </td>
                 <td className="px-4 py-3">
                   <AccionesFila
-                    nombre={registro.venta?.numero_venta ?? "venta"}
+                    nombre={registro.venta?.numero_venta ?? 'venta'}
                     extras={extrasDe(registro)}
                   />
                 </td>
@@ -62,6 +83,7 @@ export default function TablaHistorialVentas({ historial, onVerCambios }) {
         </table>
       </div>
 
+      {/* Vista de tarjetas adaptables para dispositivos móviles y pantallas medianas */}
       <div className="space-y-3 xl:hidden">
         {historial.map((registro) => (
           <div
@@ -70,22 +92,28 @@ export default function TablaHistorialVentas({ historial, onVerCambios }) {
           >
             <div className="flex items-start justify-between gap-3">
               <p className="font-medium text-slate-900">
-                {registro.venta?.numero_venta ?? "—"}
+                {registro.venta?.numero_venta ?? '—'}
               </p>
-              <span className="text-xs text-slate-500">{operacion(registro)}</span>
+              <span className="text-xs text-slate-500">
+                {operacion(registro)}
+              </span>
             </div>
             <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
-              <CalendarDays size={12} />{formatearFechaHora(registro.fecha_operacion, { hora12: true })} ·{" "}
-              {registro.usuario?.nombre_completo ?? "—"}
+              <CalendarDays size={12} />
+              {formatearFechaHora(registro.fecha_operacion, {
+                hora12: true,
+              })} · {registro.usuario?.nombre_completo ?? '—'}
             </p>
             {registro.motivo && (
               <p className="mt-2 text-sm text-slate-600">{registro.motivo}</p>
             )}
-            <AccionesFila
-              variante="tarjeta"
-              nombre={registro.venta?.numero_venta ?? "venta"}
-              extras={extrasDe(registro)}
-            />
+            <div className="mt-3 border-t border-slate-100 pt-1">
+              <AccionesFila
+                variante="tarjeta"
+                nombre={registro.venta?.numero_venta ?? 'venta'}
+                extras={extrasDe(registro)}
+              />
+            </div>
           </div>
         ))}
       </div>

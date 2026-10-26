@@ -1,15 +1,22 @@
-import { useState } from "react";
-import { FileText, Printer, RotateCw } from "lucide-react";
-import CampoSelect from "../../components/compartido/CampoSelect";
-import EditorDetallesVenta from "../../components/ventas/EditorDetallesVenta";
-import VistaProforma from "../../components/proformas/VistaProforma";
-import { useClientes } from "../../hooks/clientes/useClientes";
-import { useProductos } from "../../hooks/productos/useProductos";
-import { calcularTotales, subtotalDetalle } from "../../utils/ventas/calculos";
-import { FILA_VACIA, filaCompleta } from "../../utils/ventas/detalles";
-import { formatearPrecio } from "../../utils/productos/formato";
+import { useState } from 'react';
+import { FileText, Printer, RotateCw } from 'lucide-react';
+import CampoSelect from '../../components/compartido/CampoSelect';
+import EditorDetallesVenta from '../../components/ventas/EditorDetallesVenta';
+import VistaProforma from '../../components/proformas/VistaProforma';
+import { useClientes } from '../../hooks/clientes/useClientes';
+import { useProductos } from '../../hooks/productos/useProductos';
+import { calcularTotales, subtotalDetalle } from '../../utils/ventas/calculos';
+import { FILA_VACIA, filaCompleta } from '../../utils/ventas/detalles';
+import { formatearPrecio } from '../../utils/productos/formato';
 
+/**
+ * COMPONENTE PRINCIPAL: Proformas
+ * Explicación: Orquestador del módulo de proformas/cotizaciones que gestiona la carga de clientes y productos,
+ * el control de líneas de detalle mediante un editor interactivo, el cálculo de subtotales e impuestos,
+ * y la previsualización e impresión del documento final.
+ */
 export default function Proformas() {
+  // Extracción de listados, estados de carga y funciones de recarga para clientes y productos mediante hooks.
   const {
     clientes,
     cargando: cargandoClientes,
@@ -22,44 +29,56 @@ export default function Proformas() {
     error: errorProductos,
     recargar: recargarProductos,
   } = useProductos();
-  const [idCliente, setIdCliente] = useState("");
-  const [filas, setFilas] = useState([{ ...FILA_VACIA }]);
-  const [observaciones, setObservaciones] = useState("");
-  const [proforma, setProforma] = useState(null);
-  const [errorFormulario, setErrorFormulario] = useState("");
 
+  // Estados locales para almacenar el cliente seleccionado, las líneas de la proforma, notas y el estado de la proforma generada.
+  const [idCliente, setIdCliente] = useState('');
+  const [filas, setFilas] = useState([{ ...FILA_VACIA }]);
+  const [observaciones, setObservaciones] = useState('');
+  const [proforma, setProforma] = useState(null);
+  const [errorFormulario, setErrorFormulario] = useState('');
+
+  // Cálculos derivados y consolidación de estados de carga y errores de los servicios.
   const totales = calcularTotales(filas);
   const cargando = cargandoClientes || cargandoProductos;
   const errorDatos = errorClientes || errorProductos;
 
+  /**
+   * FUNCIÓN: prepararProforma
+   * Explicación: Valida que se haya seleccionado un cliente y completado las filas correctamente,
+   * busca la información detallada de los productos y consolida el objeto de la proforma para su previsualización e impresión.
+   */
   const prepararProforma = (evento) => {
     evento.preventDefault();
-    setErrorFormulario("");
+    setErrorFormulario('');
 
     if (!idCliente) {
-      setErrorFormulario("Selecciona un cliente para continuar.");
+      setErrorFormulario('Selecciona un cliente para continuar.');
       return;
     }
     if (!filas.length || !filas.every(filaCompleta)) {
-      setErrorFormulario("Completa el producto, la cantidad y el precio de cada fila.");
+      setErrorFormulario(
+        'Completa el producto, la cantidad y el precio de cada fila.'
+      );
       return;
     }
 
     const cliente = clientes.find(
-      (elemento) => String(elemento.id_cliente) === idCliente,
+      (elemento) => String(elemento.id_cliente) === idCliente
     );
     if (!cliente) {
-      setErrorFormulario("No se encontró el cliente seleccionado. Actualiza los datos e inténtalo de nuevo.");
+      setErrorFormulario(
+        'No se encontró el cliente seleccionado. Actualiza los datos e inténtalo de nuevo.'
+      );
       return;
     }
 
     const detalles = filas.map((fila) => {
       const producto = productos.find(
-        (elemento) => String(elemento.id_producto) === fila.id_producto,
+        (elemento) => String(elemento.id_producto) === fila.id_producto
       );
       return {
-        codigo: producto?.codigo_producto ?? "",
-        nombre: producto?.nombre_producto ?? "Producto no disponible",
+        codigo: producto?.codigo_producto ?? '',
+        nombre: producto?.nombre_producto ?? 'Producto no disponible',
         cantidad: Number(fila.cantidad),
         precioUnitario: Number(fila.precio_unitario),
         subtotal: subtotalDetalle(fila.cantidad, fila.precio_unitario),
@@ -75,6 +94,7 @@ export default function Proformas() {
     });
   };
 
+  // Funciones manejadoras que actualizan los datos del formulario y limpian la proforma previa si ocurren cambios.
   const cambiarCliente = (evento) => {
     setIdCliente(evento.target.value);
     setProforma(null);
@@ -90,6 +110,7 @@ export default function Proformas() {
     setProforma(null);
   };
 
+  // Función para reintentar la carga de los catálogos en caso de error de red.
   const recargarDatos = () => {
     recargarClientes();
     recargarProductos();
@@ -97,14 +118,19 @@ export default function Proformas() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-4">
-      <header className="border-b border-slate-200 pb-3">
-        <h1 className="inline-flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-slate-900">
-          <span className="module-heading-icon module-heading-icon--neutro flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600"><FileText size={18} /></span>
+      <header className="border-b border-slate-200 pb-3 pr-12 lg:pr-0">
+        <h1 className="flex flex-wrap items-center gap-2.5 text-xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-2xl">
+          <span className="module-heading-icon module-heading-icon--neutro flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600">
+            <FileText size={18} />
+          </span>
           Proformas
         </h1>
-        <p className="mt-1 text-sm text-slate-500">Prepara e imprime una cotización para el cliente.</p>
+        <p className="mt-1 text-sm text-slate-500">
+          Prepara e imprime una cotización para el cliente.
+        </p>
       </header>
 
+      {/* Renderizado condicional basado en errores de carga o estados de espera */}
       {errorDatos ? (
         <section className="rounded-xl border border-red-200 bg-red-50 p-5 text-center">
           <p className="text-sm text-red-700">{errorDatos}</p>
@@ -142,6 +168,7 @@ export default function Proformas() {
             </CampoSelect>
           </div>
 
+          {/* Componente editor de líneas de detalle de la proforma */}
           <EditorDetallesVenta
             filas={filas}
             productos={productos}
@@ -165,6 +192,7 @@ export default function Proformas() {
             />
           </div>
 
+          {/* Panel de resumen financiero con subtotal, impuesto y total calculado */}
           <div className="ml-auto w-full space-y-1 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm sm:w-72">
             <p className="flex justify-between text-slate-600">
               <span>Subtotal</span>
@@ -181,7 +209,10 @@ export default function Proformas() {
           </div>
 
           {errorFormulario && (
-            <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p
+              role="alert"
+              className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
+            >
               {errorFormulario}
             </p>
           )}
@@ -204,6 +235,7 @@ export default function Proformas() {
             </button>
           </div>
 
+          {/* Renderizado condicional de la vista previa de la proforma una vez generada */}
           {proforma && <VistaProforma proforma={proforma} />}
         </form>
       )}

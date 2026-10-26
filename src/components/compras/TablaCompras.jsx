@@ -52,16 +52,24 @@ export default function TablaCompras({
   return (
     <>
       {/* Vista de tabla tradicional, optimizada para pantallas grandes (escritorio / xl en adelante) */}
-      <div className="hidden overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm xl:block">
-        <table className="w-full min-w-900px text-left text-sm">
+      <div className="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm xl:block">
+        <table className="w-full table-fixed text-left text-sm">
+          <colgroup>
+            <col className="w-[25%]" />
+            <col className="w-[23%]" />
+            <col className="w-[12%]" />
+            <col className="w-[18%]" />
+            <col className="w-[10%]" />
+            <col className="w-[12%]" />
+          </colgroup>
           <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-[.12em] text-slate-500">
             <tr>
-              <th className="px-5 py-3.5 font-semibold">Compra</th>
-              <th className="px-5 py-3.5 font-semibold">Proveedor</th>
-              <th className="px-5 py-3.5 font-semibold">Productos</th>
-              <th className="px-5 py-3.5 text-right font-semibold">Total</th>
-              <th className="px-5 py-3.5 font-semibold">Estado</th>
-              <th className="px-5 py-3.5 text-right font-semibold">Acciones</th>
+              <th className="px-3 py-3.5 font-semibold">Compra</th>
+              <th className="px-3 py-3.5 font-semibold">Proveedor</th>
+              <th className="px-3 py-3.5 font-semibold">Productos</th>
+              <th className="px-3 py-3.5 font-semibold">Total</th>
+              <th className="px-3 py-3.5 font-semibold">Estado</th>
+              <th className="px-3 py-3.5 text-right font-semibold">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -71,7 +79,7 @@ export default function TablaCompras({
                 className="table-row-hover transition-colors"
               >
                 {/* Columna de identificación de la compra y fecha de registro */}
-                <td className="px-5 py-3.5">
+                <td className="px-3 py-3.5">
                   <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
                       <ReceiptText size={17} />
@@ -89,7 +97,7 @@ export default function TablaCompras({
                 </td>
 
                 {/* Columna del proveedor asociado */}
-                <td className="px-5 py-3.5">
+                <td className="px-3 py-3.5">
                   <span className="flex items-center gap-2 text-sm text-slate-700">
                     <Truck size={15} className="shrink-0 text-slate-400" />
                     {compra.proveedor?.nombre_proveedor ?? '—'}
@@ -97,12 +105,12 @@ export default function TablaCompras({
                 </td>
 
                 {/* Columna de recuento de productos */}
-                <td className="px-5 py-3.5 text-sm text-slate-600">
+                <td className="px-3 py-3.5 text-sm text-slate-600">
                   {cantidadProductos(compra)} producto(s)
                 </td>
 
                 {/* Columna del monto total y detalle de IVA */}
-                <td className="px-5 py-3.5 text-right">
+                <td className="px-3 py-3.5">
                   <span className="block font-semibold text-slate-900">
                     {formatearPrecio(compra.total)}
                   </span>
@@ -112,12 +120,12 @@ export default function TablaCompras({
                 </td>
 
                 {/* Columna con la insignia del estado actual de la compra */}
-                <td className="px-5 py-3.5">
+                <td className="px-3 py-3.5">
                   <InsigniaEstadoCompra estado={compra.estado} />
                 </td>
 
                 {/* Columna de acciones operativas para cada registro */}
-                <td className="px-5 py-3.5">
+                <td className="px-3 py-3.5">
                   <AccionesFila
                     nombre={compra.numero_compra}
                     extras={extrasDe(compra)}

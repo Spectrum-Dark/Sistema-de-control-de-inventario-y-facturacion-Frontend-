@@ -1,3 +1,5 @@
-import { peticion } from "../compartido/clienteApi";
+import { peticion } from '../compartido/clienteApi';
 
-export const listarMovimientos = () => peticion("/inventario/movimientos/listar");
+// Obtiene los movimientos registrados en el inventario.
+export const listarMovimientos = () =>
+  peticion('/inventario/movimientos/listar');

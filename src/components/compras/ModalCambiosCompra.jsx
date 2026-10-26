@@ -157,7 +157,7 @@ export default function ModalCambiosCompra({
             </h3>
           </div>
           <div className="overflow-x-auto rounded-xl border border-slate-200">
-            <table className="w-full min-w-560px text-left text-sm">
+            <table className="w-full min-w-140 text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500">
                 <tr>
                   <th className="px-3 py-2.5 font-semibold">Campo</th>
@@ -199,7 +199,7 @@ export default function ModalCambiosCompra({
             </h3>
           </div>
           <div className="overflow-x-auto rounded-xl border border-slate-200">
-            <table className="w-full min-w-560px text-left text-sm">
+            <table className="w-full min-w-140 text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500">
                 <tr>
                   <th className="px-3 py-2.5 font-semibold">Producto</th>

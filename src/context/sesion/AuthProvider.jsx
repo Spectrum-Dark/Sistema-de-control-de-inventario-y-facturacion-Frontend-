@@ -1,31 +1,34 @@
-import { useEffect, useState } from "react";
-import { AuthContext } from "./AuthContext";
+import { useEffect, useState } from 'react';
+import { AuthContext } from './AuthContext';
 import {
   guardarSesion,
   guardarUsuario,
   borrarSesion,
   obtenerToken,
   obtenerUsuario,
-} from "../../utils/sesion/almacenSesion";
-import { obtenerUsuarioAutenticado } from "../../services/sesion/sesionService";
+} from '../../utils/sesion/almacenSesion';
+import { obtenerUsuarioAutenticado } from '../../services/sesion/sesionService';
 
+// Componente proveedor 'AuthProvider' encargado de gestionar el contexto global de autenticación de la aplicación, controlando el token JWT, los datos de usuario y sincronizando la sesión con el backend al iniciar.
 export default function AuthProvider({ children }) {
   const [token, setToken] = useState(obtenerToken);
   const [usuario, setUsuario] = useState(obtenerUsuario);
 
+  // Función para iniciar sesión, persistiendo el token y el perfil de usuario en el almacenamiento local y actualizando el estado.
   const iniciarSesion = (nuevoToken, nuevoUsuario) => {
     guardarSesion(nuevoToken, nuevoUsuario);
     setToken(nuevoToken);
     setUsuario(nuevoUsuario);
   };
 
+  // Función para cerrar sesión, limpiando el almacenamiento local y reseteando los estados globales.
   const cerrarSesion = () => {
     borrarSesion();
     setToken(null);
     setUsuario(null);
   };
 
-  // Al abrir la app, se confirma con el backend quién es el usuario
+  // Efecto para verificar y confirmar la validez de la sesión con el backend al iniciar o recargar la aplicación.
   useEffect(() => {
     if (!token) return;
     let activo = true;
@@ -37,7 +40,7 @@ export default function AuthProvider({ children }) {
         setUsuario(datos);
       })
       .catch((error) => {
-        // Token vencido o revocado (401) o cuenta inactiva (403)
+        // Maneja la expiración del token (401) o la desactivación de la cuenta (403), cerrando la sesión automáticamente.
         if (activo && (error.estado === 401 || error.estado === 403)) {
           borrarSesion();
           setToken(null);

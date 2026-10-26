@@ -1,21 +1,29 @@
-import { useState } from "react";
-import { Package, Barcode, Loader2, Save, Plus, Boxes, CircleDollarSign } from "lucide-react";
-import { sileo } from "sileo";
-import Modal from "../compartido/Modal";
-import CampoFormulario from "../compartido/CampoFormulario";
-import CampoSelect from "../compartido/CampoSelect";
-import CampoTextarea from "../compartido/CampoTextarea";
+import { useState } from 'react';
+import {
+  Package,
+  Barcode,
+  Loader2,
+  Save,
+  Plus,
+  Boxes,
+  CircleDollarSign,
+} from 'lucide-react';
+import { sileo } from 'sileo';
+import Modal from '../compartido/Modal';
+import CampoFormulario from '../compartido/CampoFormulario';
+import CampoSelect from '../compartido/CampoSelect';
+import CampoTextarea from '../compartido/CampoTextarea';
 import {
   aNumeroONull,
   obtenerCambios,
-} from "../../utils/compartido/formulario";
-import { generarCodigoAutomatico } from "../../utils/compartido/codigoAutomatico";
-import { formatearPrecio } from "../../utils/productos/formato";
+} from '../../utils/compartido/formulario';
+import { generarCodigoAutomatico } from '../../utils/compartido/codigoAutomatico';
 import {
   crearProducto,
   actualizarProducto,
-} from "../../services/productos/productosService";
+} from '../../services/productos/productosService';
 
+// Componente modal 'ModalProducto' para el registro y edición de productos (repuestos), permitiendo configurar categorías, proveedores, códigos automáticos o manuales, precios y existencias.
 export default function ModalProducto({
   producto,
   categorias,
@@ -24,46 +32,56 @@ export default function ModalProducto({
   onCerrar,
   onGuardado,
 }) {
+  // Determina si el modal se encuentra en modo edición verificando la existencia del identificador del producto.
   const esEdicion = Boolean(producto?.id_producto);
   const proveedorActual = producto?.proveedores?.[0]?.id_proveedor;
 
+  // Estado local para almacenar y controlar los valores de los campos del formulario.
   const [form, setForm] = useState({
-    id_categoria: String(producto?.id_categoria ?? ""),
-    id_proveedor: String(proveedorActual ?? ""),
-    codigo_producto: producto?.codigo_producto ?? generarCodigoAutomatico(productos, "codigo_producto", "PROD-"),
-    nombre_producto: producto?.nombre_producto ?? "",
-    descripcion: producto?.descripcion ?? "",
-    precio_compra: producto?.precio_compra ?? "",
-    precio_venta: producto?.precio_venta ?? "",
+    id_categoria: String(producto?.id_categoria ?? ''),
+    id_proveedor: String(proveedorActual ?? ''),
+    codigo_producto:
+      producto?.codigo_producto ??
+      generarCodigoAutomatico(productos, 'codigo_producto', 'PROD-'),
+    nombre_producto: producto?.nombre_producto ?? '',
+    descripcion: producto?.descripcion ?? '',
+    precio_compra: producto?.precio_compra ?? '',
+    precio_venta: producto?.precio_venta ?? '',
     existencia_minima: producto?.existencia_minima ?? 0,
-    existencia_maxima: producto?.existencia_maxima ?? "",
-    estado: esEdicion ? producto.estado ?? "Activo" : undefined,
+    existencia_maxima: producto?.existencia_maxima ?? '',
+    estado: esEdicion ? (producto.estado ?? 'Activo') : undefined,
   });
   const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
+  // Define el código del producto de forma dinámica (mantiene el código actual en edición o genera uno nuevo automáticamente).
   const codigoProducto = esEdicion
     ? form.codigo_producto
-    : generarCodigoAutomatico(productos, "codigo_producto", "PROD-");
+    : generarCodigoAutomatico(productos, 'codigo_producto', 'PROD-');
 
-  // Para un producto nuevo, solo categorías activas; al editar se incluye la actual
+  // Filtra las opciones de categoría (para nuevos productos solo categorías activas; al editar se incluye también la categoría actual del producto).
   const opcionesCategoria = categorias.filter(
-    (c) => c.estado === "Activa" || c.id_categoria === producto?.id_categoria,
-  );
-  const opcionesProveedor = proveedores.filter(
-    (p) => p.estado === "Activo" || p.id_proveedor === proveedorActual,
+    (c) => c.estado === 'Activa' || c.id_categoria === producto?.id_categoria
   );
 
+  // Filtra las opciones de proveedor (para nuevos productos solo proveedores activos; al editar se incluye también el proveedor actual).
+  const opcionesProveedor = proveedores.filter(
+    (p) => p.estado === 'Activo' || p.id_proveedor === proveedorActual
+  );
+
+  // Manejador genérico para actualizar el estado del formulario ante cualquier cambio de entrada y limpiar errores activos.
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setError("");
+    setError('');
   };
 
+  // Manejador del envío del formulario para procesar la creación o actualización del producto mediante la API.
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validación previa: el nombre del producto es obligatorio.
     if (!form.nombre_producto.trim()) {
-      setError("El nombre del producto es obligatorio.");
+      setError('El nombre del producto es obligatorio.');
       return;
     }
 
@@ -79,20 +97,21 @@ export default function ModalProducto({
       existencia_maxima: aNumeroONull(form.existencia_maxima),
     };
 
+    // Validación de límites de existencia (la existencia máxima no puede ser menor que la mínima).
     if (
       valores.existencia_maxima !== null &&
       valores.existencia_maxima < valores.existencia_minima
     ) {
       setError(
-        "La existencia máxima no puede ser menor que la existencia mínima.",
+        'La existencia máxima no puede ser menor que la existencia mínima.'
       );
       return;
     }
 
     let datos = valores;
 
+    // En modo edición, calcula los cambios mediante 'obtenerCambios' para enviar únicamente las propiedades modificadas.
     if (esEdicion) {
-      // Al editar, solo se envía lo que cambió
       const original = {
         id_categoria: Number(producto.id_categoria),
         id_proveedor: Number(proveedorActual),
@@ -113,7 +132,7 @@ export default function ModalProducto({
       if (form.estado !== producto.estado) datos.estado = form.estado;
 
       if (Object.keys(datos).length === 0) {
-        setError("No hay cambios para guardar.");
+        setError('No hay cambios para guardar.');
         return;
       }
     }
@@ -126,7 +145,7 @@ export default function ModalProducto({
         : await crearProducto(datos);
 
       sileo.success({
-        title: esEdicion ? "Producto actualizado" : "Producto registrado",
+        title: esEdicion ? 'Producto actualizado' : 'Producto registrado',
         description: respuesta.message,
       });
       onGuardado(respuesta.datos, !esEdicion);
@@ -139,51 +158,226 @@ export default function ModalProducto({
 
   return (
     <Modal
-      titulo={esEdicion ? "Editar producto" : "Nuevo producto"}
+      titulo={esEdicion ? 'Editar producto' : 'Nuevo producto'}
       onCerrar={onCerrar}
       bloqueado={cargando}
       ancho="max-w-3xl"
     >
       <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Cabecera informativa del modal */}
         <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm"><Package size={19} strokeWidth={1.8} /></span>
-          <div><p className="text-sm font-semibold text-slate-900">{esEdicion ? "Datos del producto" : "Nuevo producto de inventario"}</p><p className="mt-1 text-xs leading-relaxed text-slate-500">{esEdicion ? "Actualiza la información comercial y los límites de existencia." : "Completa los datos del repuesto para agregarlo al catálogo."}</p>{esEdicion && <p className="mt-2 text-[10px] font-medium text-slate-400">Registro #{producto.id_producto}</p>}</div>
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm">
+            <Package size={19} strokeWidth={1.8} />
+          </span>
+          <div>
+            <p className="text-sm font-semibold text-slate-900">
+              {esEdicion
+                ? 'Datos del producto'
+                : 'Nuevo producto de inventario'}
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-500">
+              {esEdicion
+                ? 'Actualiza la información comercial y los límites de existencia.'
+                : 'Completa los datos del repuesto para agregarlo al catálogo.'}
+            </p>
+            {esEdicion && (
+              <p className="mt-2 text-[10px] font-medium text-slate-400">
+                Registro #{producto.id_producto}
+              </p>
+            )}
+          </div>
         </div>
 
+        {/* Cuadrícula de campos del formulario */}
         <div className="grid gap-4 sm:grid-cols-2">
-          <CampoSelect id="id_categoria" label="Categoría" value={form.id_categoria} onChange={handleChange} required>
+          {/* Selector de categoría del producto */}
+          <CampoSelect
+            id="id_categoria"
+            label="Categoría"
+            value={form.id_categoria}
+            onChange={handleChange}
+            required
+          >
             <option value="">Selecciona una categoría</option>
-            {opcionesCategoria.map((categoria) => <option key={categoria.id_categoria} value={categoria.id_categoria}>{categoria.nombre_categoria}</option>)}
+            {opcionesCategoria.map((categoria) => (
+              <option
+                key={categoria.id_categoria}
+                value={categoria.id_categoria}
+              >
+                {categoria.nombre_categoria}
+              </option>
+            ))}
           </CampoSelect>
-          <CampoSelect id="id_proveedor" label="Proveedor" value={form.id_proveedor} onChange={handleChange} required>
+
+          {/* Selector de proveedor asociado */}
+          <CampoSelect
+            id="id_proveedor"
+            label="Proveedor"
+            value={form.id_proveedor}
+            onChange={handleChange}
+            required
+          >
             <option value="">Selecciona un proveedor</option>
-            {opcionesProveedor.map((proveedor) => <option key={proveedor.id_proveedor} value={proveedor.id_proveedor}>{proveedor.nombre_proveedor}</option>)}
+            {opcionesProveedor.map((proveedor) => (
+              <option
+                key={proveedor.id_proveedor}
+                value={proveedor.id_proveedor}
+              >
+                {proveedor.nombre_proveedor}
+              </option>
+            ))}
           </CampoSelect>
 
-          <CampoFormulario id="codigo_producto" label="Código del producto" icono={Barcode} type="text" placeholder="PROD-001" maxLength={50} value={codigoProducto} onChange={handleChange} readOnly={!esEdicion} required />
-          <CampoFormulario id="nombre_producto" label="Nombre del producto" icono={Package} type="text" placeholder="Ej.: Pastillas de freno delanteras" maxLength={150} value={form.nombre_producto} onChange={handleChange} required />
+          {/* Campo para el código del producto (autogenerado o editable según el modo) */}
+          <CampoFormulario
+            id="codigo_producto"
+            label="Código del producto"
+            icono={Barcode}
+            type="text"
+            placeholder="PROD-001"
+            maxLength={50}
+            value={codigoProducto}
+            onChange={handleChange}
+            readOnly={!esEdicion}
+            required
+          />
 
-          <div className="sm:col-span-2"><CampoTextarea id="descripcion" label="Descripción (opcional)" placeholder="Detalles, compatibilidad o características del producto" value={form.descripcion} onChange={handleChange} /></div>
+          {/* Campo para el nombre descriptivo del repuesto */}
+          <CampoFormulario
+            id="nombre_producto"
+            label="Nombre del producto"
+            icono={Package}
+            type="text"
+            placeholder="Ej.: Pastillas de freno delanteras"
+            maxLength={150}
+            value={form.nombre_producto}
+            onChange={handleChange}
+            required
+          />
 
-          <CampoFormulario id="precio_compra" label="Precio de compra (C$)" icono={CircleDollarSign} type="number" min={0} step="0.01" placeholder="0.00" value={form.precio_compra} onChange={handleChange} required />
-          <CampoFormulario id="precio_venta" label="Precio de venta (C$)" icono={CircleDollarSign} type="number" min={0} step="0.01" placeholder="0.00" value={form.precio_venta} onChange={handleChange} required />
+          {/* Área de texto para detalles o compatibilidad */}
+          <div className="sm:col-span-2">
+            <CampoTextarea
+              id="descripcion"
+              label="Descripción (opcional)"
+              placeholder="Detalles, compatibilidad o características del producto"
+              value={form.descripcion}
+              onChange={handleChange}
+            />
+          </div>
 
-          <CampoFormulario id="existencia_minima" label="Existencia mínima" icono={Boxes} type="number" min={0} step="1" placeholder="0" value={form.existencia_minima} onChange={handleChange} />
-          <CampoFormulario id="existencia_maxima" label="Existencia máxima (opcional)" icono={Boxes} type="number" min={0} step="1" placeholder="Sin límite definido" value={form.existencia_maxima} onChange={handleChange} />
+          {/* Campo numérico para el precio de compra en córdobas */}
+          <CampoFormulario
+            id="precio_compra"
+            label="Precio de compra (C$)"
+            icono={CircleDollarSign}
+            type="number"
+            min={0}
+            step="0.01"
+            placeholder="0.00"
+            value={form.precio_compra}
+            onChange={handleChange}
+            required
+          />
 
-          {esEdicion && <div className="sm:col-span-2"><CampoSelect id="estado" label="Estado" value={form.estado} onChange={handleChange}><option value="Activo">Activo</option><option value="Inactivo">Inactivo</option></CampoSelect></div>}
+          {/* Campo numérico para el precio de venta en córdobas */}
+          <CampoFormulario
+            id="precio_venta"
+            label="Precio de venta (C$)"
+            icono={CircleDollarSign}
+            type="number"
+            min={0}
+            step="0.01"
+            placeholder="0.00"
+            value={form.precio_venta}
+            onChange={handleChange}
+            required
+          />
+
+          {/* Campo para la existencia mínima de stock */}
+          <CampoFormulario
+            id="existencia_minima"
+            label="Existencia mínima"
+            icono={Boxes}
+            type="number"
+            min={0}
+            step="1"
+            placeholder="0"
+            value={form.existencia_minima}
+            onChange={handleChange}
+          />
+
+          {/* Campo opcional para la existencia máxima */}
+          <CampoFormulario
+            id="existencia_maxima"
+            label="Existencia máxima (opcional)"
+            icono={Boxes}
+            type="number"
+            min={0}
+            step="1"
+            placeholder="Sin límite definido"
+            value={form.existencia_maxima}
+            onChange={handleChange}
+          />
+
+          {/* Selector de estado (visible únicamente en modo edición) */}
+          {esEdicion && (
+            <div className="sm:col-span-2">
+              <CampoSelect
+                id="estado"
+                label="Estado"
+                value={form.estado}
+                onChange={handleChange}
+              >
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+              </CampoSelect>
+            </div>
+          )}
         </div>
 
-        {!esEdicion && <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3.5"><p className="mb-2 text-[10px] font-semibold uppercase tracking-[.12em] text-slate-500">Vista previa</p><div className="flex min-w-0 items-center gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600"><Package size={16} /></span><div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-800">{form.nombre_producto.trim() || "Nombre del producto"}</p><p className="mt-0.5 truncate text-xs text-slate-500">{codigoProducto} · {categorias.find((categoria) => String(categoria.id_categoria) === form.id_categoria)?.nombre_categoria || "Selecciona una categoría"}</p></div></div></div>}
+        {/* Tarjeta de vista previa dinámica (visible exclusivamente al registrar un nuevo producto) */}
+        {!esEdicion && (
+          <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3.5">
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[.12em] text-slate-500">
+              Vista previa
+            </p>
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600">
+                <Package size={16} />
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-slate-800">
+                  {form.nombre_producto.trim() || 'Nombre del producto'}
+                </p>
+                <p className="mt-0.5 truncate text-xs text-slate-500">
+                  {codigoProducto} ·{' '}
+                  {categorias.find(
+                    (categoria) =>
+                      String(categoria.id_categoria) === form.id_categoria
+                  )?.nombre_categoria || 'Selecciona una categoría'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
-        <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-xs text-slate-600"><Boxes size={15} className="shrink-0 text-slate-500" /><p>La existencia actual no se edita aquí; la controla el inventario.</p></div>
+        {/* Nota informativa aclaratoria sobre el manejo de existencias en el inventario */}
+        <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-xs text-slate-600">
+          <Boxes size={15} className="shrink-0 text-slate-500" />
+          <p>
+            La existencia actual no se edita aquí; la controla el inventario.
+          </p>
+        </div>
 
+        {/* Mensaje de error general en caso de validación fallida */}
         {error && (
           <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-700">
             {error}
           </p>
         )}
 
+        {/* Botones de acción del pie del formulario */}
         <div className="flex flex-col-reverse gap-2 border-t border-slate-200 pt-4 sm:flex-row sm:justify-end">
           <button
             type="button"
@@ -202,10 +396,10 @@ export default function ModalProducto({
             {cargando && <Loader2 size={16} className="animate-spin" />}
             {!cargando && (esEdicion ? <Save size={15} /> : <Plus size={15} />)}
             {cargando
-              ? "Guardando..."
+              ? 'Guardando...'
               : esEdicion
-                ? "Guardar cambios"
-                : "Registrar"}
+                ? 'Guardar cambios'
+                : 'Registrar'}
           </button>
         </div>
       </form>

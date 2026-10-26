@@ -37,7 +37,7 @@ export default function TablaCategorias({
     <>
       {/* Vista de tabla tradicional, optimizada para pantallas grandes (xl en adelante) con desplazamiento horizontal si es necesario */}
       <div className="hidden overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm xl:block">
-        <table className="w-full min-w-760px text-left text-sm">
+        <table className="w-full min-w-190 text-left text-sm">
           {/* Cabecera de la tabla con los títulos de las columnas */}
           <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-[.12em] text-slate-500">
             <tr>

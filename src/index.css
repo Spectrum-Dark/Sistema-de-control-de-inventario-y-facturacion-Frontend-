@@ -1,6 +1,8 @@
+/* Importación del sistema de estilos de Tailwind CSS (Tailwind v4) */
 @import "tailwindcss";
 
 /* Apariencia global de Sileo, coordinada con los temas de la aplicación. */
+/* Definición de variables CSS personalizadas para el modo claro por defecto */
 html:not([data-tema="oscuro"]) {
   --sileo-fill: #292929;
   --sileo-description: rgb(255 255 255 / .78);
@@ -12,8 +14,10 @@ html:not([data-tema="oscuro"]) {
   --sileo-state-action: #525252;
   --sileo-width: min(390px, calc(100vw - 1.5rem));
 }
+
+/* Redefinición de variables CSS personalizadas para el modo oscuro */
 html[data-tema="oscuro"] {
-  --sileo-fill: #292929;
+  --sileo-fill: #111111;
   --sileo-description: rgb(255 255 255 / .78);
   --sileo-state-success: #9dd8a8;
   --sileo-state-loading: #e5e5e5;
@@ -23,6 +27,8 @@ html[data-tema="oscuro"] {
   --sileo-state-action: #e0e0e0;
   --sileo-width: min(390px, calc(100vw - 1.5rem));
 }
+
+/* Estilizado modular y selectores de atributos para el componente de notificaciones (Sileo) */
 [data-sileo-toast] { filter: drop-shadow(0 12px 30px rgb(0 0 0 / .32)) drop-shadow(0 0 1px rgb(255 255 255 / .16)); }
 [data-sileo-title] { font-size: .84rem; font-weight: 700; letter-spacing: -.01em; }
 [data-sileo-description] { max-width: 370px; font-size: .78rem; line-height: 1.5; }
@@ -31,7 +37,30 @@ html[data-tema="oscuro"] {
 [data-sileo-badge] { border: 1px solid rgb(255 255 255 / .16); box-shadow: inset 0 1px 0 rgb(255 255 255 / .1), 0 3px 10px rgb(0 0 0 / .3); }
 html[data-tema="oscuro"] [data-sileo-toast] { filter: drop-shadow(0 12px 30px rgb(0 0 0 / .5)) drop-shadow(0 0 1px rgb(255 255 255 / .2)); }
 
-/* Tema claro neutro: reduce el blanco puro en fondos, tarjetas y controles. */
+/* Notificaciones más compactas y centradas en pantallas móviles mediante Media Queries adaptativas. */
+@media (max-width: 1023px) {
+  html {
+    --sileo-width: min(320px, calc(100vw - 1rem));
+  }
+  [data-sileo-viewport] {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    box-sizing: border-box;
+    align-items: center !important;
+    transform: none !important;
+    padding: .5rem;
+  }
+  [data-sileo-description] {
+    max-width: 290px;
+    padding: .8rem;
+    font-size: .74rem;
+  }
+  [data-sileo-title] { font-size: .8rem; }
+}
+
+/* Tema claro neutro: reduce el blanco puro en fondos, tarjetas y controles para mitigar la fatiga visual. */
 html:not([data-tema="oscuro"]) {
   color-scheme: light;
   background: #f1f1f0;
@@ -57,9 +86,11 @@ html:not([data-tema="oscuro"]) input:focus,
 html:not([data-tema="oscuro"]) select:focus,
 html:not([data-tema="oscuro"]) textarea:focus { border-color: #9b9b98; }
 
+/* Utilidades de componentes de interfaz y efectos hover para tablas y submenús */
 .table-row-hover:hover { background-color: #f7f7f7; }
 .submenu-list { margin-left: 26px; }
-/* Acentos moderados por módulo; el Dashboard conserva su paleta propia. */
+
+/* Acentos cromáticos moderados configurados por módulo mediante atributos de datos */
 html:not([data-tema="oscuro"]) .pagina-crud[data-acento="categorias"] { --acento-icono: #7048e8; }
 html:not([data-tema="oscuro"]) .pagina-crud[data-acento="marcas"] { --acento-icono: #b27a2f; }
 html:not([data-tema="oscuro"]) .pagina-crud[data-acento="proveedores"] { --acento-icono: #3d8492; }
@@ -72,6 +103,8 @@ html:not([data-tema="oscuro"]) .pagina-crud[data-acento="ventas"] { --acento-ico
 html:not([data-tema="oscuro"]) .pagina-crud[data-acento="inventario"] { --acento-icono: #7c8a43; }
 html:not([data-tema="oscuro"]) .pagina-crud[data-acento="facturacion"] { --acento-icono: #4f788c; }
 html:not([data-tema="oscuro"]) .pagina-crud[data-acento="usuarios"] { --acento-icono: #687386; }
+
+/* Inyección de estilos basados en las variables de acento para contenedores con iconos */
 html:not([data-tema="oscuro"]) .pagina-crud :is([class~="bg-slate-50"], [class~="bg-slate-100"], [class~="bg-white"]):has(> svg) {
   border-color: var(--acento-icono, #777);
   background-color: var(--acento-icono, #777);
@@ -92,6 +125,8 @@ html:not([data-tema="oscuro"]) .module-heading-icon--neutro {
   background-color: #ededeb;
   color: #626262;
 }
+
+/* Indicador visual de enlace de submenú activo mediante pseudo-elemento ::before */
 .submenu-active-link::before {
   position: absolute;
   top: 50%;
@@ -109,13 +144,14 @@ html[data-tema="oscuro"] .submenu-active-link::before {
   background: #292929;
 }
 
-/* Tema oscuro monocromático para la aplicación completa. */
+/* Tema oscuro monocromático profundo aplicado globalmente a toda la aplicación */
 html[data-tema="oscuro"] {
   color-scheme: dark;
   background: #000;
   color: #e5e5e5;
 }
 
+/* Sobrescritura sistemática de clases utilitarias de Tailwind para el modo oscuro */
 html[data-tema="oscuro"] body,
 html[data-tema="oscuro"] .bg-slate-50,
 html[data-tema="oscuro"] .bg-slate-100 { background-color: #080808; }
@@ -144,6 +180,7 @@ html[data-tema="oscuro"] .border-slate-400,
 html[data-tema="oscuro"] .divide-slate-100 > :not(:last-child),
 html[data-tema="oscuro"] .divide-slate-200 > :not(:last-child) { border-color: #303030; }
 
+/* Control de inputs, selectores y áreas de texto personalizados para modo oscuro */
 html[data-tema="oscuro"] input,
 html[data-tema="oscuro"] select,
 html[data-tema="oscuro"] textarea { color-scheme: dark; background-color: #101010; color: #e5e5e5; border-color: #3b3b3b; }
@@ -158,6 +195,7 @@ html[data-tema="oscuro"] textarea::placeholder { color: #777; }
 html[data-tema="oscuro"] .bg-slate-900\/50 { background-color: rgb(0 0 0 / .65); }
 html[data-tema="oscuro"] .focus-visible\:ring-slate-400:focus-visible { --tw-ring-color: #737373; }
 
+/* Esquemas de colores adaptados para estados de alerta (errores, éxitos y avisos) en modo oscuro */
 html[data-tema="oscuro"] .bg-red-50 { background-color: #271717; }
 html[data-tema="oscuro"] .border-red-200 { border-color: #5c3030; }
 html[data-tema="oscuro"] .text-red-700,
@@ -172,7 +210,7 @@ html[data-tema="oscuro"] .text-amber-700 { color: #e7cb82; }
 html[data-tema="oscuro"] .sidebar-logout { color: #a3a3a3; }
 html[data-tema="oscuro"] .sidebar-logout:hover { color: #fca5a5; background-color: #321d1d; }
 
-/* La barra adopta el tono de marca en claro y conserva el carbón en oscuro. */
+/* Estilos de la barra de navegación lateral (Sidebar): tono de marca en claro y carbón en oscuro. */
 html:not([data-tema="oscuro"]) .app-sidebar {
   background-color: #0F172B;
   border-color: rgb(255 255 255 / .1);
@@ -191,6 +229,8 @@ html[data-tema="oscuro"] .app-sidebar .submenu-active-link::before {
 }
 .app-sidebar .sidebar-logout { color: rgb(255 255 255 / .55); }
 .app-sidebar .sidebar-logout:hover { color: #fecaca; background-color: rgb(127 29 29 / .45); }
+
+/* Personalización avanzada del scrollbar de la barra lateral para ambos modos */
 .sidebar-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgb(255 255 255 / .28) transparent;
