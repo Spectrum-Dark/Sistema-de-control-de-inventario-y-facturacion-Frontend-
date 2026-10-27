@@ -212,6 +212,7 @@ export default function ModalVenta({
         <EditorDetallesVenta
           filas={filas}
           productos={opcionesProducto}
+          venta={venta}
           onChange={cambiarFilas}
         />
 

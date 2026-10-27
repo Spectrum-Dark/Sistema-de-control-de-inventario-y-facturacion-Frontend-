@@ -8,12 +8,41 @@ const claseInput =
   'w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 transition focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200';
 
 // Componente 'EditorDetallesVenta' encargado de gestionar los detalles interactivos de productos en el flujo de ventas, permitiendo agregar filas, seleccionar artículos disponibles, ajustar cantidades y calcular subtotales de manera dinámica.
-export default function EditorDetallesVenta({ filas, productos, onChange }) {
+export default function EditorDetallesVenta({
+  filas,
+  productos,
+  venta,
+  onChange,
+}) {
   // Función auxiliar para actualizar una fila específica manteniendo inmutabilidad en el array de filas.
   const actualizarFila = (indice, cambios) =>
     onChange(
       filas.map((fila, i) => (i === indice ? { ...fila, ...cambios } : fila))
     );
+
+  // Calcula el máximo por fila descontando las otras líneas y devolviendo temporalmente el stock ya usado por esta venta al corregirla.
+  const maximoDisponible = (indice, idProducto) => {
+    const producto = productos.find(
+      (p) => String(p.id_producto) === String(idProducto)
+    );
+    const existencia = Number(producto?.existencia ?? 0);
+    const cantidadOriginal = (venta?.detalles ?? []).reduce(
+      (total, detalle) =>
+        String(detalle.id_producto) === String(idProducto)
+          ? total + Number(detalle.cantidad ?? 0)
+          : total,
+      0
+    );
+    const cantidadEnOtrasFilas = filas.reduce(
+      (total, fila, i) =>
+        i !== indice && String(fila.id_producto) === String(idProducto)
+          ? total + Number(fila.cantidad ?? 0)
+          : total,
+      0
+    );
+
+    return Math.max(0, existencia + cantidadOriginal - cantidadEnOtrasFilas);
+  };
 
   // Manejador para seleccionar un producto del catálogo y autocompletar su precio de venta unitario correspondiente.
   const elegirProducto = (indice, idProducto) => {
@@ -22,6 +51,12 @@ export default function EditorDetallesVenta({ filas, productos, onChange }) {
     );
     actualizarFila(indice, {
       id_producto: idProducto,
+      cantidad: String(
+        Math.min(
+          Number(filas[indice].cantidad) || 1,
+          maximoDisponible(indice, idProducto)
+        )
+      ),
       precio_unitario: producto ? String(Number(producto.precio_venta)) : '',
     });
   };
@@ -67,7 +102,15 @@ export default function EditorDetallesVenta({ filas, productos, onChange }) {
                 placeholder="Buscar por código o nombre"
                 maxOpciones={Infinity}
                 options={productos
-                  .filter((producto) => Number(producto.existencia) > 0)
+                  .filter(
+                    (producto) =>
+                      Number(producto.existencia) > 0 ||
+                      (venta?.detalles ?? []).some(
+                        (detalle) =>
+                          String(detalle.id_producto) ===
+                          String(producto.id_producto)
+                      )
+                  )
                   .map((producto) => ({
                     value: producto.id_producto,
                     label: `${producto.codigo_producto} — ${producto.nombre_producto}`,
@@ -87,10 +130,18 @@ export default function EditorDetallesVenta({ filas, productos, onChange }) {
                 type="number"
                 min={1}
                 step="1"
+                max={maximoDisponible(i, fila.id_producto)}
                 value={fila.cantidad}
-                onChange={(e) =>
-                  actualizarFila(i, { cantidad: e.target.value })
-                }
+                onChange={(e) => {
+                  const valor = e.target.value;
+                  const maximo = maximoDisponible(i, fila.id_producto);
+                  actualizarFila(i, {
+                    cantidad:
+                      valor === ''
+                        ? ''
+                        : String(Math.min(Number(valor), maximo)),
+                  });
+                }}
                 required
                 className={claseInput}
               />
