@@ -57,13 +57,13 @@ export const menuPrincipal = [
   {
     nombre: 'Clientes y proformas',
     icono: ContactRound,
-    roles: [ID_ROL.ADMINISTRADOR, ID_ROL.OPERADOR, ID_ROL.CONSULTOR],
+    roles: [ID_ROL.ADMINISTRADOR, ID_ROL.OPERADOR],
     hijos: [
       { nombre: 'Clientes', ruta: '/clientes' },
       {
         nombre: 'Proformas',
         ruta: '/proformas',
-        roles: [ID_ROL.ADMINISTRADOR, ID_ROL.OPERADOR, ID_ROL.CONSULTOR],
+        roles: [ID_ROL.ADMINISTRADOR, ID_ROL.OPERADOR],
       },
     ],
   },
@@ -114,13 +114,18 @@ export const menuPrincipal = [
   },
 ];
 
-/**
- * Evalúa si un rol de usuario específico tiene permisos para ver una opción del menú.
- * Si la opción define roles explícitos, valida si se incluyen; de lo contrario,
- * aplica una regla por defecto (los consultores tienen restricciones generales).
- */
-const puedeVerOpcion = (opcion, idRol) =>
-  opcion.roles ? opcion.roles.includes(idRol) : idRol !== ID_ROL.CONSULTOR;
+/** Los consultores solo pueden ver Dashboard y el grupo de Reportes. */
+const puedeVerOpcion = (opcion, idRol) => {
+  if (Number(idRol) === ID_ROL.CONSULTOR) {
+    return (
+      opcion.ruta === '/dashboard' ||
+      opcion.ruta?.startsWith('/reportes/') ||
+      opcion.nombre === 'Reportes'
+    );
+  }
+
+  return opcion.roles ? opcion.roles.includes(Number(idRol)) : true;
+};
 
 /**
  * Filtra dinámicamente el menú principal de navegación según el rol del usuario actual.

@@ -15,9 +15,13 @@ export default function RutaProtegida() {
   // Validación 1: Si el usuario no ha iniciado sesión, se le redirige de forma segura al formulario de login
   if (!autenticado) return <Navigate to="/login" replace />;
 
-  // Validación 2: Regla de negocio especial para el rol "Consultor", limitando su acceso exclusivamente a la vista de proformas
-  if (usuario?.id_rol === ID_ROL.CONSULTOR && pathname !== '/proformas') {
-    return <Navigate to="/proformas" replace />;
+  // El consultor solo puede acceder al Dashboard y a las vistas de reportes.
+  const esConsultor = Number(usuario?.id_rol) === ID_ROL.CONSULTOR;
+  const rutaPermitidaConsultor =
+    pathname === '/dashboard' || pathname.startsWith('/reportes/');
+
+  if (esConsultor && !rutaPermitidaConsultor) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   // Si pasa todas las validaciones de seguridad y negocio, se renderizan los componentes hijos correspondientes mediante <Outlet />
