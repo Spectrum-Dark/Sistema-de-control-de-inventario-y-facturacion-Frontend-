@@ -40,9 +40,9 @@ export default function TablaMarcas({
             <tr>
               <th className="px-5 py-3.5 font-semibold">Marca</th>
               <th className="px-5 py-3.5 font-semibold">Descripción</th>
-              <th className="px-5 py-3.5 font-semibold">Estado</th>
+              <th className="px-5 py-3.5 font-semibold columna-estado">Estado</th>
               {hayAcciones && (
-                <th className="px-5 py-3.5 text-right font-semibold">
+                <th className="px-5 py-3.5 text-right font-semibold columna-acciones">
                   Acciones
                 </th>
               )}
@@ -66,11 +66,11 @@ export default function TablaMarcas({
                     </span>
                   )}
                 </td>
-                <td className="px-5 py-3.5">
+                <td className="px-5 py-3.5 columna-estado">
                   <InsigniaEstado estado={marca.estado} />
                 </td>
                 {hayAcciones && (
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5 columna-acciones">
                     <AccionesFila
                       nombre={marca.nombre_marca}
                       puedeEditar={puedeEditar}

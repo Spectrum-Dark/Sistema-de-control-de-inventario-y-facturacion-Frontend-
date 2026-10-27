@@ -8,6 +8,7 @@ export default function CampoFormulario({
   sinIcono = false,
   ...props
 }) {
+  const esFechaHora = props.type === 'datetime-local';
   return (
     <div>
       {/* Etiqueta asociada al campo de entrada usando el atributo htmlFor para accesibilidad */}
@@ -33,7 +34,7 @@ export default function CampoFormulario({
           id={id}
           name={id}
           aria-invalid={Boolean(error)}
-          className={`w-full rounded-xl border bg-white py-2.5 ${sinIcono ? 'pl-3' : 'pl-10'} pr-10 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 transition focus:outline-none focus:ring-2 ${
+          className={`w-full rounded-xl border bg-white py-2.5 ${sinIcono || esFechaHora ? 'pl-3' : 'pl-10'} ${esFechaHora ? 'pr-3 text-left' : 'pr-10'} text-sm text-slate-900 shadow-sm placeholder:text-slate-400 transition focus:outline-none focus:ring-2 ${
             error
               ? 'border-red-400 focus:border-red-500 focus:ring-red-100'
               : 'border-slate-300 hover:border-slate-400 focus:border-slate-500 focus:ring-slate-300'

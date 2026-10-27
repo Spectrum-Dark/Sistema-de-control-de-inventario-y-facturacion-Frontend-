@@ -38,21 +38,14 @@ export default function TablaModelos({
       {/* Vista de tabla tradicional para pantallas grandes (XL en adelante) */}
       <div className="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm xl:block">
         <table className="w-full table-fixed text-left text-sm">
-          <colgroup>
-            <col className="w-[24%]" />
-            <col className="w-[16%]" />
-            <col className={hayAcciones ? 'w-[36%]' : 'w-[48%]'} />
-            <col className="w-[12%]" />
-            {hayAcciones && <col className="w-[12%]" />}
-          </colgroup>
           <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-[.12em] text-slate-500">
             <tr>
               <th className="px-5 py-3.5 font-semibold">Modelo y marca</th>
               <th className="px-5 py-3.5 font-semibold">Años</th>
               <th className="px-5 py-3.5 font-semibold">Descripción</th>
-              <th className="px-5 py-3.5 font-semibold">Estado</th>
+              <th className="px-5 py-3.5 font-semibold columna-estado">Estado</th>
               {hayAcciones && (
-                <th className="px-5 py-3.5 text-right font-semibold">
+                <th className="px-5 py-3.5 text-right font-semibold columna-acciones">
                   Acciones
                 </th>
               )}
@@ -84,11 +77,11 @@ export default function TablaModelos({
                     </span>
                   )}
                 </td>
-                <td className="px-5 py-3.5">
+                <td className="px-5 py-3.5 columna-estado">
                   <InsigniaEstado estado={modelo.estado} />
                 </td>
                 {hayAcciones && (
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5 columna-acciones">
                     <AccionesFila
                       nombre={modelo.nombre_modelo}
                       puedeEditar={puedeEditar}

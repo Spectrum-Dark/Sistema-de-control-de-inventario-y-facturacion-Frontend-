@@ -80,11 +80,11 @@ export default function TablaUsuarios({
               <th className="px-5 py-3.5 font-semibold">Usuario</th>
               <th className="px-5 py-3.5 font-semibold">Correo electrónico</th>
               <th className="px-5 py-3.5 font-semibold">Rol</th>
-              <th className="px-5 py-3.5 font-semibold">Estado</th>
+              <th className="px-5 py-3.5 font-semibold columna-estado">Estado</th>
               <th className="hidden px-5 py-3.5 font-semibold lg:table-cell">
                 Fecha de registro
               </th>
-              <th className="px-5 py-3.5 text-right font-semibold">Acciones</th>
+              <th className="px-5 py-3.5 text-right font-semibold columna-acciones">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -105,13 +105,13 @@ export default function TablaUsuarios({
                 <td className="px-5 py-3.5">
                   <Rol id={u.id_rol} />
                 </td>
-                <td className="px-5 py-3.5">
+                <td className="px-5 py-3.5 columna-estado">
                   <InsigniaEstado estado={u.estado} />
                 </td>
                 <td className="hidden whitespace-nowrap px-5 py-3.5 text-xs text-slate-500 lg:table-cell">
                   {formatearFecha(u.fecha_creacion)}
                 </td>
-                <td className="px-5 py-3.5">
+                <td className="px-5 py-3.5 columna-acciones">
                   <AccionesFila
                     nombre={u.nombre_completo}
                     deshabilitado={!puedeModificar(u, usuarioActual)}

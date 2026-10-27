@@ -54,22 +54,14 @@ export default function TablaCompras({
       {/* Vista de tabla tradicional, optimizada para pantallas grandes (escritorio / xl en adelante) */}
       <div className="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm xl:block">
         <table className="w-full table-fixed text-left text-sm">
-          <colgroup>
-            <col className="w-[25%]" />
-            <col className="w-[23%]" />
-            <col className="w-[12%]" />
-            <col className="w-[18%]" />
-            <col className="w-[10%]" />
-            <col className="w-[12%]" />
-          </colgroup>
           <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-[.12em] text-slate-500">
             <tr>
               <th className="px-3 py-3.5 font-semibold">Compra</th>
               <th className="px-3 py-3.5 font-semibold">Proveedor</th>
               <th className="px-3 py-3.5 font-semibold">Productos</th>
               <th className="px-3 py-3.5 font-semibold">Total</th>
-              <th className="px-3 py-3.5 font-semibold">Estado</th>
-              <th className="px-3 py-3.5 text-right font-semibold">Acciones</th>
+              <th className="px-3 py-3.5 font-semibold columna-estado">Estado</th>
+              <th className="px-3 py-3.5 text-right font-semibold columna-acciones">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -125,7 +117,7 @@ export default function TablaCompras({
                 </td>
 
                 {/* Columna de acciones operativas para cada registro */}
-                <td className="px-3 py-3.5">
+                <td className="px-3 py-3.5 columna-acciones">
                   <AccionesFila
                     nombre={compra.numero_compra}
                     extras={extrasDe(compra)}

@@ -43,10 +43,10 @@ export default function TablaCategorias({
             <tr>
               <th className="px-5 py-3.5 font-semibold">Categoría</th>
               <th className="px-5 py-3.5 font-semibold">Descripción</th>
-              <th className="px-5 py-3.5 font-semibold">Estado</th>
+              <th className="px-5 py-3.5 font-semibold columna-estado">Estado</th>
               {/* Renderiza la columna de acciones de forma condicional */}
               {hayAcciones && (
-                <th className="px-5 py-3.5 text-right font-semibold">
+                <th className="px-5 py-3.5 text-right font-semibold columna-acciones">
                   Acciones
                 </th>
               )}
@@ -77,13 +77,13 @@ export default function TablaCategorias({
                 </td>
 
                 {/* Celda de estado utilizando el componente reutilizable InsigniaEstado */}
-                <td className="px-5 py-3.5">
+                <td className="px-5 py-3.5 columna-estado">
                   <InsigniaEstado estado={categoria.estado} />
                 </td>
 
                 {/* Celda de acciones condicional con los botones de editar y eliminar */}
                 {hayAcciones && (
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5 columna-acciones">
                     <AccionesFila
                       nombre={categoria.nombre_categoria}
                       puedeEditar={puedeEditar}

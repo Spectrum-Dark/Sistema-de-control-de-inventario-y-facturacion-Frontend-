@@ -36,7 +36,7 @@ export default function TablaHistorialVentas({ historial, onVerCambios }) {
               <th className="px-4 py-3 font-medium">Operación</th>
               <th className="px-4 py-3 font-medium">Usuario</th>
               <th className="px-4 py-3 font-semibold">Motivo</th>
-              <th className="px-4 py-3 text-right font-medium">Acciones</th>
+              <th className="px-4 py-3 text-right font-medium columna-acciones">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -71,7 +71,7 @@ export default function TablaHistorialVentas({ historial, onVerCambios }) {
                 <td className="max-w-xs px-4 py-3 text-slate-600">
                   {registro.motivo || '—'}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 columna-acciones">
                   <AccionesFila
                     nombre={registro.venta?.numero_venta ?? 'venta'}
                     extras={extrasDe(registro)}

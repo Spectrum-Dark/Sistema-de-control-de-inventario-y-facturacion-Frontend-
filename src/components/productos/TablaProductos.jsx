@@ -1,3 +1,4 @@
+import { Package } from 'lucide-react';
 import InsigniaEstado from '../compartido/InsigniaEstado';
 import AccionesFila from '../compartido/AccionesFila';
 import { formatearPrecio, tieneStockBajo } from '../../utils/productos/formato';
@@ -36,23 +37,15 @@ export default function TablaProductos({
       {/* Vista de tabla tradicional optimizada para pantallas medianas y grandes (md en adelante) */}
       <div className="hidden overflow-hidden rounded-xl border border-slate-200 bg-white md:block">
         <table className="w-full table-fixed text-left text-sm">
-          <colgroup>
-            <col style={{ width: hayAcciones ? '30%' : '36%' }} />
-            <col style={{ width: hayAcciones ? '14%' : '16%' }} />
-            <col style={{ width: hayAcciones ? '14%' : '16%' }} />
-            <col style={{ width: hayAcciones ? '20%' : '21%' }} />
-            <col style={{ width: hayAcciones ? '9%' : '11%' }} />
-            {hayAcciones && <col style={{ width: '13%' }} />}
-          </colgroup>
           <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
             <tr>
               <th className="px-4 py-3 font-medium">Producto</th>
               <th className="px-4 py-3 text-right font-medium">P. compra</th>
               <th className="px-4 py-3 text-right font-medium">P. venta</th>
               <th className="px-4 py-3 font-medium">Existencia</th>
-              <th className="px-4 py-3 font-medium">Estado</th>
+              <th className="px-4 py-3 font-medium columna-estado">Estado</th>
               {hayAcciones && (
-                <th className="px-4 py-3 text-right font-medium">Acciones</th>
+                <th className="px-4 py-3 text-right font-medium columna-acciones">Acciones</th>
               )}
             </tr>
           </thead>
@@ -60,13 +53,20 @@ export default function TablaProductos({
             {productos.map((p) => (
               <tr key={p.id_producto} className="hover:bg-slate-50">
                 <td className="px-4 py-3">
-                  <p className="truncate font-medium text-slate-900">
-                    {p.nombre_producto}
-                  </p>
-                  <p className="truncate text-xs text-slate-500">
-                    {p.codigo_producto} ·{' '}
-                    {nombresCategorias[p.id_categoria] ?? '—'}
-                  </p>
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                      <Package size={17} />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate font-medium text-slate-900">
+                        {p.nombre_producto}
+                      </span>
+                      <span className="block truncate text-xs text-slate-500">
+                        {p.codigo_producto} ·{' '}
+                        {nombresCategorias[p.id_categoria] ?? '—'}
+                      </span>
+                    </span>
+                  </div>
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-right text-slate-600">
                   {formatearPrecio(p.precio_compra)}
@@ -77,11 +77,11 @@ export default function TablaProductos({
                 <td className="px-4 py-3">
                   <Existencia producto={p} />
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 columna-estado">
                   <InsigniaEstado estado={p.estado} />
                 </td>
                 {hayAcciones && (
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 columna-acciones">
                     <AccionesFila
                       nombre={p.nombre_producto}
                       puedeEditar={puedeEditar}

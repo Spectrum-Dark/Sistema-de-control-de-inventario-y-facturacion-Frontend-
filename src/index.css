@@ -1,6 +1,49 @@
 /* Importación del sistema de estilos de Tailwind CSS (Tailwind v4) */
 @import "tailwindcss";
 
+/* Separa el icono nativo del selector del texto del campo de fecha y hora. */
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  margin-inline-start: 0.4rem;
+  cursor: pointer;
+}
+
+/* Tablas de la aplicación: ancho automático según contenido, alineación izquierda y sin scroll horizontal. */
+#root table,
+[role="dialog"] table {
+  width: 100%;
+  min-width: 0 !important;
+  table-layout: auto;
+}
+
+#root table th,
+#root table td,
+[role="dialog"] table th,
+[role="dialog"] table td {
+  overflow-wrap: anywhere;
+  white-space: normal !important;
+  text-align: left !important;
+}
+
+#root table .columna-estado,
+[role="dialog"] table .columna-estado {
+  text-align: center !important;
+}
+
+#root table .columna-acciones,
+[role="dialog"] table .columna-acciones {
+  text-align: right !important;
+}
+
+#root table td.columna-acciones :is(.flex, .inline-flex),
+[role="dialog"] table td.columna-acciones :is(.flex, .inline-flex) {
+  justify-content: flex-end;
+}
+
+#root div:has(> table),
+[role="dialog"] div:has(> table) {
+  overflow-x: hidden;
+}
+
 /* Apariencia global de Sileo, coordinada con los temas de la aplicación. */
 /* Definición de variables CSS personalizadas para el modo claro por defecto */
 html:not([data-tema="oscuro"]) {
@@ -245,3 +288,19 @@ html[data-tema="oscuro"] .app-sidebar .submenu-active-link::before {
 html[data-tema="oscuro"] .sidebar-scroll { scrollbar-color: #454545 transparent; }
 html[data-tema="oscuro"] .sidebar-scroll::-webkit-scrollbar-thumb { background: #454545; }
 html[data-tema="oscuro"] .sidebar-scroll::-webkit-scrollbar-thumb:hover { background: #626262; }
+
+/* Scrollbar delgado para el contenido desplazable de los modales y sus listas. */
+.modal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #a3a3a3 transparent;
+}
+.modal-scroll::-webkit-scrollbar { width: 6px; }
+.modal-scroll::-webkit-scrollbar-track { background: transparent; }
+.modal-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #a3a3a3;
+}
+.modal-scroll::-webkit-scrollbar-thumb:hover { background: #737373; }
+html[data-tema="oscuro"] .modal-scroll { scrollbar-color: #454545 transparent; }
+html[data-tema="oscuro"] .modal-scroll::-webkit-scrollbar-thumb { background: #454545; }
+html[data-tema="oscuro"] .modal-scroll::-webkit-scrollbar-thumb:hover { background: #626262; }

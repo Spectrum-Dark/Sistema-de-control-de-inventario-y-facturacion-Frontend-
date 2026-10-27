@@ -59,7 +59,7 @@ export default function Modal({
         </div>
 
         {/* Cuerpo o contenido interno del modal (children) con límite de altura y desplazamiento vertical independiente. */}
-        <div className="max-h-[82vh] overflow-y-auto p-5 sm:p-6">
+        <div className="modal-scroll max-h-[82vh] overflow-y-auto p-5 sm:p-6">
           {children}
         </div>
       </div>

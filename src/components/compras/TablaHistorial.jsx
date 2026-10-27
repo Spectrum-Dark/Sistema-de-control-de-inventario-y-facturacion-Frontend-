@@ -39,7 +39,7 @@ export default function TablaHistorial({ historial, onVerCambios }) {
               <th className="px-4 py-3 font-medium">Operación</th>
               <th className="px-4 py-3 font-medium">Usuario</th>
               <th className="px-4 py-3 font-semibold">Motivo</th>
-              <th className="px-4 py-3 text-right font-medium">Acciones</th>
+              <th className="px-4 py-3 text-right font-medium columna-acciones">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -83,7 +83,7 @@ export default function TablaHistorial({ historial, onVerCambios }) {
                 </td>
 
                 {/* Columna de acciones (botón para visualizar los cambios) */}
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 columna-acciones">
                   <AccionesFila
                     nombre={h.compra?.numero_compra ?? 'compra'}
                     extras={extrasDe(h)}

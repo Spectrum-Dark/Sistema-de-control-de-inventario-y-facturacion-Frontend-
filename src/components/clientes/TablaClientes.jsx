@@ -41,24 +41,15 @@ export default function TablaClientes({
       {/* Vista de tabla tradicional, optimizada para pantallas grandes (xl en adelante) */}
       <div className="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm xl:block">
         <table className="w-full table-fixed text-left text-sm">
-          {/* Definición de los anchos de columna de manera proporcional y dinámica */}
-          <colgroup>
-            <col style={{ width: hayAcciones ? '27%' : '32%' }} />
-            <col style={{ width: hayAcciones ? '24%' : '27%' }} />
-            <col style={{ width: hayAcciones ? '23%' : '26%' }} />
-            <col style={{ width: hayAcciones ? '10%' : '10%' }} />
-            {hayAcciones && <col style={{ width: '16%' }} />}
-          </colgroup>
-
           {/* Cabecera de la tabla con los títulos descriptivos de cada columna */}
           <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-[.12em] text-slate-500">
             <tr>
               <th className="px-5 py-3.5 font-semibold">Cliente</th>
               <th className="px-5 py-3.5 font-semibold">Contacto</th>
               <th className="px-5 py-3.5 font-semibold">Dirección</th>
-              <th className="px-5 py-3.5 font-semibold">Estado</th>
+              <th className="px-5 py-3.5 font-semibold columna-estado">Estado</th>
               {hayAcciones && (
-                <th className="px-5 py-3.5 text-right font-semibold">
+                <th className="px-5 py-3.5 text-right font-semibold columna-acciones">
                   Acciones
                 </th>
               )}
@@ -95,13 +86,13 @@ export default function TablaClientes({
                 </td>
 
                 {/* Celda de estado utilizando el componente InsigniaEstado */}
-                <td className="px-5 py-3.5">
+                <td className="px-5 py-3.5 columna-estado">
                   <InsigniaEstado estado={cliente.estado} />
                 </td>
 
                 {/* Celda de acciones condicional con opciones de edición y eliminación */}
                 {hayAcciones && (
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5 columna-acciones">
                     <AccionesFila
                       nombre={cliente.nombre_cliente}
                       puedeEditar={puedeEditar}

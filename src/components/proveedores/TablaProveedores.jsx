@@ -46,9 +46,9 @@ export default function TablaProveedores({
               <th className="px-5 py-3.5 font-semibold">Proveedor</th>
               <th className="px-5 py-3.5 font-semibold">Contacto</th>
               <th className="px-5 py-3.5 font-semibold">Dirección</th>
-              <th className="px-5 py-3.5 font-semibold">Estado</th>
+              <th className="px-5 py-3.5 font-semibold columna-estado">Estado</th>
               {hayAcciones && (
-                <th className="px-5 py-3.5 text-right font-semibold">
+                <th className="px-5 py-3.5 text-right font-semibold columna-acciones">
                   Acciones
                 </th>
               )}
@@ -72,11 +72,11 @@ export default function TablaProveedores({
                 <td className="max-w-xs px-5 py-3.5 text-sm text-slate-600">
                   {proveedor.direccion || <Vacio />}
                 </td>
-                <td className="px-5 py-3.5">
+                <td className="px-5 py-3.5 columna-estado">
                   <InsigniaEstado estado={proveedor.estado} />
                 </td>
                 {hayAcciones && (
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5 columna-acciones">
                     <AccionesFila
                       nombre={proveedor.nombre_proveedor}
                       puedeEditar={puedeEditar}

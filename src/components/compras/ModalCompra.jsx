@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Hash, Calendar, Loader2, Package, ReceiptText } from 'lucide-react';
+import { Hash, Loader2, Package, ReceiptText } from 'lucide-react';
 import { sileo } from 'sileo';
 import Modal from '../compartido/Modal';
 import CampoFormulario from '../compartido/CampoFormulario';
@@ -273,7 +273,7 @@ export default function ModalCompra({
           </div>
 
           <div
-            className={`grid grid-cols-1 items-start gap-3 ${esCorreccion ? 'sm:grid-cols-2' : 'sm:grid-cols-2 xl:grid-cols-3'}`}
+            className={`grid grid-cols-1 items-start gap-3 ${esCorreccion ? 'sm:grid-cols-[1.15fr_1fr]' : 'sm:grid-cols-2 xl:grid-cols-[1.15fr_1fr_1fr]'}`}
           >
             {/* Selector de proveedor asociado */}
             <CampoSeleccionable
@@ -282,6 +282,7 @@ export default function ModalCompra({
               value={form.id_proveedor}
               onChange={handleChange}
               placeholder="Escribe el nombre del proveedor"
+              maxOpciones={Infinity}
               options={opcionesProveedor.map((proveedor) => ({
                 value: proveedor.id_proveedor,
                 label: proveedor.nombre_proveedor,
@@ -313,7 +314,6 @@ export default function ModalCompra({
             <CampoFormulario
               id="fecha_compra"
               label="Fecha y hora de la compra"
-              icono={Calendar}
               type="datetime-local"
               step="1"
               value={form.fecha_compra}

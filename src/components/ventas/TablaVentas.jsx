@@ -60,16 +60,16 @@ export default function TablaVentas({
   return (
     <>
       {/* Vista de tabla tradicional para pantallas extra grandes (XL en adelante) */}
-      <div className="hidden overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm xl:block">
-        <table className="w-full min-w-255 text-left text-sm">
+      <div className="hidden rounded-2xl border border-slate-200 bg-white shadow-sm xl:block">
+        <table className="w-full table-fixed text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-[.12em] text-slate-500">
             <tr>
               <th className="px-5 py-3.5 font-semibold">Venta</th>
               <th className="px-5 py-3.5 font-semibold">Cliente</th>
               <th className="px-5 py-3.5 font-semibold">Productos</th>
               <th className="px-5 py-3.5 text-right font-semibold">Total</th>
-              <th className="px-5 py-3.5 font-semibold">Estado</th>
-              <th className="px-5 py-3.5 text-right font-semibold">Acciones</th>
+              <th className="px-5 py-3.5 font-semibold columna-estado">Estado</th>
+              <th className="px-5 py-3.5 text-right font-semibold columna-acciones">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -113,10 +113,10 @@ export default function TablaVentas({
                     IVA {formatearPrecio(venta.impuesto)}
                   </span>
                 </td>
-                <td className="px-5 py-3.5">
+                <td className="px-5 py-3.5 columna-estado">
                   <InsigniaEstado estado={venta.estado} />
                 </td>
-                <td className="px-5 py-3.5">
+                <td className="px-5 py-3.5 columna-acciones">
                   <AccionesFila
                     nombre={venta.numero_venta}
                     extras={extrasDe(venta)}

@@ -10,6 +10,7 @@ export default function CampoSeleccionable({
   options,
   placeholder = 'Escribe para buscar...',
   required = false,
+  maxOpciones = 6,
 }) {
   // Referencias para el elemento de entrada y control de sincronización de estado local.
   const inputRef = useRef(null);
@@ -28,18 +29,20 @@ export default function CampoSeleccionable({
 
   // Filtra las opciones de manera memorizada en base al texto ingresado y coincidencias de etiqueta o descripción.
   const filtradas = useMemo(() => {
-    const busqueda = texto.trim().toLocaleLowerCase();
-    if (!abierto || (opcionSeleccionada && texto === opcionSeleccionada.label))
-      return [];
+    if (!abierto) return [];
+    const mostrarTodas =
+      opcionSeleccionada &&
+      texto === opcionSeleccionada.label;
+    const busqueda = mostrarTodas ? '' : texto.trim().toLocaleLowerCase();
     return options.filter((opcion) =>
       `${opcion.label} ${opcion.descripcion ?? ''}`
         .toLocaleLowerCase()
         .includes(busqueda)
     );
-  }, [abierto, opcionSeleccionada, options, texto]);
+  }, [abierto, maxOpciones, opcionSeleccionada, options, texto]);
 
-  // Limita la visualización de opciones a un máximo de 6 elementos para mantener el rendimiento y diseño.
-  const opcionesVisibles = filtradas.slice(0, 6);
+  // Limita las opciones visibles y permite ampliar el límite en selectores con catálogos extensos.
+  const opcionesVisibles = filtradas.slice(0, maxOpciones);
 
   // Efecto sincronizador que actualiza el texto interno del input si la etiqueta o el valor externo cambian.
   useEffect(() => {
@@ -75,6 +78,7 @@ export default function CampoSeleccionable({
     setActivo(0);
     emitirCambio(String(opcion.value));
     inputRef.current?.setCustomValidity('');
+    inputRef.current?.blur();
   };
 
   // Manejador de eventos de teclado (flechas de navegación, Enter para seleccionar y Escape para cerrar).
@@ -139,7 +143,7 @@ export default function CampoSeleccionable({
         <ul
           id={`${id}_opciones`}
           role="listbox"
-          className="absolute z-30 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl"
+          className="modal-scroll absolute z-30 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl"
         >
           {opcionesVisibles.map((opcion, indice) => (
             <li
@@ -170,7 +174,7 @@ export default function CampoSeleccionable({
             </li>
           ))}
           {/* Aviso informativo si existen más resultados de los mostrados en el límite */}
-          {filtradas.length > 6 && (
+          {filtradas.length > maxOpciones && (
             <li className="px-3 py-2 text-[11px] text-slate-500">
               Hay más resultados; escribe para afinar la búsqueda.
             </li>

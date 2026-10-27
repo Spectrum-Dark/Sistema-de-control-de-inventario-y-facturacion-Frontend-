@@ -6,7 +6,7 @@ import { formatearPrecio } from '../../utils/productos/formato';
 
 // Constante que define las clases CSS reutilizables para los inputs dentro del editor de detalles de compra.
 const claseInput =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 transition focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200';
+  'w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 transition focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200';
 
 // Componente para gestionar dinámicamente los detalles de una compra (selección de productos, cantidades, precios unitarios y subtotales).
 export default function EditorDetallesCompra({ filas, productos, onChange }) {
@@ -66,13 +66,14 @@ export default function EditorDetallesCompra({ filas, productos, onChange }) {
         >
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-12">
             {/* Campo seleccionable de productos (filtra los ya elegidos para evitar repeticiones) */}
-            <div className="sm:col-span-5">
+            <div className="sm:col-span-6">
               <CampoSeleccionable
                 id={`producto_compra_${i}`}
                 label="Producto"
                 value={fila.id_producto}
                 onChange={(evento) => elegirProducto(i, evento.target.value)}
                 placeholder="Buscar por código o nombre"
+                maxOpciones={Infinity}
                 options={productos
                   .filter(
                     (p) =>
@@ -90,7 +91,7 @@ export default function EditorDetallesCompra({ filas, productos, onChange }) {
 
             {/* Campo de cantidad de unidades a comprar */}
             <div className="sm:col-span-2">
-              <label className="mb-1 block text-xs font-medium text-slate-500">
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
                 Cantidad
               </label>
               <input
@@ -108,8 +109,8 @@ export default function EditorDetallesCompra({ filas, productos, onChange }) {
             </div>
 
             {/* Campo de precio unitario (bloqueado en modo de solo lectura ya que se hereda del producto) */}
-            <div className="sm:col-span-3">
-              <label className="mb-1 block text-xs font-medium text-slate-500">
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
                 Precio unitario
               </label>
               <input
@@ -120,7 +121,11 @@ export default function EditorDetallesCompra({ filas, productos, onChange }) {
                 value={fila.precio_unitario}
                 readOnly
                 required
-                className={`${claseInput} cursor-not-allowed bg-slate-100 text-slate-500`}
+                style={{
+                  width: `${Math.min(22, Math.max(12, String(fila.precio_unitario ?? '').length + 8))}ch`,
+                  maxWidth: '100%',
+                }}
+                className={`${claseInput.replace('w-full', 'max-w-full')} cursor-not-allowed bg-slate-100 text-slate-500`}
               />
             </div>
 

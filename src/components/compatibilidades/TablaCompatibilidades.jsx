@@ -44,14 +44,6 @@ export default function TablaCompatibilidades({
       {/* Vista de tabla tradicional, optimizada para pantallas grandes (xl en adelante) */}
       <div className="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm xl:block">
         <table className="w-full table-fixed text-left text-sm">
-          {/* Definición de los anchos de columna de manera proporcional según la presencia de acciones */}
-          <colgroup>
-            <col style={{ width: hayAcciones ? '32%' : '38%' }} />
-            <col style={{ width: hayAcciones ? '30%' : '36%' }} />
-            <col style={{ width: hayAcciones ? '22%' : '26%' }} />
-            {hayAcciones && <col style={{ width: '16%' }} />}
-          </colgroup>
-
           {/* Cabecera de la tabla con los títulos descriptivos */}
           <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-[.12em] text-slate-500">
             <tr>
@@ -59,7 +51,7 @@ export default function TablaCompatibilidades({
               <th className="px-5 py-3.5 font-semibold">Modelo compatible</th>
               <th className="px-5 py-3.5 font-semibold">Observaciones</th>
               {hayAcciones && (
-                <th className="px-5 py-3.5 text-right font-semibold">
+                <th className="px-5 py-3.5 text-right font-semibold columna-acciones">
                   Acciones
                 </th>
               )}
@@ -104,7 +96,7 @@ export default function TablaCompatibilidades({
 
                 {/* Celda de acciones condicional */}
                 {hayAcciones && (
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5 columna-acciones">
                     <AccionesFila
                       nombre={`${nombreProducto(fila)} con ${nombreModelo(fila)}`}
                       puedeEditar={puedeEditar}

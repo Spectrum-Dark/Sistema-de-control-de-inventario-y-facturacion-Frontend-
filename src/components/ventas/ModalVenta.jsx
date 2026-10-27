@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, Hash, Loader2 } from 'lucide-react';
+import { Hash, Loader2 } from 'lucide-react';
 import { sileo } from 'sileo';
 import Modal from '../compartido/Modal';
 import CampoFormulario from '../compartido/CampoFormulario';
@@ -57,6 +57,27 @@ export default function ModalVenta({
     : generarCodigoAutomatico(ventas, 'numero_venta', 'VTA-');
 
   const opcionesProducto = productos;
+  const opcionesCliente = [
+    ...clientes,
+    ...(venta &&
+    !clientes.some(
+      (cliente) => String(cliente.id_cliente) === String(venta.id_cliente)
+    )
+      ? [
+          {
+            ...venta.cliente,
+            id_cliente: venta.id_cliente,
+            nombre_cliente:
+              venta.cliente?.nombre_cliente ?? 'Cliente actual',
+          },
+        ]
+      : []),
+  ].map((cliente) => ({
+    value: cliente.id_cliente,
+    label: cliente.nombre_cliente,
+    descripcion:
+      cliente.identificacion || cliente.telefono || 'Cliente registrado',
+  }));
   const totales = calcularTotales(filas);
 
   const handleChange = (e) => {
@@ -85,7 +106,14 @@ export default function ModalVenta({
     const detalles = filasAPayload(filas);
     const observaciones = form.observaciones.trim() || null;
     const datos = esCorreccion
-      ? { motivo: form.motivo.trim(), observaciones, detalles }
+      ? {
+          motivo: form.motivo.trim(),
+          observaciones,
+          detalles,
+          ...(Number(form.id_cliente) !== Number(venta.id_cliente) && {
+            id_cliente: Number(form.id_cliente),
+          }),
+        }
       : {
           id_cliente: Number(form.id_cliente),
           numero_venta: numeroVenta.trim(),
@@ -141,34 +169,18 @@ export default function ModalVenta({
             )}
           </div>
           <div
-            className={`grid grid-cols-1 gap-3 ${esCorreccion ? 'sm:grid-cols-2' : 'sm:grid-cols-3'}`}
+            className={`grid grid-cols-1 gap-3 ${esCorreccion ? 'sm:grid-cols-[1.15fr_1fr]' : 'sm:grid-cols-[1.15fr_1fr_1fr]'}`}
           >
-            {esCorreccion ? (
-              <CampoFormulario
-                id="id_cliente"
-                label="Cliente"
-                type="text"
-                value={venta.cliente?.nombre_cliente ?? 'Cliente no disponible'}
-                readOnly
-              />
-            ) : (
-              <CampoSeleccionable
-                id="id_cliente"
-                label="Cliente"
-                value={form.id_cliente}
-                onChange={handleChange}
-                placeholder="Escribe el nombre o identificación"
-                options={clientes.map((cliente) => ({
-                  value: cliente.id_cliente,
-                  label: cliente.nombre_cliente,
-                  descripcion:
-                    cliente.identificacion ||
-                    cliente.telefono ||
-                    'Cliente registrado',
-                }))}
-                required
-              />
-            )}
+            <CampoSeleccionable
+              id="id_cliente"
+              label="Cliente"
+              value={form.id_cliente}
+              onChange={handleChange}
+              placeholder="Escribe el nombre o identificación"
+              maxOpciones={Infinity}
+              options={opcionesCliente}
+              required
+            />
             {!esCorreccion && (
               <CampoFormulario
                 id="numero_venta"
@@ -187,7 +199,6 @@ export default function ModalVenta({
               <CampoFormulario
                 id="fecha_venta"
                 label="Fecha y hora de la venta"
-                icono={Calendar}
                 type="datetime-local"
                 step="1"
                 value={form.fecha_venta}

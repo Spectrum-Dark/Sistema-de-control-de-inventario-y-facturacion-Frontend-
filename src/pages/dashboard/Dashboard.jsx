@@ -74,9 +74,9 @@ function TarjetaIndicador({
   return (
     <article className="dashboard-metric rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-slate-500">{titulo}</p>
-          <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900">
+          <p className="mt-3 whitespace-nowrap text-2xl font-bold tabular-nums tracking-tight text-slate-900 xl:text-[clamp(0.9rem,1.3vw,1.5rem)]">
             {valor}
           </p>
         </div>
@@ -324,7 +324,7 @@ function GraficoEstadoInventario({ totalProductos, productosBajos }) {
  * incluyendo barras de progreso relativas y numeración destacada para el primer puesto.
  */
 function ProductosDestacados({ productos }) {
-  const destacados = productos.slice(0, 5);
+  const destacados = productos.slice(0, 4);
   const maximo = Math.max(
     1,
     ...destacados.map((producto) => Number(producto.total_vendido ?? 0))
