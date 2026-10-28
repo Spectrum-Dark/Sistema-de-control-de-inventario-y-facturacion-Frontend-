@@ -24,9 +24,7 @@ export default function PanelSesion({
           <span className="auth-brand-icon">
             <Package size={22} strokeWidth={2} />
           </span>
-          <span className="auth-brand-name">
-            Repuestos<span> · </span>Gestión
-          </span>
+          <span className="auth-brand-name">Repuestos de Vehículos</span>
           <span className="auth-brand-caption">INVENTARIO Y FACTURACIÓN</span>
         </header>
 

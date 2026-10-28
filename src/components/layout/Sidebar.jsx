@@ -78,10 +78,10 @@ export default function Sidebar({ abierto, onCerrar }) {
             </span>
             <span className="min-w-0">
               <span className="block truncate text-sm font-bold tracking-tight text-white">
-                Repuestos
+                Repuestos de Vehículos
               </span>
               <span className="mt-0.5 block text-[10px] font-medium uppercase tracking-[.12em] text-slate-400">
-                Gestión comercial
+                Inventario y Facturación
               </span>
             </span>
           </div>
